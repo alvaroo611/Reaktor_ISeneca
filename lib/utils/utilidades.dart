@@ -1,5 +1,5 @@
 import 'package:dio/dio.dart';
-
+//Utils
 class Utilidades {
 
   static Future<String> getJsonData(String url) async {
