@@ -14,6 +14,7 @@ import 'package:iseneca/screens/screens.dart';
 import 'package:iseneca/service/services.dart';
 import 'package:provider/provider.dart';
 import 'package:iseneca/providers/profesores_provider.dart';
+
 //Main
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -39,7 +40,8 @@ void logOut() async {
     }
   }
 }
-//AppState
+
+//AppState class
 class AppState extends StatelessWidget {
   const AppState({super.key});
 
