@@ -41,7 +41,7 @@ class _IncidenciaTelefonoScreenState extends State<IncidenciaTelefonoScreen> {
   void _fetchStudent() async {
     final httpClient = http.Client();
     await _providerAlumno.fetchStudents(httpClient);
-    setState(() {}); // Actualiza el estado después de obtener los profesores
+    setState(() {}); // Actualiza el estado después de obtener los estudiantes
   }
 
   Future<void> _seleccionarFecha(BuildContext context) async {
