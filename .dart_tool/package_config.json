@@ -2,34 +2,16 @@
   "configVersion": 2,
   "packages": [
     {
-      "name": "_fe_analyzer_shared",
-      "rootUri": "file:///C:/Users/alvar/AppData/Local/Pub/Cache/hosted/pub.dev/_fe_analyzer_shared-61.0.0",
-      "packageUri": "lib/",
-      "languageVersion": "2.17"
-    },
-    {
       "name": "_flutterfire_internals",
-      "rootUri": "file:///C:/Users/alvar/AppData/Local/Pub/Cache/hosted/pub.dev/_flutterfire_internals-1.3.25",
+      "rootUri": "file:///C:/Users/alvar/AppData/Local/Pub/Cache/hosted/pub.dev/_flutterfire_internals-1.3.34",
       "packageUri": "lib/",
       "languageVersion": "3.2"
-    },
-    {
-      "name": "analyzer",
-      "rootUri": "file:///C:/Users/alvar/AppData/Local/Pub/Cache/hosted/pub.dev/analyzer-5.13.0",
-      "packageUri": "lib/",
-      "languageVersion": "2.19"
     },
     {
       "name": "archive",
       "rootUri": "file:///C:/Users/alvar/AppData/Local/Pub/Cache/hosted/pub.dev/archive-3.4.6",
       "packageUri": "lib/",
       "languageVersion": "2.12"
-    },
-    {
-      "name": "args",
-      "rootUri": "file:///C:/Users/alvar/AppData/Local/Pub/Cache/hosted/pub.dev/args-2.4.2",
-      "packageUri": "lib/",
-      "languageVersion": "2.19"
     },
     {
       "name": "async",
@@ -69,37 +51,37 @@
     },
     {
       "name": "cloud_firestore",
-      "rootUri": "file:///C:/Users/alvar/AppData/Local/Pub/Cache/hosted/pub.dev/cloud_firestore-4.15.8",
+      "rootUri": "file:///C:/Users/alvar/AppData/Local/Pub/Cache/hosted/pub.dev/cloud_firestore-4.17.4",
       "packageUri": "lib/",
       "languageVersion": "2.18"
     },
     {
       "name": "cloud_firestore_platform_interface",
-      "rootUri": "file:///C:/Users/alvar/AppData/Local/Pub/Cache/hosted/pub.dev/cloud_firestore_platform_interface-6.1.9",
+      "rootUri": "file:///C:/Users/alvar/AppData/Local/Pub/Cache/hosted/pub.dev/cloud_firestore_platform_interface-6.2.4",
       "packageUri": "lib/",
       "languageVersion": "2.18"
     },
     {
       "name": "cloud_firestore_web",
-      "rootUri": "file:///C:/Users/alvar/AppData/Local/Pub/Cache/hosted/pub.dev/cloud_firestore_web-3.10.8",
+      "rootUri": "file:///C:/Users/alvar/AppData/Local/Pub/Cache/hosted/pub.dev/cloud_firestore_web-3.12.4",
       "packageUri": "lib/",
       "languageVersion": "3.2"
     },
     {
       "name": "cloud_functions",
-      "rootUri": "file:///C:/Users/alvar/AppData/Local/Pub/Cache/hosted/pub.dev/cloud_functions-4.6.8",
+      "rootUri": "file:///C:/Users/alvar/AppData/Local/Pub/Cache/hosted/pub.dev/cloud_functions-4.7.5",
       "packageUri": "lib/",
       "languageVersion": "2.18"
     },
     {
       "name": "cloud_functions_platform_interface",
-      "rootUri": "file:///C:/Users/alvar/AppData/Local/Pub/Cache/hosted/pub.dev/cloud_functions_platform_interface-5.5.19",
+      "rootUri": "file:///C:/Users/alvar/AppData/Local/Pub/Cache/hosted/pub.dev/cloud_functions_platform_interface-5.5.27",
       "packageUri": "lib/",
       "languageVersion": "2.18"
     },
     {
       "name": "cloud_functions_web",
-      "rootUri": "file:///C:/Users/alvar/AppData/Local/Pub/Cache/hosted/pub.dev/cloud_functions_web-4.7.2",
+      "rootUri": "file:///C:/Users/alvar/AppData/Local/Pub/Cache/hosted/pub.dev/cloud_functions_web-4.9.5",
       "packageUri": "lib/",
       "languageVersion": "3.2"
     },
@@ -140,32 +122,26 @@
       "languageVersion": "2.12"
     },
     {
-      "name": "file",
-      "rootUri": "file:///C:/Users/alvar/AppData/Local/Pub/Cache/hosted/pub.dev/file-7.0.0",
-      "packageUri": "lib/",
-      "languageVersion": "3.0"
-    },
-    {
       "name": "firebase_auth",
-      "rootUri": "file:///C:/Users/alvar/AppData/Local/Pub/Cache/hosted/pub.dev/firebase_auth-4.17.8",
+      "rootUri": "file:///C:/Users/alvar/AppData/Local/Pub/Cache/hosted/pub.dev/firebase_auth-4.19.6",
       "packageUri": "lib/",
       "languageVersion": "2.18"
     },
     {
       "name": "firebase_auth_platform_interface",
-      "rootUri": "file:///C:/Users/alvar/AppData/Local/Pub/Cache/hosted/pub.dev/firebase_auth_platform_interface-7.1.8",
+      "rootUri": "file:///C:/Users/alvar/AppData/Local/Pub/Cache/hosted/pub.dev/firebase_auth_platform_interface-7.2.7",
       "packageUri": "lib/",
       "languageVersion": "2.18"
     },
     {
       "name": "firebase_auth_web",
-      "rootUri": "file:///C:/Users/alvar/AppData/Local/Pub/Cache/hosted/pub.dev/firebase_auth_web-5.9.8",
+      "rootUri": "file:///C:/Users/alvar/AppData/Local/Pub/Cache/hosted/pub.dev/firebase_auth_web-5.11.6",
       "packageUri": "lib/",
       "languageVersion": "3.2"
     },
     {
       "name": "firebase_core",
-      "rootUri": "file:///C:/Users/alvar/AppData/Local/Pub/Cache/hosted/pub.dev/firebase_core-2.27.0",
+      "rootUri": "file:///C:/Users/alvar/AppData/Local/Pub/Cache/hosted/pub.dev/firebase_core-2.31.1",
       "packageUri": "lib/",
       "languageVersion": "2.18"
     },
@@ -177,27 +153,27 @@
     },
     {
       "name": "firebase_core_web",
-      "rootUri": "file:///C:/Users/alvar/AppData/Local/Pub/Cache/hosted/pub.dev/firebase_core_web-2.11.5",
+      "rootUri": "file:///C:/Users/alvar/AppData/Local/Pub/Cache/hosted/pub.dev/firebase_core_web-2.17.0",
       "packageUri": "lib/",
       "languageVersion": "3.2"
     },
     {
       "name": "firebase_database",
-      "rootUri": "file:///C:/Users/alvar/AppData/Local/Pub/Cache/hosted/pub.dev/firebase_database-10.3.2",
+      "rootUri": "file:///C:/Users/alvar/AppData/Local/Pub/Cache/hosted/pub.dev/firebase_database-10.5.6",
       "packageUri": "lib/",
       "languageVersion": "2.18"
     },
     {
       "name": "firebase_database_platform_interface",
-      "rootUri": "file:///C:/Users/alvar/AppData/Local/Pub/Cache/hosted/pub.dev/firebase_database_platform_interface-0.2.5+10",
+      "rootUri": "file:///C:/Users/alvar/AppData/Local/Pub/Cache/hosted/pub.dev/firebase_database_platform_interface-0.2.5+34",
       "packageUri": "lib/",
       "languageVersion": "2.18"
     },
     {
       "name": "firebase_database_web",
-      "rootUri": "file:///C:/Users/alvar/AppData/Local/Pub/Cache/hosted/pub.dev/firebase_database_web-0.2.3+10",
+      "rootUri": "file:///C:/Users/alvar/AppData/Local/Pub/Cache/hosted/pub.dev/firebase_database_web-0.2.5+6",
       "packageUri": "lib/",
-      "languageVersion": "2.18"
+      "languageVersion": "3.2"
     },
     {
       "name": "flutter",
@@ -230,12 +206,6 @@
       "languageVersion": "2.12"
     },
     {
-      "name": "glob",
-      "rootUri": "file:///C:/Users/alvar/AppData/Local/Pub/Cache/hosted/pub.dev/glob-2.1.2",
-      "packageUri": "lib/",
-      "languageVersion": "2.19"
-    },
-    {
       "name": "google_identity_services_web",
       "rootUri": "file:///C:/Users/alvar/AppData/Local/Pub/Cache/hosted/pub.dev/google_identity_services_web-0.2.2",
       "packageUri": "lib/",
@@ -243,9 +213,9 @@
     },
     {
       "name": "google_sign_in",
-      "rootUri": "file:///C:/Users/alvar/AppData/Local/Pub/Cache/hosted/pub.dev/google_sign_in-6.1.5",
+      "rootUri": "file:///C:/Users/alvar/AppData/Local/Pub/Cache/hosted/pub.dev/google_sign_in-6.2.1",
       "packageUri": "lib/",
-      "languageVersion": "2.19"
+      "languageVersion": "3.2"
     },
     {
       "name": "google_sign_in_android",
@@ -255,9 +225,9 @@
     },
     {
       "name": "google_sign_in_ios",
-      "rootUri": "file:///C:/Users/alvar/AppData/Local/Pub/Cache/hosted/pub.dev/google_sign_in_ios-5.6.4",
+      "rootUri": "file:///C:/Users/alvar/AppData/Local/Pub/Cache/hosted/pub.dev/google_sign_in_ios-5.7.6",
       "packageUri": "lib/",
-      "languageVersion": "2.19"
+      "languageVersion": "3.2"
     },
     {
       "name": "google_sign_in_platform_interface",
@@ -356,12 +326,6 @@
       "languageVersion": "2.12"
     },
     {
-      "name": "package_config",
-      "rootUri": "file:///C:/Users/alvar/AppData/Local/Pub/Cache/hosted/pub.dev/package_config-2.1.0",
-      "packageUri": "lib/",
-      "languageVersion": "2.12"
-    },
-    {
       "name": "path",
       "rootUri": "file:///C:/Users/alvar/AppData/Local/Pub/Cache/hosted/pub.dev/path-1.9.0",
       "packageUri": "lib/",
@@ -370,12 +334,6 @@
     {
       "name": "petitparser",
       "rootUri": "file:///C:/Users/alvar/AppData/Local/Pub/Cache/hosted/pub.dev/petitparser-5.4.0",
-      "packageUri": "lib/",
-      "languageVersion": "2.19"
-    },
-    {
-      "name": "pigeon",
-      "rootUri": "file:///C:/Users/alvar/AppData/Local/Pub/Cache/hosted/pub.dev/pigeon-11.0.1",
       "packageUri": "lib/",
       "languageVersion": "2.19"
     },
@@ -396,12 +354,6 @@
       "rootUri": "file:///C:/Users/alvar/AppData/Local/Pub/Cache/hosted/pub.dev/provider-6.0.5",
       "packageUri": "lib/",
       "languageVersion": "2.12"
-    },
-    {
-      "name": "pub_semver",
-      "rootUri": "file:///C:/Users/alvar/AppData/Local/Pub/Cache/hosted/pub.dev/pub_semver-2.1.4",
-      "packageUri": "lib/",
-      "languageVersion": "2.17"
     },
     {
       "name": "quiver",
@@ -560,16 +512,10 @@
       "languageVersion": "3.3"
     },
     {
-      "name": "watcher",
-      "rootUri": "file:///C:/Users/alvar/AppData/Local/Pub/Cache/hosted/pub.dev/watcher-1.1.0",
-      "packageUri": "lib/",
-      "languageVersion": "3.0"
-    },
-    {
       "name": "web",
-      "rootUri": "file:///C:/Users/alvar/AppData/Local/Pub/Cache/hosted/pub.dev/web-0.4.2",
+      "rootUri": "file:///C:/Users/alvar/AppData/Local/Pub/Cache/hosted/pub.dev/web-0.5.1",
       "packageUri": "lib/",
-      "languageVersion": "3.2"
+      "languageVersion": "3.3"
     },
     {
       "name": "xml",
@@ -578,19 +524,13 @@
       "languageVersion": "2.16"
     },
     {
-      "name": "yaml",
-      "rootUri": "file:///C:/Users/alvar/AppData/Local/Pub/Cache/hosted/pub.dev/yaml-3.1.2",
-      "packageUri": "lib/",
-      "languageVersion": "2.19"
-    },
-    {
       "name": "iseneca",
       "rootUri": "../",
       "packageUri": "lib/",
       "languageVersion": "3.3"
     }
   ],
-  "generated": "2024-05-26T10:35:47.515081Z",
+  "generated": "2024-05-27T14:34:58.669623Z",
   "generator": "pub",
   "generatorVersion": "3.4.1",
   "flutterRoot": "file:///C:/src/flutter",
