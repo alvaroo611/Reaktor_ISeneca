@@ -211,6 +211,7 @@ class _IncidenciaTelefonoScreenState extends State<IncidenciaTelefonoScreen> {
                       borderRadius: BorderRadius.circular(10),
                     ),
                     child: DropdownButton<String>(
+                      key: Key('profesorDropdown'),
                       value: _profesorSeleccionado,
                       onChanged: (String? newValue) {
                         setState(() {
