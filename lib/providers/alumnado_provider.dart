@@ -11,7 +11,7 @@ class AlumnadoProvider extends ChangeNotifier {
 
   //hoja excel
   //https://docs.google.com/spreadsheets/d/14nffuLY-WILXuAQFMUWNEZIYK08WxI0g1_aK73Ths9Q/edit#gid=0
-
+  //
   AlumnadoProvider() {
     debugPrint("Alumnado Provider inicalizado");
     getAlumno();
@@ -58,7 +58,8 @@ class AlumnadoProvider extends ChangeNotifier {
   }
 
   getHorario() async {
-    const url = "https://script.google.com/macros/s/AKfycbyPsB_koj3MwkmRFn8IJU-k4sOP8nRfnHHKNNt9xov9INZ1VEsQbu96gDR8Seiz0oDGOQ/exec?spreadsheetId=14nffuLY-WILXuAQFMUWNEZIYK08WxI0g1_aK73Ths9Q&sheet=Horarios";
+    const url =
+        "https://script.google.com/macros/s/AKfycbyPsB_koj3MwkmRFn8IJU-k4sOP8nRfnHHKNNt9xov9INZ1VEsQbu96gDR8Seiz0oDGOQ/exec?spreadsheetId=14nffuLY-WILXuAQFMUWNEZIYK08WxI0g1_aK73Ths9Q&sheet=Horarios";
     String jsonData = await Utilidades.getJsonData(url);
     jsonData = '{"results":$jsonData}';
     final cursosResponse = HorarioResponse.fromJson(jsonData);
