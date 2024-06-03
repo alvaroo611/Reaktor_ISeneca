@@ -44,18 +44,18 @@ class GoogleSignInState extends State<GoogleSignIn> {
 
                   String? nombreUsuarioGoogle = user.displayName;
                   bool existe = false;
-                  bool oneChance = true;
+
                   for (int i = 0; i < lista.length; i++) {
                     debugPrint(lista[i].usuario);
                     if (lista[i].usuario == usuarioGoogle.toString()) {
                       existe = true;
-                      Navigator.pushNamed(context, "main_screen",
-                          arguments: nombreUsuarioGoogle);
                     }
                   }
-                  if (!existe && oneChance) {
+                  if (existe) {
+                    Navigator.pushNamed(context, "main_screen",
+                        arguments: nombreUsuarioGoogle);
+                  } else {
                     _mostrarAlert(context);
-                    oneChance = false;
                     logOut();
                   }
                 } catch (e) {
