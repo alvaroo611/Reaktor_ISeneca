@@ -30,7 +30,11 @@ class ProviderAlumno extends ChangeNotifier {
   }
 
   List<String> getStudentNames() {
-    return _students.map((student) => student.name).toList();
+    List<String> nombresYApellidos = [];
+    for (var student in students) {
+      nombresYApellidos.add('${student.name} ');
+    }
+    return nombresYApellidos;
   }
 }
 
