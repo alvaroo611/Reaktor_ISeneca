@@ -43,13 +43,9 @@ class XmlProvider extends ChangeNotifier {
         notifyListeners();
       } else {
         print("Error al cargar los datos");
-
-        throw Exception('Failed to load XML data');
       }
     } catch (error) {
       print('Error al cargar el archivo XML: $error');
-      LogService.logError('Error al cargar los datos', error);
-      throw error;
     }
   }
 }

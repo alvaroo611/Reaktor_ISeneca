@@ -52,11 +52,11 @@ class GoogleSignInState extends State<GoogleSignIn> {
                       Navigator.pushNamed(context, "main_screen",
                           arguments: nombreUsuarioGoogle);
                     }
-                    if (!existe && oneChance) {
-                      _mostrarAlert(context);
-                      oneChance = false;
-                      logOut();
-                    }
+                  }
+                  if (!existe && oneChance) {
+                    _mostrarAlert(context);
+                    oneChance = false;
+                    logOut();
                   }
                 } catch (e) {
                   if (e is FirebaseAuthException) {

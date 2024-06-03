@@ -8,12 +8,12 @@ class ProviderAlumno extends ChangeNotifier {
   List<Student> get students => _students;
 
   Future<void> fetchStudents(http.Client client) async {
-    const url =
-        'https://microservices-iesjandula.duckdns.org:8088/horarios/get/sortstudents';
-
     try {
-      final response = await http.get(Uri.parse(url));
-
+      final response = await client.get(
+        Uri.parse(
+            'https://microservices-iesjandula.duckdns.org:8088/horarios/get/sortstudents'), // Reemplaza con tu URL correcta
+        headers: {'Content-Type': 'application/json'},
+      );
       if (response.statusCode == 200) {
         final List<dynamic> jsonData = json.decode(response.body);
         _students = jsonData
@@ -25,7 +25,7 @@ class ProviderAlumno extends ChangeNotifier {
         print('Error en la solicitud: ${response.statusCode}');
       }
     } catch (error) {
-      print('Error de red: $error');
+      print('Error fetching alumnos: $error');
     }
   }
 
