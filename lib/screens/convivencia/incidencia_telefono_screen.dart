@@ -13,6 +13,8 @@ class IncidenciaTelefonoScreen extends StatefulWidget {
 }
 
 class _IncidenciaTelefonoScreenState extends State<IncidenciaTelefonoScreen> {
+  List<String> myListProfesores = [];
+
   DateTime? _fechaSeleccionada;
   String? _opcionHora;
   String? _profesorSeleccionado;

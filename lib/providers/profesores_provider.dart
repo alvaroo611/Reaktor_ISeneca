@@ -12,7 +12,7 @@ class ProfesoresProvider extends ChangeNotifier {
       // Se hace la petición al endpoint
       final response = await client.get(
         Uri.parse(
-            'http://localhost:8088/horarios/get/teachers'), // Reemplaza con tu URL correcta
+            'http://microservices-iesjandula.duckdns.org:8088/horarios/get/teachers'), // Reemplaza con tu URL correcta
         headers: {'Content-Type': 'application/json'},
       );
 
