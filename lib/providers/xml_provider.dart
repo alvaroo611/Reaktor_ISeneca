@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
+import 'package:iseneca/loggers/log.dart';
 
 class XmlProvider extends ChangeNotifier {
   final Dio _dio = Dio();
@@ -38,13 +39,16 @@ class XmlProvider extends ChangeNotifier {
 
       if (response.statusCode == 200) {
         print("Datos cargados correctamente");
+        LogService.logInfo("Datos cargados correctamente ");
         notifyListeners();
       } else {
         print("Error al cargar los datos");
+
         throw Exception('Failed to load XML data');
       }
     } catch (error) {
       print('Error al cargar el archivo XML: $error');
+      LogService.logError('Error al cargar los datos', error);
       throw error;
     }
   }

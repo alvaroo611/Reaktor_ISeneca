@@ -8,7 +8,8 @@ class ProviderAlumno extends ChangeNotifier {
   List<Student> get students => _students;
 
   Future<void> fetchStudents(http.Client client) async {
-    const url = 'http://localhost:8088/horarios/get/sortstudents';
+    const url =
+        'https://microservices-iesjandula.duckdns.org:8088/horarios/get/sortstudents';
 
     try {
       final response = await http.get(Uri.parse(url));

@@ -44,7 +44,7 @@ class GoogleSignInState extends State<GoogleSignIn> {
 
                   String? nombreUsuarioGoogle = user.displayName;
                   bool existe = false;
-
+                  bool oneChance = true;
                   for (int i = 0; i < lista.length; i++) {
                     debugPrint(lista[i].usuario);
                     if (lista[i].usuario == usuarioGoogle.toString()) {
@@ -52,11 +52,11 @@ class GoogleSignInState extends State<GoogleSignIn> {
                       Navigator.pushNamed(context, "main_screen",
                           arguments: nombreUsuarioGoogle);
                     }
-                  }
-
-                  if (!existe) {
-                    _mostrarAlert(context);
-                    logOut();
+                    if (!existe && oneChance) {
+                      _mostrarAlert(context);
+                      oneChance = false;
+                      logOut();
+                    }
                   }
                 } catch (e) {
                   if (e is FirebaseAuthException) {
@@ -82,7 +82,8 @@ class GoogleSignInState extends State<GoogleSignIn> {
             ),
           )
         : Container(
-            margin: const EdgeInsets.all(15), child: const CircularProgressIndicator());
+            margin: const EdgeInsets.all(15),
+            child: const CircularProgressIndicator());
   }
 }
 
@@ -103,7 +104,8 @@ void _mostrarAlert(BuildContext context) {
           ),
           actions: [
             TextButton(
-                onPressed: () => Navigator.pop(context), child: const Text("OK")),
+                onPressed: () => Navigator.pop(context),
+                child: const Text("OK")),
           ],
         );
       });

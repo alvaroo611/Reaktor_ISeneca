@@ -48,7 +48,7 @@ dependencies:
   syncfusion_flutter_calendar: ^23.1.42
   syncfusion_flutter_xlsio: ^23.1.42
   url_launcher: ^6.0.17
-
+  logger: ^1.0.0
 dev_dependencies:
   flutter_lints: ^2.0.0
   flutter_test:
