@@ -27,7 +27,7 @@ class XmlProvider extends ChangeNotifier {
 
       // Enviar la solicitud HTTP con Dio
       Response response = await _dio.post(
-        'http://localhost:8088/horarios/send/xml',
+        'http://microservices-iesjandula.duckdns.org:8088/horarios/send/xml',
         data: formData,
         options: Options(
           headers: {
