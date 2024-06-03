@@ -13,7 +13,7 @@ class ProviderAlumno extends ChangeNotifier {
   List<Student> _students = [];
   final Dio _dio = Dio();
   List<Student> get students => _students;
-  Future<void> loadCsvDataFromFile() async {
+  Future<void> loadCsvDataFromFile(http.Client client) async {
     try {
       // Leer el archivo CSV desde los activos
       ByteData csvBytes = await rootBundle.load('assets/CsvStudent.csv');
