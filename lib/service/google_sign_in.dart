@@ -49,6 +49,7 @@ class GoogleSignInState extends State<GoogleSignIn> {
                     debugPrint(lista[i].usuario);
                     if (lista[i].usuario == usuarioGoogle.toString()) {
                       existe = true;
+                      break;
                     }
                   }
                   if (existe) {
