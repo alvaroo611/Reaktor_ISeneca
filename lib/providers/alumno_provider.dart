@@ -83,7 +83,8 @@ class ProviderAlumno extends ChangeNotifier {
   List<String> getStudentNames() {
     List<String> nombresYApellidos = [];
     for (var student in students) {
-      nombresYApellidos.add('${student.name} ');
+      nombresYApellidos
+          .add('${student.name} ${student.lastName} ${student.course}');
     }
     return nombresYApellidos;
   }
