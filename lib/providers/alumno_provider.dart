@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:async';
 import 'dart:io';
+import 'dart:core';
 
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
@@ -16,14 +17,15 @@ class ProviderAlumno extends ChangeNotifier {
   Future<void> loadCsvDataFromFile(http.Client client) async {
     try {
       // Leer el archivo CSV desde los activos
-      ByteData csvBytes = await rootBundle.load('assets/CsvStudent.csv');
+      ByteData csvBytes =
+          await rootBundle.load('assets/AlumnadoCentroUnidad.csv');
       List<int> csvList = csvBytes.buffer.asUint8List();
 
       // Crear un objeto FormData con el archivo CSV
       FormData formData = FormData.fromMap({
         'csvFile': MultipartFile.fromBytes(
           csvList,
-          filename: 'CsvStudent.csv',
+          filename: 'AlumnadoCentroUnidad.csv',
           contentType: MediaType('text', 'csv'),
         ),
       });
@@ -43,13 +45,13 @@ class ProviderAlumno extends ChangeNotifier {
       );
 
       if (response.statusCode == 200) {
-        print("Datos cargados correctamente");
+        print("Datos cargados correctamente de  csv");
         // Reemplazar con tu servicio de log si es necesario
-        LogService.logInfo("Datos cargados correctamente ");
+        LogService.logInfo("Datos cargados correctamente");
         // Notificar a los oyentes si estás utilizando algún mecanismo de notificación
         notifyListeners();
       } else {
-        print("Error al cargar los datos");
+        print("Error al cargar los datos del csv");
       }
     } catch (error) {
       print('Error al cargar el archivo CSV: $error');
@@ -87,45 +89,58 @@ class ProviderAlumno extends ChangeNotifier {
   }
 }
 
-List<Student> studentFromJson(String str) =>
-    List<Student>.from(json.decode(str).map((x) => Student.fromJson(x)));
+// To parse this JSON data, do
+//
+//     final student = studentFromJson(jsonString);
 
-String studentToJson(List<Student> data) =>
-    json.encode(List<dynamic>.from(data.map((x) => x.toJson())));
+Student studentFromJson(String str) => Student.fromJson(json.decode(str));
+
+String studentToJson(Student data) => json.encode(data.toJson());
 
 class Student {
   String name;
-
-  Course course;
+  String lastName;
+  String course;
+  String matriculationYear;
+  String firstTutorLastName;
+  String secondTutorLastName;
+  String tutorName;
+  String tutorPhone;
+  String tutorEmail;
 
   Student({
     required this.name,
+    required this.lastName,
     required this.course,
+    required this.matriculationYear,
+    required this.firstTutorLastName,
+    required this.secondTutorLastName,
+    required this.tutorName,
+    required this.tutorPhone,
+    required this.tutorEmail,
   });
 
   factory Student.fromJson(Map<String, dynamic> json) => Student(
         name: json["name"],
-        course: Course.fromJson(json["course"]),
+        lastName: json["lastName"],
+        course: json["course"],
+        matriculationYear: json["matriculationYear"],
+        firstTutorLastName: json["firstTutorLastName"],
+        secondTutorLastName: json["secondTutorLastName"],
+        tutorName: json["tutorName"],
+        tutorPhone: json["tutorPhone"],
+        tutorEmail: json["tutorEmail"],
       );
 
   Map<String, dynamic> toJson() => {
         "name": name,
-        "course": course.toJson(),
-      };
-}
-
-class Course {
-  String name;
-
-  Course({
-    required this.name,
-  });
-
-  factory Course.fromJson(Map<String, dynamic> json) => Course(
-        name: json["name"],
-      );
-
-  Map<String, dynamic> toJson() => {
-        "name": name,
+        "lastName": lastName,
+        "course": course,
+        "matriculationYear": matriculationYear,
+        "firstTutorLastName": firstTutorLastName,
+        "secondTutorLastName": secondTutorLastName,
+        "tutorName": tutorName,
+        "tutorPhone": tutorPhone,
+        "tutorEmail": tutorEmail,
       };
 }

@@ -49,13 +49,11 @@ class GoogleSignInState extends State<GoogleSignIn> {
                     debugPrint(lista[i].usuario);
                     if (lista[i].usuario == usuarioGoogle.toString()) {
                       existe = true;
-                      break;
+                      Navigator.pushNamed(context, "main_screen",
+                          arguments: nombreUsuarioGoogle);
                     }
                   }
-                  if (existe) {
-                    Navigator.pushNamed(context, "main_screen",
-                        arguments: nombreUsuarioGoogle);
-                  } else {
+                  if (!existe) {
                     _mostrarAlert(context);
                     logOut();
                   }
