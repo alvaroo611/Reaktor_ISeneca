@@ -14,17 +14,25 @@ class GoogleSignIn extends StatefulWidget {
   GoogleSignInState createState() => GoogleSignInState();
 }
 
-//Class google sign in
 class GoogleSignInState extends State<GoogleSignIn> {
   bool isLoading = false;
+  late CredencialesProvider credencialesProvider;
+
+  @override
+  void initState() {
+    super.initState();
+    // Aquí puedes cargar las credenciales
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      credencialesProvider =
+          Provider.of<CredencialesProvider>(context, listen: false);
+      credencialesProvider.getCredencialesUsuario();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
-    final credencialesProvider = Provider.of<CredencialesProvider>(context);
-    credencialesProvider.getCredencialesUsuario();
-    final lista = credencialesProvider.listaCredenciales;
-
     Size size = MediaQuery.of(context).size;
+    final lista = Provider.of<CredencialesProvider>(context).listaCredenciales;
 
     return !isLoading
         ? Container(
@@ -50,20 +58,17 @@ class GoogleSignInState extends State<GoogleSignIn> {
 
                   for (int i = 0; i < lista.length; i++) {
                     debugPrint(lista[i].usuario);
-                    await Future.delayed(const Duration(seconds: 1));
+
                     if (lista[i].usuario == usuarioGoogle.toString()) {
                       existe = true;
-
-                      Navigator.pushNamed(context, "main_screen",
+                      await Navigator.pushNamed(context, "main_screen",
                           arguments: nombreUsuarioGoogle);
+                      break;
                     }
                   }
                   if (!existe) {
                     _mostrarAlert(context);
                     logOut();
-                  } else {
-                    Navigator.pushNamed(context, "main_screen",
-                        arguments: nombreUsuarioGoogle);
                   }
                 } catch (e) {
                   if (e is FirebaseAuthException) {
@@ -72,10 +77,11 @@ class GoogleSignInState extends State<GoogleSignIn> {
                   if (e is PlatformException) {
                     logOut();
                   }
+                } finally {
+                  setState(() {
+                    isLoading = false;
+                  });
                 }
-                setState(() {
-                  isLoading = false;
-                });
               },
               label: const Text(
                 "Accede a tu cuenta de Google",
@@ -90,12 +96,12 @@ class GoogleSignInState extends State<GoogleSignIn> {
           )
         : Container(
             margin: const EdgeInsets.all(15),
-            child: const CircularProgressIndicator());
+            child: const CircularProgressIndicator(),
+          );
   }
-}
 
-void _mostrarAlert(BuildContext context) {
-  showDialog(
+  void _mostrarAlert(BuildContext context) {
+    showDialog(
       context: context,
       barrierDismissible: true,
       builder: (context) {
@@ -111,9 +117,12 @@ void _mostrarAlert(BuildContext context) {
           ),
           actions: [
             TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: const Text("OK")),
+              onPressed: () => Navigator.pop(context),
+              child: const Text("OK"),
+            ),
           ],
         );
-      });
+      },
+    );
+  }
 }
