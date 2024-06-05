@@ -34,11 +34,10 @@ class GoogleSignInState extends State<GoogleSignIn> {
             child: OutlinedButton.icon(
               icon: const FaIcon(FontAwesomeIcons.google),
               onPressed: () async {
-                
                 setState(() {
                   isLoading = true;
                 });
-                
+
                 FirebaseService service = FirebaseService();
                 try {
                   await service.signInWithGoogle();
@@ -48,11 +47,15 @@ class GoogleSignInState extends State<GoogleSignIn> {
 
                   String? nombreUsuarioGoogle = user.displayName;
                   bool existe = false;
+                  await Future.delayed(const Duration(seconds: 2));
 
                   for (int i = 0; i < lista.length; i++) {
                     debugPrint(lista[i].usuario);
                     if (lista[i].usuario == usuarioGoogle.toString()) {
                       existe = true;
+
+                      await Future.delayed(const Duration(seconds: 2));
+
                       Navigator.pushNamed(context, "main_screen",
                           arguments: nombreUsuarioGoogle);
                     }
