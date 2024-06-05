@@ -33,10 +33,11 @@ class GoogleSignInState extends State<GoogleSignIn> {
             child: OutlinedButton.icon(
               icon: const FaIcon(FontAwesomeIcons.google),
               onPressed: () async {
+                await Future.delayed(Duration(seconds: 2));
                 setState(() {
                   isLoading = true;
                 });
-                await Future.delayed(Duration(seconds: 2));
+                
                 FirebaseService service = FirebaseService();
                 try {
                   await service.signInWithGoogle();
