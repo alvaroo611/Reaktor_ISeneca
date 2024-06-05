@@ -20,7 +20,8 @@ class GoogleSignInState extends State<GoogleSignIn> {
   @override
   Widget build(BuildContext context) {
     final credencialesProvider = Provider.of<CredencialesProvider>(context);
-    final lista = credencialesProvider.listaCredenciales;
+    final lista =
+        credencialesProvider.getCredencialesUsuario().listaCredenciales;
 
     Size size = MediaQuery.of(context).size;
 
@@ -49,7 +50,7 @@ class GoogleSignInState extends State<GoogleSignIn> {
                     debugPrint(lista[i].usuario);
                     if (lista[i].usuario == usuarioGoogle.toString()) {
                       existe = true;
-                      await Navigator.pushNamed(context, "main_screen",
+                      Navigator.pushNamed(context, "main_screen",
                           arguments: nombreUsuarioGoogle);
                     }
                   }
