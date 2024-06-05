@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:async';
 import 'dart:io';
 import 'dart:core';
+import 'package:convert/convert.dart';
 
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
@@ -80,15 +81,27 @@ class ProviderAlumno extends ChangeNotifier {
       print('Error fetching alumnos: $error');
     }
   }
-
-  List<String> getStudentNames() {
+   List<String> getStudentNames() {
     List<String> nombresYApellidos = [];
     for (var student in students) {
-      nombresYApellidos
-          .add('${student.name} ${student.lastName} ${student.course}');
+      // Construir la cadena completa
+      String fullName = '${student.name} ${student.lastName} ${student.course}';
+      // Convertir la cadena de ISO-8859-1 a UTF-8
+      String utf8FullName = _convertIsoToUtf8(fullName);
+      // Añadir la cadena convertida a la lista
+      nombresYApellidos.add(utf8FullName);
     }
     return nombresYApellidos;
   }
+
+  String _convertIsoToUtf8(String isoString) {
+    // Convertir la cadena a bytes en ISO-8859-1
+    List<int> isoBytes = latin1.encode(isoString);
+    // Decodificar los bytes a UTF-8
+    return utf8.decode(isoBytes);
+  }
+
+  
 }
 
 // To parse this JSON data, do
