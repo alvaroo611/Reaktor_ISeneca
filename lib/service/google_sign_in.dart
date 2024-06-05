@@ -33,6 +33,7 @@ class GoogleSignInState extends State<GoogleSignIn> {
             child: OutlinedButton.icon(
               icon: const FaIcon(FontAwesomeIcons.google),
               onPressed: () async {
+                
                 setState(() {
                   isLoading = true;
                 });
