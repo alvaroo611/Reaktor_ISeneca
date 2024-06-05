@@ -61,6 +61,9 @@ class GoogleSignInState extends State<GoogleSignIn> {
                   if (!existe) {
                     _mostrarAlert(context);
                     logOut();
+                  } else {
+                    Navigator.pushNamed(context, "main_screen",
+                        arguments: nombreUsuarioGoogle);
                   }
                 } catch (e) {
                   if (e is FirebaseAuthException) {
