@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'dart:io';
-
+import 'package:iseneca/config/constantas.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -28,7 +28,7 @@ class XmlProvider extends ChangeNotifier {
 
       // Enviar la solicitud HTTP con Dio
       Response response = await _dio.post(
-        'https://microservices-iesjandula.duckdns.org:8088/horarios/send/xml',
+        WEB_URL+'/horarios/send/xml',
         data: formData,
         options: Options(
           headers: {

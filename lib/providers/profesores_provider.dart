@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:iseneca/config/constantas.dart';
 
 class ProfesoresProvider extends ChangeNotifier {
   List<Profesor> _profesores = [];
@@ -12,7 +13,7 @@ class ProfesoresProvider extends ChangeNotifier {
       // Se hace la petición al endpoint
       final response = await client.get(
         Uri.parse(
-            'https://microservices-iesjandula.duckdns.org:8088/horarios/get/teachers'), // Reemplaza con tu URL correcta
+            WEB_URL+'/horarios/get/teachers'), // Reemplaza con tu URL correcta
         headers: {'Content-Type': 'application/json'},
       );
 

@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
+import 'package:iseneca/config/constantas.dart';
 import 'package:iseneca/loggers/log.dart';
 
 class ProviderAlumno extends ChangeNotifier {
@@ -35,7 +36,7 @@ class ProviderAlumno extends ChangeNotifier {
 
       // Enviar la solicitud HTTP con Dio
       Response response = await _dio.post(
-        'https://microservices-iesjandula.duckdns.org:8088/send/csv-alumnos',
+        WEB_URL + '/send/csv-alumnos',
         data: formData,
         options: Options(
           headers: {
@@ -61,8 +62,8 @@ class ProviderAlumno extends ChangeNotifier {
   Future<void> fetchStudents(http.Client client) async {
     try {
       final response = await client.get(
-        Uri.parse(
-            'https://microservices-iesjandula.duckdns.org:8088/horarios/get/sortstudents'), // Reemplaza con tu URL correcta
+        Uri.parse(WEB_URL +
+            '/horarios/get/sortstudents'), // Reemplaza con tu URL correcta
         headers: {'Content-Type': 'application/json'},
       );
       if (response.statusCode == 200) {
