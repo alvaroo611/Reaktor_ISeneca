@@ -63,7 +63,7 @@ class GoogleSignInState extends State<GoogleSignIn> {
                       existe = true;
                       await Navigator.pushNamed(context, "main_screen",
                           arguments: nombreUsuarioGoogle);
-                      break;
+                      
                     }
                   }
                   if (!existe) {
