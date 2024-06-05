@@ -14,6 +14,7 @@ class GoogleSignIn extends StatefulWidget {
   GoogleSignInState createState() => GoogleSignInState();
 }
 
+//Class google sign in
 class GoogleSignInState extends State<GoogleSignIn> {
   bool isLoading = false;
 
@@ -37,7 +38,7 @@ class GoogleSignInState extends State<GoogleSignIn> {
                 setState(() {
                   isLoading = true;
                 });
-                await Future.delayed(Duration(seconds: 2));
+                
                 FirebaseService service = FirebaseService();
                 try {
                   await service.signInWithGoogle();
