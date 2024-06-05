@@ -47,14 +47,12 @@ class GoogleSignInState extends State<GoogleSignIn> {
 
                   String? nombreUsuarioGoogle = user.displayName;
                   bool existe = false;
-                  await Future.delayed(const Duration(seconds: 2));
 
                   for (int i = 0; i < lista.length; i++) {
                     debugPrint(lista[i].usuario);
+                    await Future.delayed(const Duration(seconds: 1));
                     if (lista[i].usuario == usuarioGoogle.toString()) {
                       existe = true;
-
-                      await Future.delayed(const Duration(seconds: 2));
 
                       Navigator.pushNamed(context, "main_screen",
                           arguments: nombreUsuarioGoogle);
