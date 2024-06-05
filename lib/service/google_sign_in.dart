@@ -36,6 +36,7 @@ class GoogleSignInState extends State<GoogleSignIn> {
                 setState(() {
                   isLoading = true;
                 });
+                await Future.delayed(Duration(seconds: 2));
                 FirebaseService service = FirebaseService();
                 try {
                   await service.signInWithGoogle();
