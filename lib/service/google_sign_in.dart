@@ -20,8 +20,8 @@ class GoogleSignInState extends State<GoogleSignIn> {
   @override
   Widget build(BuildContext context) {
     final credencialesProvider = Provider.of<CredencialesProvider>(context);
-    final lista =
-        credencialesProvider.getCredencialesUsuario().listaCredenciales;
+    credencialesProvider.getCredencialesUsuario();
+    final lista = credencialesProvider.listaCredenciales;
 
     Size size = MediaQuery.of(context).size;
 
