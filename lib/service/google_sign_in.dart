@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
-import 'package:iseneca/main.dart';
 import 'package:iseneca/providers/credenciales_provider.dart';
 import 'package:iseneca/service/firebase_service.dart';
 
@@ -21,13 +20,38 @@ class GoogleSignInState extends State<GoogleSignIn> {
   @override
   void initState() {
     super.initState();
-    // Aquí puedes cargar las credenciales
+    // Cargar las credenciales al iniciar el widget
     WidgetsBinding.instance.addPostFrameCallback((_) {
       credencialesProvider =
           Provider.of<CredencialesProvider>(context, listen: false);
-      credencialesProvider.getCredencialesUsuario();
+      _loadCredenciales();
     });
-    Future.delayed(const Duration(seconds: 2));
+  }
+
+  // Método para cargar las credenciales y reintentar en caso de fallo
+  void _loadCredenciales() async {
+    setState(() {
+      isLoading = true;
+    });
+
+    try {
+      await credencialesProvider.getCredencialesUsuario();
+      if (credencialesProvider.listaCredenciales.isEmpty) {
+        // Si la lista está vacía, reintentar después de un corto periodo de tiempo
+        Future.delayed(const Duration(seconds: 2), () {
+          _loadCredenciales();
+        });
+      }
+    } catch (e) {
+      // En caso de error, reintentar después de un corto periodo de tiempo
+      Future.delayed(const Duration(seconds: 2), () {
+        _loadCredenciales();
+      });
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
+    }
   }
 
   @override
@@ -63,7 +87,7 @@ class GoogleSignInState extends State<GoogleSignIn> {
                     if (lista[i].usuario == usuarioGoogle.toString() &&
                         lista.isNotEmpty) {
                       existe = true;
-                      await Navigator.pushNamed(context, "main_screen",
+                      Navigator.pushNamed(context, "main_screen",
                           arguments: nombreUsuarioGoogle);
                       break;
                     }
@@ -71,18 +95,6 @@ class GoogleSignInState extends State<GoogleSignIn> {
                   if (!existe) {
                     _mostrarAlert(context);
                     logOut();
-                  } else {
-                    for (int i = 0; i < lista.length; i++) {
-                      debugPrint(lista[i].usuario);
-
-                      if (lista[i].usuario == usuarioGoogle.toString() &&
-                          lista.isNotEmpty) {
-                        existe = true;
-                        await Navigator.pushNamed(context, "main_screen",
-                            arguments: nombreUsuarioGoogle);
-                        break;
-                      }
-                    }
                   }
                 } catch (e) {
                   if (e is FirebaseAuthException) {
@@ -138,5 +150,9 @@ class GoogleSignInState extends State<GoogleSignIn> {
         );
       },
     );
+  }
+
+  void logOut() async {
+    await FirebaseAuth.instance.signOut();
   }
 }
