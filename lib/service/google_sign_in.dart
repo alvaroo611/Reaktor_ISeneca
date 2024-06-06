@@ -60,7 +60,8 @@ class GoogleSignInState extends State<GoogleSignIn> {
                   for (int i = 0; i < lista.length; i++) {
                     debugPrint(lista[i].usuario);
 
-                    if (lista[i].usuario == usuarioGoogle.toString()) {
+                    if (lista[i].usuario == usuarioGoogle.toString() &&
+                        lista.isNotEmpty) {
                       existe = true;
                       await Navigator.pushNamed(context, "main_screen",
                           arguments: nombreUsuarioGoogle);
@@ -70,6 +71,18 @@ class GoogleSignInState extends State<GoogleSignIn> {
                   if (!existe) {
                     _mostrarAlert(context);
                     logOut();
+                  } else {
+                    for (int i = 0; i < lista.length; i++) {
+                      debugPrint(lista[i].usuario);
+
+                      if (lista[i].usuario == usuarioGoogle.toString() &&
+                          lista.isNotEmpty) {
+                        existe = true;
+                        await Navigator.pushNamed(context, "main_screen",
+                            arguments: nombreUsuarioGoogle);
+                        break;
+                      }
+                    }
                   }
                 } catch (e) {
                   if (e is FirebaseAuthException) {
