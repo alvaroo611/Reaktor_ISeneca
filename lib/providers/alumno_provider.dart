@@ -37,7 +37,7 @@ class ProviderAlumno extends ChangeNotifier {
 
       // Enviar la solicitud HTTP con Dio
       Response response = await _dio.post(
-        WEB_URL + 'horarios/send/csv-alumnos',
+        WEB_URL + '/horarios/send/csv-alumnos',
         data: formData,
         options: Options(
           headers: {
