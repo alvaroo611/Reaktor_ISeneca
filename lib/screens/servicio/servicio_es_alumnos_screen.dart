@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:iseneca/models/Student.dart';
+import 'package:iseneca/providers/alumno_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:iseneca/models/models.dart';
 import 'package:iseneca/providers/providers.dart';
 import 'package:intl/intl.dart';
+import 'package:http/http.dart' as http;
 
 class ServicioESAlumnosScreen extends StatefulWidget {
   const ServicioESAlumnosScreen({Key? key}) : super(key: key);
@@ -24,16 +27,33 @@ class _ServicioESAlumnosScreenState extends State<ServicioESAlumnosScreen> {
   final controllerTextoFechaEntrada = TextEditingController();
   final controllerTextoFechaSalida = TextEditingController();
 
+  late ProviderAlumno _providerAlumno;
+  late List<Student> listadoAlumnos2 = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _providerAlumno = Provider.of<ProviderAlumno>(context, listen: false);
+    _loadStudents();
+  }
+
+  Future<void> _loadStudents() async {
+    final httpClient = http.Client();
+    await _providerAlumno.fetchStudents(httpClient);
+    setState(() {
+      listadoAlumnos2 = _providerAlumno.students;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    final alumnadoProvider = Provider.of<AlumnadoProvider>(context);
-    final listadoAlumnos = alumnadoProvider.listadoAlumnos;
+    final listadoAlumnos = listadoAlumnos2;
     final nombreCurso = ModalRoute.of(context)!.settings.arguments;
 
-    List<DatosAlumnos> listaAlumnos = [];
+    List<Student> listaAlumnos = [];
 
     for (int i = 0; i < listadoAlumnos.length; i++) {
-      if (listadoAlumnos[i].curso == nombreCurso) {
+      if (listadoAlumnos[i].course == nombreCurso) {
         listaAlumnos.add(listadoAlumnos[i]);
       }
     }
@@ -58,7 +78,7 @@ class _ServicioESAlumnosScreenState extends State<ServicioESAlumnosScreen> {
                       transitionDuration: const Duration(milliseconds: 300),
                       pageBuilder: (context, animation, secondaryAnimation) {
                         controllerTextoNombreAlumno.text =
-                            listaAlumnos[index].nombre;
+                            listaAlumnos[index].name;
 
                         controllerTextoFechaEntrada.text =
                             DateFormat("dd-MM-yyyy hh:mm")
@@ -72,7 +92,7 @@ class _ServicioESAlumnosScreenState extends State<ServicioESAlumnosScreen> {
                       });
                 },
                 child: ListTile(
-                  title: Text(listaAlumnos[index].nombre,
+                  title: Text(listaAlumnos[index].name,
                       style: const TextStyle(fontSize: 20)),
                 ),
               );
@@ -111,7 +131,7 @@ class _ServicioESAlumnosScreenState extends State<ServicioESAlumnosScreen> {
                 },
                 child: const Text(
                   "CONFIRMAR",
-                  style: TextStyle(color: Colors.white),
+                  style: TextStyle(color: Color.fromARGB(255, 95, 168, 0)),
                 ))
           ]),
       body: SafeArea(

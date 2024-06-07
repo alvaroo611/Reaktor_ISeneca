@@ -2,9 +2,11 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 //import 'package:flutter/painting.dart';
 import 'package:intl/intl.dart';
+import 'package:iseneca/providers/alumno_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:iseneca/models/servicio_response.dart';
 import 'package:iseneca/providers/servicio_provider.dart';
+import 'package:http/http.dart' as http;
 
 class ServicioInformesScreen extends StatefulWidget {
   const ServicioInformesScreen({Key? key}) : super(key: key);
@@ -23,6 +25,21 @@ class _ServicioInformesScreenState extends State<ServicioInformesScreen> {
   DateTime dateTimeFin = DateTime.now();
   int size = 0;
   int repeticiones = 0;
+  late ProviderAlumno _providerAlumno;
+  @override
+  void initState() {
+    super.initState();
+    _providerAlumno = Provider.of<ProviderAlumno>(context, listen: false);
+    _loadStudents();
+  }
+
+  Future<void> _loadStudents() async {
+    final httpClient = http.Client();
+    await _providerAlumno.fetchStudents(httpClient);
+    setState(() {
+      listaAlumnosNombres = _providerAlumno.getStudentNames();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -38,100 +55,100 @@ class _ServicioInformesScreenState extends State<ServicioInformesScreen> {
       ),
       body: Column(
         children: [
-      Container(
-        padding: const EdgeInsets.only(top: 15),
-        child: Column(
-          children: [
-            Row(
+          Container(
+            padding: const EdgeInsets.only(top: 15),
+            child: Column(
               children: [
-                SizedBox(
-                  width: anchura * 0.5,
-                  child: TextField(
-                    readOnly: true,
-                    style: const TextStyle(fontWeight: FontWeight.bold),
-                    controller:
-                        TextEditingController(text: selectedDateInicio),
-                    decoration: InputDecoration(
-                      labelText: "FECHA INICIO",
-                      border: const OutlineInputBorder(),
-                      suffixIcon: IconButton(
-                        icon: const Icon(Icons.calendar_today_rounded),
-                        onPressed: () {
-                          fechaInicioEscogida = true;
-                          mostrarFecha(
-                              "Inicio", listaAlumnosFechas, context);
-                        },
+                Row(
+                  children: [
+                    SizedBox(
+                      width: anchura * 0.5,
+                      child: TextField(
+                        readOnly: true,
+                        style: const TextStyle(fontWeight: FontWeight.bold),
+                        controller:
+                            TextEditingController(text: selectedDateInicio),
+                        decoration: InputDecoration(
+                          labelText: "FECHA INICIO",
+                          border: const OutlineInputBorder(),
+                          suffixIcon: IconButton(
+                            icon: const Icon(Icons.calendar_today_rounded),
+                            onPressed: () {
+                              fechaInicioEscogida = true;
+                              mostrarFecha(
+                                  "Inicio", listaAlumnosFechas, context);
+                            },
+                          ),
+                        ),
                       ),
                     ),
-                  ),
+                    SizedBox(
+                      width: anchura * 0.5,
+                      child: TextField(
+                        enabled: fechaInicioEscogida,
+                        readOnly: true,
+                        style: const TextStyle(fontWeight: FontWeight.bold),
+                        controller:
+                            TextEditingController(text: selectedDateFin),
+                        decoration: InputDecoration(
+                          labelText: "FECHA FIN",
+                          border: const OutlineInputBorder(),
+                          suffixIcon: IconButton(
+                            icon: const Icon(Icons.calendar_today_rounded),
+                            onPressed: () => mostrarFecha(
+                                "Fin", listaAlumnosFechas, context),
+                          ),
+                        ),
+                      ),
+                    )
+                  ],
                 ),
-                SizedBox(
-                  width: anchura * 0.5,
-                  child: TextField(
-                    enabled: fechaInicioEscogida,
-                    readOnly: true,
-                    style: const TextStyle(fontWeight: FontWeight.bold),
-                    controller:
-                        TextEditingController(text: selectedDateFin),
-                    decoration: InputDecoration(
-                      labelText: "FECHA FIN",
-                      border: const OutlineInputBorder(),
-                      suffixIcon: IconButton(
-                        icon: const Icon(Icons.calendar_today_rounded),
-                        onPressed: () => mostrarFecha(
-                            "Fin", listaAlumnosFechas, context),
-                      ),
-                    ),
-                  ),
-                )
+                ElevatedButton(
+                    onPressed: () {
+                      setState(() {
+                        listaAlumnosFechas = [];
+                        listaAlumnosNombres = [];
+                        updateLista(context, dateTimeInicio, dateTimeFin);
+
+                        // for (int i = 0; i < listaAlumnosFechas.length; i++) {
+                        //   debugPrint(listaAlumnosFechas[i].nombreAlumno);
+                        // }
+
+                        for (int i = 0; i < listaAlumnosFechas.length; i++) {
+                          listaAlumnosNombres
+                              .add(listaAlumnosFechas[i].nombreAlumno);
+                        }
+
+                        listaAlumnosNombres =
+                            listaAlumnosNombres.toSet().toList();
+
+                        listaAlumnosNombres.sort(((a, b) => a.compareTo(b)));
+                        size = listaAlumnosNombres.length;
+                      });
+                    },
+                    child: const Text("MOSTRAR"))
               ],
             ),
-            ElevatedButton(
-                onPressed: () {
-                  setState(() {
-                    listaAlumnosFechas = [];
-                    listaAlumnosNombres = [];
-                    updateLista(context, dateTimeInicio, dateTimeFin);
+          ),
+          Expanded(
+            child: ListView.builder(
+              itemCount: size,
+              itemBuilder: (context, index) {
+                repeticiones =
+                    _calcularRepeticiones(listaAlumnosNombres[index]);
 
-                    // for (int i = 0; i < listaAlumnosFechas.length; i++) {
-                    //   debugPrint(listaAlumnosFechas[i].nombreAlumno);
-                    // }
-
-                    for (int i = 0; i < listaAlumnosFechas.length; i++) {
-                      listaAlumnosNombres
-                          .add(listaAlumnosFechas[i].nombreAlumno);
-                    }
-
-                    listaAlumnosNombres =
-                        listaAlumnosNombres.toSet().toList();
-
-                    listaAlumnosNombres.sort(((a, b) => a.compareTo(b)));
-                    size = listaAlumnosNombres.length;
-                  });
-                },
-                child: const Text("MOSTRAR"))
-          ],
-        ),
-      ),
-      Expanded(
-        child: ListView.builder(
-          itemCount: size,
-          itemBuilder: (context, index) {
-            repeticiones =
-                _calcularRepeticiones(listaAlumnosNombres[index]);
-
-            return GestureDetector(
-              onTap: () => Navigator.pushNamed(
-                  context, "servicio_informes_detalles_screen",
-                  arguments: listaAlumnosNombres[index]),
-              child: ListTile(
-                title: Text(listaAlumnosNombres[index]),
-                subtitle: Text("Cantidad $repeticiones"),
-              ),
-            );
-          },
-        ),
-      )
+                return GestureDetector(
+                  onTap: () => Navigator.pushNamed(
+                      context, "servicio_informes_detalles_screen",
+                      arguments: listaAlumnosNombres[index]),
+                  child: ListTile(
+                    title: Text(listaAlumnosNombres[index]),
+                    subtitle: Text("Cantidad $repeticiones"),
+                  ),
+                );
+              },
+            ),
+          )
         ],
       ),
     );
@@ -213,7 +230,8 @@ class _ServicioInformesScreenState extends State<ServicioInformesScreen> {
     String fechaSalida = "$anoAlumnoSalida$mesAlumnoSalida$diaAlumnoSalida";
     DateTime fechaSalidaParseada = DateTime.parse(fechaSalida);
 
-    if (fechaEntradaParseada.isAfter(dateInicio.subtract(const Duration(days: 1))) &&
+    if (fechaEntradaParseada
+            .isAfter(dateInicio.subtract(const Duration(days: 1))) &&
         fechaSalidaParseada.isBefore(dateFin.add(const Duration(days: 1)))) {
       estaDentro = true;
     }
