@@ -81,7 +81,8 @@ class ProviderAlumno extends ChangeNotifier {
       print('Error fetching alumnos: $error');
     }
   }
-   List<String> getStudentNames() {
+
+  List<String> getStudentNames() {
     List<String> nombresYApellidos = [];
     for (var student in students) {
       // Construir la cadena completa
@@ -100,8 +101,6 @@ class ProviderAlumno extends ChangeNotifier {
     // Decodificar los bytes a UTF-8
     return utf8.decode(isoBytes);
   }
-
-  
 }
 
 // To parse this JSON data, do

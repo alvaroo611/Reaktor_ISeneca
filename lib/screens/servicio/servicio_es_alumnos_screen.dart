@@ -126,7 +126,8 @@ class _ServicioESAlumnosScreenState extends State<ServicioESAlumnosScreen> {
                         border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(10)),
                         labelText: "NOMBRE ALUMNO",
-                        labelStyle: const TextStyle(fontWeight: FontWeight.bold)),
+                        labelStyle:
+                            const TextStyle(fontWeight: FontWeight.bold)),
                     enabled: false,
                   ),
                   const Divider(color: Colors.transparent),
@@ -136,7 +137,8 @@ class _ServicioESAlumnosScreenState extends State<ServicioESAlumnosScreen> {
                         border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(10)),
                         labelText: "FECHA ENTRADA",
-                        labelStyle: const TextStyle(fontWeight: FontWeight.bold)),
+                        labelStyle:
+                            const TextStyle(fontWeight: FontWeight.bold)),
                     enabled: false,
                   ),
                   const Divider(color: Colors.transparent),
@@ -160,7 +162,8 @@ class _ServicioESAlumnosScreenState extends State<ServicioESAlumnosScreen> {
                         border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(10)),
                         labelText: "FECHA SALIDA",
-                        labelStyle: const TextStyle(fontWeight: FontWeight.bold)),
+                        labelStyle:
+                            const TextStyle(fontWeight: FontWeight.bold)),
                     readOnly: true,
                   )
                 ],
