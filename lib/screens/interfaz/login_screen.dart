@@ -95,6 +95,7 @@ class ContentState extends State<Content> {
   }
 }
 
+//Class texto aplicacion
 class TextoAplicacion extends StatelessWidget {
   const TextoAplicacion({
     Key? key,
