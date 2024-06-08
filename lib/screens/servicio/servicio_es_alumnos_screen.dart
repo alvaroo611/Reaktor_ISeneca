@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:iseneca/config/constantas.dart';
 import 'package:iseneca/models/Student.dart';
 import 'package:iseneca/providers/alumno_provider.dart';
 import 'package:provider/provider.dart';
@@ -45,149 +46,199 @@ class _ServicioESAlumnosScreenState extends State<ServicioESAlumnosScreen> {
     });
   }
 
+  Future<void> _postVisit(String name, String lastName, String course) async {
+    final httpClient = http.Client();
+    final response = await httpClient.post(
+      Uri.parse(WEB_URL + '/horarios/student/visita/bathroom'),
+      body: {
+        'name': name,
+        'lastName': lastName,
+        'course': course,
+      },
+    );
+
+    if (response.statusCode == 200) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Visita registrada correctamente')),
+      );
+      print('Visita registrada correctamente');
+    } else {
+      print('Error al registrar la visita: ${response.statusCode}');
+    }
+  }
+
+  Future<void> _postReturnBathroom(
+      String name, String lastName, String course) async {
+    final httpClient = http.Client();
+    final response = await httpClient.post(
+      Uri.parse(WEB_URL + '/horarios/student/regreso/bathroom'),
+      body: {
+        'name': name,
+        'lastName': lastName,
+        'course': course,
+      },
+    );
+
+    if (response.statusCode == 200) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Regreso registrada correctamente')),
+      );
+      print('Regreso registrado correctamente');
+    } else {
+      print('Error al registrar el regreso: ${response.statusCode}');
+    }
+  }
+
+  Future<void> _confirmAction(Student student) async {
+    await _postVisit(student.name, student.lastName, student.course);
+    await _postReturnBathroom(student.name, student.lastName, student.course);
+  }
+
   @override
   Widget build(BuildContext context) {
-    final listadoAlumnos = listadoAlumnos2;
-    final nombreCurso = ModalRoute.of(context)!.settings.arguments;
-
-    List<Student> listaAlumnos = [];
-
-    for (int i = 0; i < listadoAlumnos.length; i++) {
-      if (listadoAlumnos[i].course == nombreCurso) {
-        listaAlumnos.add(listadoAlumnos[i]);
-      }
-    }
+    final nombreCurso = ModalRoute.of(context)!.settings.arguments as String;
+    final listadoAlumnos = listadoAlumnos2
+        .where((alumno) => alumno.course == nombreCurso)
+        .toList();
 
     return Scaffold(
       appBar: AppBar(
-        title: Text("$nombreCurso"),
+        title: Text(nombreCurso),
       ),
       body: Center(
         child: ListView.builder(
-            itemCount: listaAlumnos.length,
-            itemBuilder: (BuildContext context, int index) {
-              return GestureDetector(
-                onTap: () {
-                  controllerTextoNombreAlumno.text = "";
-                  controllerTextoFechaEntrada.text = "";
-                  controllerTextoFechaSalida.text = "";
+          itemCount: listadoAlumnos.length,
+          itemBuilder: (BuildContext context, int index) {
+            return GestureDetector(
+              onTap: () {
+                controllerTextoNombreAlumno.clear();
+                controllerTextoFechaEntrada.clear();
+                controllerTextoFechaSalida.clear();
 
-                  showGeneralDialog(
-                      context: context,
-                      barrierDismissible: false,
-                      transitionDuration: const Duration(milliseconds: 300),
-                      pageBuilder: (context, animation, secondaryAnimation) {
-                        controllerTextoNombreAlumno.text =
-                            listaAlumnos[index].name;
+                showGeneralDialog(
+                  context: context,
+                  barrierDismissible: false,
+                  transitionDuration: const Duration(milliseconds: 300),
+                  pageBuilder: (context, animation, secondaryAnimation) {
+                    controllerTextoNombreAlumno.text =
+                        listadoAlumnos[index].name;
+                    controllerTextoFechaEntrada.text =
+                        DateFormat("dd-MM-yyyy hh:mm").format(DateTime.now());
 
-                        controllerTextoFechaEntrada.text =
-                            DateFormat("dd-MM-yyyy hh:mm")
-                                .format(DateTime.now());
-                        return dialogoBotones(
-                            fechaCompleta,
-                            servicioProvider,
-                            controllerTextoNombreAlumno,
-                            controllerTextoFechaEntrada,
-                            controllerTextoFechaSalida);
-                      });
-                },
-                child: ListTile(
-                  title: Text(listaAlumnos[index].name,
-                      style: const TextStyle(fontSize: 20)),
-                ),
-              );
-            }),
+                    return dialogoBotones(
+                      fechaCompleta,
+                      servicioProvider,
+                      controllerTextoNombreAlumno,
+                      controllerTextoFechaEntrada,
+                      controllerTextoFechaSalida,
+                      listadoAlumnos[index].course,
+                    );
+                  },
+                );
+              },
+              child: ListTile(
+                title: Text(listadoAlumnos[index].name,
+                    style: const TextStyle(fontSize: 20)),
+              ),
+            );
+          },
+        ),
       ),
     );
   }
 
   Widget dialogoBotones(
-      bool fechaCompleta,
-      ServicioProvider servicio,
-      TextEditingController controllerTextoNombreAlumno,
-      TextEditingController controllerTextoFechaEntrada,
-      TextEditingController controllerTextoFechaSalida) {
+    bool fechaCompleta,
+    ServicioProvider servicio,
+    TextEditingController controllerTextoNombreAlumno,
+    TextEditingController controllerTextoFechaEntrada,
+    TextEditingController controllerTextoFechaSalida,
+    String curso,
+  ) {
     return Scaffold(
       appBar: AppBar(
-          leading: TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text(
-                "CANCELAR",
-                style: TextStyle(color: Color.fromARGB(255, 255, 0, 0)),
-              )),
-          leadingWidth: 90,
-          actions: [
-            TextButton(
-                onPressed: () {
-                  if (!fechaCompleta) {
-                    null;
-                  } else {
-                    servicio.setAlumnosServicio(
-                        controllerTextoNombreAlumno.text,
-                        controllerTextoFechaEntrada.text,
-                        controllerTextoFechaSalida.text);
-                    Navigator.pop(context);
-                  }
-                },
-                child: const Text(
-                  "CONFIRMAR",
-                  style: TextStyle(color: Color.fromARGB(255, 95, 168, 0)),
-                ))
-          ]),
+        leading: TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: const Text(
+            "CANCELAR",
+            style: TextStyle(color: Color.fromARGB(255, 255, 0, 0)),
+          ),
+        ),
+        leadingWidth: 90,
+        actions: [
+          TextButton(
+            onPressed: () {
+              if (fechaCompleta) {
+                servicio.setAlumnosServicio(
+                  controllerTextoNombreAlumno.text,
+                  controllerTextoFechaEntrada.text,
+                  controllerTextoFechaSalida.text,
+                );
+                final student = listadoAlumnos2
+                    .firstWhere((student) => student.course == curso);
+                _confirmAction(student);
+                Navigator.pop(context);
+              }
+            },
+            child: const Text(
+              "CONFIRMAR",
+              style: TextStyle(color: Color.fromARGB(255, 95, 168, 0)),
+            ),
+          ),
+        ],
+      ),
       body: SafeArea(
-          child: Container(
-              padding: const EdgeInsets.all(10),
-              color: Colors.white,
-              child: Column(
-                children: [
-                  TextField(
-                    controller: controllerTextoNombreAlumno,
-                    decoration: InputDecoration(
-                        border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10)),
-                        labelText: "NOMBRE ALUMNO",
-                        labelStyle:
-                            const TextStyle(fontWeight: FontWeight.bold)),
-                    enabled: false,
+        child: Container(
+          padding: const EdgeInsets.all(10),
+          color: Colors.white,
+          child: Column(
+            children: [
+              TextField(
+                controller: controllerTextoNombreAlumno,
+                decoration: InputDecoration(
+                  border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10)),
+                  labelText: "NOMBRE ALUMNO",
+                  labelStyle: const TextStyle(fontWeight: FontWeight.bold),
+                ),
+                enabled: false,
+              ),
+              const Divider(color: Colors.transparent),
+              TextField(
+                controller: controllerTextoFechaEntrada,
+                decoration: InputDecoration(
+                  border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10)),
+                  labelText: "FECHA ENTRADA",
+                  labelStyle: const TextStyle(fontWeight: FontWeight.bold),
+                ),
+              ),
+              const Divider(color: Colors.transparent),
+              TextField(
+                controller: controllerTextoFechaSalida,
+                decoration: InputDecoration(
+                  suffixIcon: IconButton(
+                    onPressed: () {
+                      setState(() {
+                        fechaCompleta = true;
+                        debugPrint("fechaCompleta: $fechaCompleta");
+                        controllerTextoFechaSalida.text =
+                            DateFormat("dd-MM-yyyy hh:mm")
+                                .format(DateTime.now());
+                      });
+                    },
+                    icon: const Icon(Icons.add_box_outlined, size: 30),
                   ),
-                  const Divider(color: Colors.transparent),
-                  TextField(
-                    controller: controllerTextoFechaEntrada,
-                    decoration: InputDecoration(
-                        border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10)),
-                        labelText: "FECHA ENTRADA",
-                        labelStyle:
-                            const TextStyle(fontWeight: FontWeight.bold)),
-                    enabled: true,
-                  ),
-                  const Divider(color: Colors.transparent),
-                  TextField(
-                    controller: controllerTextoFechaSalida,
-                    decoration: InputDecoration(
-                        suffixIcon: IconButton(
-                            onPressed: () {
-                              setState(() {
-                                fechaCompleta = true;
-                                debugPrint("fechaCompleta: $fechaCompleta");
-                                controllerTextoFechaSalida.text =
-                                    DateFormat("dd-MM-yyyy hh:mm")
-                                        .format(DateTime.now());
-                              });
-                            },
-                            icon: const Icon(
-                              Icons.add_box_outlined,
-                              size: 30,
-                            )),
-                        border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10)),
-                        labelText: "FECHA SALIDA",
-                        labelStyle:
-                            const TextStyle(fontWeight: FontWeight.bold)),
-                    enabled: true,
-                  )
-                ],
-              ))),
+                  border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10)),
+                  labelText: "FECHA SALIDA",
+                  labelStyle: const TextStyle(fontWeight: FontWeight.bold),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }

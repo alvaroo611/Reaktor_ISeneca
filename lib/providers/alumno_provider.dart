@@ -61,7 +61,7 @@ class ProviderAlumno extends ChangeNotifier {
     }
   }
 
-  Future<void> fetchStudents(http.Client client) async {
+  Future<List<Student>> fetchStudents(http.Client client) async {
     try {
       final response = await client.get(
         Uri.parse(WEB_URL +
@@ -69,18 +69,18 @@ class ProviderAlumno extends ChangeNotifier {
         headers: {'Content-Type': 'application/json'},
       );
       if (response.statusCode == 200) {
-        final List<dynamic> jsonData = json.decode(response.body);
-        _students = jsonData
-            .map((studentJson) => Student.fromJson(studentJson))
-            .toList();
+        final data = json.decode(response.body);
+        _students =
+            List<Student>.from(data.map((item) => Student.fromJson(item)));
         notifyListeners();
+        return _students;
       } else {
-        //
-        print('Error en la solicitud: ${response.statusCode}');
+        throw Exception('Failed to load students');
       }
     } catch (error) {
       print('Error fetching alumnos: $error');
     }
+    return _students;
   }
 
   List<String> getStudentNames() {

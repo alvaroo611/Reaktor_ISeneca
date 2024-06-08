@@ -10,20 +10,19 @@ class ServicioProvider extends ChangeNotifier {
 
   Future<void> fetchAlumnosPorFecha(String fechaInicio, String fechaFin) async {
     final url = Uri.parse(WEB_URL +
-        'horarios/get/students/visitas/bathroom?fechaInicio=$fechaInicio&fechaFin=$fechaFin');
+        '/horarios/get/students/visitas/bathroom?fechaInicio=$fechaInicio&fechaFin=$fechaFin');
     try {
       final response = await http.get(url);
+
       if (response.statusCode == 200) {
-        List<dynamic> data = json.decode(response.body);
-        listadoAlumnosServicio =
-            data.map((item) => Servicio.fromJson(item)).toList();
+        final data = ServicioResponse.fromJson(response.body);
+        listadoAlumnosServicio = data.result;
         notifyListeners();
       } else {
         throw Exception('Failed to load students');
       }
     } catch (error) {
-      print('Error fetching students: $error');
-      throw error;
+      throw Exception('Failed to load students: $error');
     }
   }
   //Google Script Lectura ejecutado

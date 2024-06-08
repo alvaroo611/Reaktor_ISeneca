@@ -34,48 +34,6 @@ class _ServicioESScreenState extends State<ServicioESScreen> {
     });
   }
 
-  Future<void> _postVisit(String name, String lastName, String course) async {
-    final httpClient = http.Client();
-    final response = await httpClient.post(
-      Uri.parse(WEB_URL + '/horarios/student/visita/bathroom'),
-      body: {
-        'name': name,
-        'lastName': lastName,
-        'course': course,
-      },
-    );
-
-    if (response.statusCode == 200) {
-      print('Visita registrada correctamente');
-    } else {
-      print('Error al registrar la visita: ${response.statusCode}');
-    }
-  }
-
-  Future<void> _postReturnBathroom(
-      String name, String lastName, String course) async {
-    final httpClient = http.Client();
-    final response = await httpClient.post(
-      Uri.parse(WEB_URL + '/horarios/student/regreso/bathroom'),
-      body: {
-        'name': name,
-        'lastName': lastName,
-        'course': course,
-      },
-    );
-
-    if (response.statusCode == 200) {
-      print('Regreso registrado correctamente');
-    } else {
-      print('Error al registrar el regreso: ${response.statusCode}');
-    }
-  }
-
-  Future<void> _confirmAction(Student student) async {
-    await _postVisit(student.name, student.lastName, student.course);
-    await _postReturnBathroom(student.name, student.lastName, student.course);
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -99,14 +57,8 @@ class _ServicioESScreenState extends State<ServicioESScreen> {
                     },
                     child: ListTile(
                       title: Text(curso),
-                      trailing: IconButton(
-                        icon: Icon(Icons.check),
-                        onPressed: () {
-                          final student = listadoAlumnos
-                              .firstWhere((student) => student.course == curso);
-                          _confirmAction(student);
-                        },
-                      ),
+                      trailing:
+                          IconButton(icon: Icon(Icons.check), onPressed: () {}),
                     ),
                   );
                 },

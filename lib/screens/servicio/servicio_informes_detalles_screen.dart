@@ -1,36 +1,76 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:iseneca/models/models.dart';
-import 'package:iseneca/providers/providers.dart';
-//import 'package:url_launcher/url_launcher.dart';
+import 'package:iseneca/models/Student.dart';
+import 'package:iseneca/providers/alumno_provider.dart';
+import 'package:iseneca/providers/servicio_provider.dart';
 import 'package:url_launcher/url_launcher_string.dart';
+import 'package:http/http.dart' as http;
 
-class ServicioInformesDetallesScreen extends StatelessWidget {
+class ServicioInformesDetallesScreen extends StatefulWidget {
   const ServicioInformesDetallesScreen({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
-    final nombreParametro = ModalRoute.of(context)!.settings.arguments;
-    final servicioProvider = Provider.of<ServicioProvider>(context);
-    final alumnadoProvider = Provider.of<AlumnadoProvider>(context);
-    final listaAlumnos = alumnadoProvider.listadoAlumnos;
-    List<DatosAlumnos> alumno = [];
+  _ServicioInformesDetallesScreenState createState() =>
+      _ServicioInformesDetallesScreenState();
+}
 
+class _ServicioInformesDetallesScreenState
+    extends State<ServicioInformesDetallesScreen> {
+  List<Student> alumno = [];
+  List<String> fechas = [];
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _loadData();
+    });
+  }
+
+  Future<void> _loadData() async {
+    final nombreParametro =
+        ModalRoute.of(context)!.settings.arguments as String;
+    final servicioProvider =
+        Provider.of<ServicioProvider>(context, listen: false);
+    final alumnadoProvider =
+        Provider.of<ProviderAlumno>(context, listen: false);
+    final httpClient = http.Client();
+
+    List<Student> listaAlumnos = [];
+
+    try {
+      listaAlumnos = await alumnadoProvider.fetchStudents(httpClient);
+    } catch (e) {
+      print('Error loading students: $e');
+    }
+
+    List<Student> tempAlumno = [];
     for (int i = 0; i < listaAlumnos.length; i++) {
-      if (listaAlumnos[i].nombre == nombreParametro) {
-        alumno.add(listaAlumnos[i]);
+      if (listaAlumnos[i].name == nombreParametro) {
+        tempAlumno.add(listaAlumnos[i]);
       }
     }
-    final listadoAlumnosDetalles = servicioProvider.listadoAlumnosServicio;
 
-    List<String> fechas = [];
+    final listadoAlumnosDetalles = servicioProvider.listadoAlumnosServicio;
+    List<String> tempFechas = [];
 
     for (int i = 0; i < listadoAlumnosDetalles.length; i++) {
       if (listadoAlumnosDetalles[i].nombreAlumno == nombreParametro) {
-        fechas.add(
+        tempFechas.add(
             "${listadoAlumnosDetalles[i].fechaEntrada} - ${listadoAlumnosDetalles[i].fechaSalida}");
       }
     }
+
+    setState(() {
+      alumno = tempAlumno;
+      fechas = tempFechas;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final nombreParametro =
+        ModalRoute.of(context)!.settings.arguments as String;
 
     return Scaffold(
       appBar: AppBar(
@@ -57,12 +97,12 @@ class ServicioInformesDetallesScreen extends StatelessWidget {
     );
   }
 
-  void _mostrarAlert(BuildContext context, List<DatosAlumnos> alumno) {
-    int numeroTlfAlumno = int.parse(alumno[0].telefonoAlumno);
-    int numeroTlfPadre = int.parse(alumno[0].telefonoPadre);
-    int numeroTlfMadre = int.parse(alumno[0].telefonoMadre);
+  void _mostrarAlert(BuildContext context, List<Student> alumno) {
+    if (alumno.isEmpty) return;
 
-    String mailAlumno = alumno[0].email;
+    int numeroTlfAlumno = int.parse(alumno[0].tutorPhone);
+
+    String mailAlumno = alumno[0].tutorEmail;
 
     showDialog(
         context: context,
@@ -73,7 +113,7 @@ class ServicioInformesDetallesScreen extends StatelessWidget {
           return AlertDialog(
             shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(20.0)),
-            title: Text(alumno[0].nombre),
+            title: Text(alumno[0].name),
             content: Column(
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
@@ -108,36 +148,6 @@ class ServicioInformesDetallesScreen extends StatelessWidget {
                         color: Colors.blue),
                   ],
                 ),
-                Row(
-                  children: [
-                    Text(
-                      "Teléfono Padre: ",
-                      style: textStyle,
-                    ),
-                    Text("$numeroTlfPadre"),
-                    IconButton(
-                        onPressed: () {
-                          launchUrlString("tel:$numeroTlfPadre");
-                        },
-                        icon: const Icon(Icons.phone),
-                        color: Colors.blue),
-                  ],
-                ),
-                Row(
-                  children: [
-                    Text(
-                      "Teléfono Madre: ",
-                      style: textStyle,
-                    ),
-                    Text("$numeroTlfMadre"),
-                    IconButton(
-                        onPressed: () {
-                          launchUrlString("tel:$numeroTlfMadre");
-                        },
-                        icon: const Icon(Icons.phone),
-                        color: Colors.blue)
-                  ],
-                )
               ],
             ),
             actions: [
