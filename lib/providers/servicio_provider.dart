@@ -9,8 +9,8 @@ class ServicioProvider extends ChangeNotifier {
   List<Servicio> listadoAlumnosServicio = [];
 
   Future<void> fetchAlumnosPorFecha(String fechaInicio, String fechaFin) async {
-    final url = Uri.parse(
-        'https://tu-servidor.com/get/students/visitas/bathroom?fechaInicio=$fechaInicio&fechaFin=$fechaFin');
+    final url = Uri.parse(WEB_URL +
+        'horarios/get/students/visitas/bathroom?fechaInicio=$fechaInicio&fechaFin=$fechaFin');
     try {
       final response = await http.get(url);
       if (response.statusCode == 200) {
