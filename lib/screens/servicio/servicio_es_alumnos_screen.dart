@@ -217,7 +217,6 @@ class _ServicioESAlumnosScreenState extends State<ServicioESAlumnosScreen> {
                 final student = listadoAlumnos2
                     .firstWhere((student) => student.course == curso);
                 _confirmAction(context, student);
-                Navigator.pop(context);
               }
             },
             child: const Text(
