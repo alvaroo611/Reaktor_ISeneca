@@ -64,6 +64,9 @@ class _ServicioESAlumnosScreenState extends State<ServicioESAlumnosScreen> {
       print('Visita registrada correctamente');
     } else {
       print('Error al registrar la visita: ${response.statusCode}');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error al registrar la visita: ')),
+      );
     }
   }
 
@@ -85,6 +88,9 @@ class _ServicioESAlumnosScreenState extends State<ServicioESAlumnosScreen> {
       );
       print('Regreso registrado correctamente');
     } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error al registrar el regreso: ')),
+      );
       print('Error al registrar el regreso: ${response.statusCode}');
     }
   }
