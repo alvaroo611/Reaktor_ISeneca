@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:iseneca/models/Student.dart';
 import 'package:iseneca/models/servicio_response.dart';
 import 'package:iseneca/utils/utilidades.dart';
 import 'package:iseneca/config/constantas.dart';
@@ -7,27 +8,64 @@ import 'dart:convert';
 
 class ServicioProvider extends ChangeNotifier {
   List<Servicio> listadoAlumnosServicio = [];
+  late List<Map<String, dynamic>> visitas;
 
-  Future<void> fetchAlumnosPorFecha(
+  List<Student> getAlumnoFromMap() {
+    // Crear una lista para almacenar los estudiantes
+    List<Student> alumnos = [];
+
+    // Iterar sobre cada mapa en la lista
+    visitas.forEach((mapa) {
+      // Iterar sobre las entradas del mapa
+      mapa.forEach((clave, valor) {
+        // Verificar si la clave es "alumno" y si el valor es una instancia de Student
+        if (clave == "alumno" && valor is Student) {
+          // Agregar el estudiante a la lista
+          alumnos.add(valor);
+        }
+      });
+    });
+
+    // Devolver la lista de estudiantes
+    return alumnos;
+  }
+
+  List<String> getNombresAlumnosFromMap() {
+    // Crear una lista para almacenar los nombres de los estudiantes
+    List<String> nombresAlumnos = [];
+
+    // Iterar sobre cada mapa en la lista
+    visitas.forEach((mapa) {
+      // Obtener el nombre del estudiante del mapa y agregarlo a la lista
+      if (mapa.containsKey("alumno")) {
+        nombresAlumnos.add(mapa["alumno"].name);
+      }
+    });
+
+    // Devolver la lista de nombres de los estudiantes
+    return nombresAlumnos;
+  }
+
+  Future<void> fetchStudentVisits(
       String fechaInicio, String fechaFin, BuildContext context) async {
     final url = Uri.parse(WEB_URL +
         '/horarios/get/students/visitas/bathroom?fechaInicio=$fechaInicio&fechaFin=$fechaFin');
-    try {
-      final response = await http.get(url);
-      if (response.statusCode == 200) {
-        List<dynamic> data = json.decode(response.body);
-        listadoAlumnosServicio =
-            data.map((item) => Servicio.fromJson(item)).toList();
-        notifyListeners();
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            content: Text('Error al cargar estudiantes por fecha endpoint.')));
-        Future.delayed(Duration(seconds: 1));
-        throw Exception('Failed to load students');
-      }
-    } catch (error) {
-      print('Error fetching students: $error');
-      throw error;
+
+    final response = await http.get(url);
+
+    if (response.statusCode == 200) {
+      // Convertir el cuerpo de la respuesta JSON en un mapa
+      visitas = List<Map<String, dynamic>>.from(json.decode(response.body));
+
+      ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Datos cargados correctamente')));
+      // Ahora puedes trabajar con el mapa de visitas
+    } else {
+      // Manejar el caso en que la solicitud no sea exitosa
+      print('Error al obtener la lista de visitas: ${response.statusCode}');
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content:
+              Text('Error al cargar las visitas de los estudiantes al baño.')));
     }
   }
   //Google Script Lectura ejecutado

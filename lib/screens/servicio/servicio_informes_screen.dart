@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:iseneca/models/Student.dart';
 import 'package:iseneca/models/servicio_response.dart';
 import 'package:iseneca/providers/servicio_provider.dart';
 import 'package:provider/provider.dart';
@@ -16,24 +17,66 @@ class _ServicioInformesScreenState extends State<ServicioInformesScreen> {
   String selectedDateInicio = "";
   String selectedDateFin = "";
   bool fechaInicioEscogida = false;
-  List<Servicio> listaAlumnosFechas = [];
+  List<Student> listaAlumnosFechas = [];
   List<String> listaAlumnosNombres = [];
   DateTime dateTimeInicio = DateTime.now();
   DateTime dateTimeFin = DateTime.now();
   int size = 0;
   int repeticiones = 0;
 
-  Future<void> _loadStudentsPorFecha(BuildContext context) async {
+  int _calcularRepeticiones(String nombreAlumno) {
+    int num = 0;
+    for (int i = 0; i < listaAlumnosFechas.length; i++) {
+      if (nombreAlumno == listaAlumnosFechas[i].name) {
+        num++;
+      }
+    }
+    return num;
+  }
+
+  void mostrarFecha(String modo, BuildContext context) {
+    showCupertinoModalPopup(
+      context: context,
+      builder: (BuildContext builder) {
+        return Container(
+          color: Colors.white,
+          height: MediaQuery.of(context).copyWith().size.height * 0.25,
+          child: CupertinoDatePicker(
+            initialDateTime: DateTime.now(),
+            minimumYear: DateTime.now().year - 1,
+            maximumYear: DateTime.now().year,
+            mode: CupertinoDatePickerMode.date,
+            onDateTimeChanged: (value) {
+              String valueFormat = DateFormat("dd-MM-yyyy").format(value);
+
+              if (modo == "Inicio") {
+                setState(() {
+                  selectedDateInicio = valueFormat;
+                  dateTimeInicio = value;
+                });
+              }
+
+              if (modo == "Fin") {
+                setState(() {
+                  selectedDateFin = valueFormat;
+                  dateTimeFin = value;
+                });
+              }
+            },
+          ),
+        );
+      },
+    );
+  }
+
+  Future<void> _loadNombresAlumnos(BuildContext context) async {
     try {
       final servicioProvider =
           Provider.of<ServicioProvider>(context, listen: false);
-      await servicioProvider.fetchAlumnosPorFecha(
+      await servicioProvider.fetchStudentVisits(
           selectedDateInicio, selectedDateFin, context);
       setState(() {
-        listaAlumnosFechas = servicioProvider.listadoAlumnosServicio;
-        listaAlumnosNombres =
-            listaAlumnosFechas.map((e) => e.nombreAlumno).toSet().toList();
-        listaAlumnosNombres.sort((a, b) => a.compareTo(b));
+        listaAlumnosNombres = servicioProvider.getNombresAlumnosFromMap();
         size = listaAlumnosNombres.length;
       });
     } catch (e) {
@@ -102,7 +145,7 @@ class _ServicioInformesScreenState extends State<ServicioInformesScreen> {
                 ),
                 ElevatedButton(
                   onPressed: () {
-                    _loadStudentsPorFecha(context);
+                    _loadNombresAlumnos(context);
                   },
                   child: const Text("MOSTRAR"),
                 ),
@@ -132,50 +175,5 @@ class _ServicioInformesScreenState extends State<ServicioInformesScreen> {
         ],
       ),
     );
-  }
-
-  void mostrarFecha(String modo, BuildContext context) {
-    showCupertinoModalPopup(
-      context: context,
-      builder: (BuildContext builder) {
-        return Container(
-          color: Colors.white,
-          height: MediaQuery.of(context).copyWith().size.height * 0.25,
-          child: CupertinoDatePicker(
-            initialDateTime: DateTime.now(),
-            minimumYear: DateTime.now().year - 1,
-            maximumYear: DateTime.now().year,
-            mode: CupertinoDatePickerMode.date,
-            onDateTimeChanged: (value) {
-              String valueFormat = DateFormat("dd-MM-yyyy").format(value);
-
-              if (modo == "Inicio") {
-                setState(() {
-                  selectedDateInicio = valueFormat;
-                  dateTimeInicio = value;
-                });
-              }
-
-              if (modo == "Fin") {
-                setState(() {
-                  selectedDateFin = valueFormat;
-                  dateTimeFin = value;
-                });
-              }
-            },
-          ),
-        );
-      },
-    );
-  }
-
-  int _calcularRepeticiones(String nombreAlumno) {
-    int num = 0;
-    for (int i = 0; i < listaAlumnosFechas.length; i++) {
-      if (nombreAlumno == listaAlumnosFechas[i].nombreAlumno) {
-        num++;
-      }
-    }
-    return num;
   }
 }
