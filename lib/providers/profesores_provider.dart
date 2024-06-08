@@ -2,18 +2,19 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:iseneca/config/constantas.dart';
+import 'package:iseneca/models/profesor.dart';
 
 class ProfesoresProvider extends ChangeNotifier {
   List<Profesor> _profesores = [];
 
   List<Profesor> get profesores => _profesores;
 
-  Future<void> fetchProfesores(http.Client client) async {
+  Future<List<Profesor>> fetchProfesores(http.Client client) async {
     try {
       // Se hace la petición al endpoint
       final response = await client.get(
-        Uri.parse(
-            WEB_URL+'/horarios/get/teachers'), // Reemplaza con tu URL correcta
+        Uri.parse(WEB_URL +
+            '/horarios/get/teachers'), // Reemplaza con tu URL correcta
         headers: {'Content-Type': 'application/json'},
       );
 
@@ -44,6 +45,7 @@ class ProfesoresProvider extends ChangeNotifier {
       print('Error fetching profesores: $error');
       throw error;
     }
+    return _profesores;
   }
 
   // Método para obtener nombres y apellidos de todos los profesores
@@ -54,40 +56,4 @@ class ProfesoresProvider extends ChangeNotifier {
     }
     return nombresYApellidos;
   }
-}
-
-Profesor profesorFromJson(String str) => Profesor.fromJson(json.decode(str));
-
-String profesorToJson(Profesor data) => json.encode(data.toJson());
-
-class Profesor {
-  String numIntPr;
-  String abreviatura;
-  String nombre;
-  String primerApellido;
-  String segundoApellido;
-
-  Profesor({
-    required this.numIntPr,
-    required this.abreviatura,
-    required this.nombre,
-    required this.primerApellido,
-    required this.segundoApellido,
-  });
-
-  factory Profesor.fromJson(Map<String, dynamic> json) => Profesor(
-        numIntPr: json["numIntPR"],
-        abreviatura: json["abreviatura"],
-        nombre: json["nombre"],
-        primerApellido: json["primerApellido"],
-        segundoApellido: json["segundoApellido"],
-      );
-
-  Map<String, dynamic> toJson() => {
-        "numIntPR": numIntPr,
-        "abreviatura": abreviatura,
-        "nombre": nombre,
-        "primerApellido": primerApellido,
-        "segundoApellido": segundoApellido,
-      };
 }
