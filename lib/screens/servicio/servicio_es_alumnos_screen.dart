@@ -113,7 +113,7 @@ class _ServicioESAlumnosScreenState extends State<ServicioESAlumnosScreen> {
               onPressed: () => Navigator.pop(context),
               child: const Text(
                 "CANCELAR",
-                style: TextStyle(color: Colors.white),
+                style: TextStyle(color: Color.fromARGB(255, 255, 0, 0)),
               )),
           leadingWidth: 90,
           actions: [
@@ -159,7 +159,7 @@ class _ServicioESAlumnosScreenState extends State<ServicioESAlumnosScreen> {
                         labelText: "FECHA ENTRADA",
                         labelStyle:
                             const TextStyle(fontWeight: FontWeight.bold)),
-                    enabled: false,
+                    enabled: true,
                   ),
                   const Divider(color: Colors.transparent),
                   TextField(
@@ -184,7 +184,7 @@ class _ServicioESAlumnosScreenState extends State<ServicioESAlumnosScreen> {
                         labelText: "FECHA SALIDA",
                         labelStyle:
                             const TextStyle(fontWeight: FontWeight.bold)),
-                    readOnly: true,
+                    enabled: true,
                   )
                 ],
               ))),

@@ -15,6 +15,7 @@ class ServicioESScreen extends StatefulWidget {
 class _ServicioESScreenState extends State<ServicioESScreen> {
   late ProviderAlumno _providerAlumno;
   late List<Student> listadoAlumnos = [];
+  late List<String> cursosUnicos = [];
 
   @override
   void initState() {
@@ -28,6 +29,8 @@ class _ServicioESScreenState extends State<ServicioESScreen> {
     await _providerAlumno.fetchStudents(httpClient);
     setState(() {
       listadoAlumnos = _providerAlumno.students;
+      cursosUnicos =
+          listadoAlumnos.map((student) => student.course).toSet().toList();
     });
   }
 
@@ -83,22 +86,24 @@ class _ServicioESScreenState extends State<ServicioESScreen> {
         child: listadoAlumnos.isEmpty
             ? CircularProgressIndicator()
             : ListView.builder(
-                itemCount: listadoAlumnos.length,
+                itemCount: cursosUnicos.length,
                 itemBuilder: (BuildContext context, int index) {
-                  final student = listadoAlumnos[index];
+                  final curso = cursosUnicos[index];
                   return GestureDetector(
                     onTap: () {
                       Navigator.pushNamed(
                         context,
                         "servicio_es_alumnos_screen",
-                        arguments: student.course,
+                        arguments: curso,
                       );
                     },
                     child: ListTile(
-                      title: Text(student.course),
+                      title: Text(curso),
                       trailing: IconButton(
                         icon: Icon(Icons.check),
                         onPressed: () {
+                          final student = listadoAlumnos
+                              .firstWhere((student) => student.course == curso);
                           _confirmAction(student);
                         },
                       ),
