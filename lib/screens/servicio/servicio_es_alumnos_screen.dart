@@ -30,7 +30,7 @@ class _ServicioESAlumnosScreenState extends State<ServicioESAlumnosScreen> {
 
   late ProviderAlumno _providerAlumno;
   late List<Student> listadoAlumnos2 = [];
-
+  bool isLoading = false;
   @override
   void initState() {
     super.initState();
@@ -111,9 +111,22 @@ class _ServicioESAlumnosScreenState extends State<ServicioESAlumnosScreen> {
     }
   }
 
-  Future<void> _confirmAction(Student student) async {
+  Future<void> _confirmAction(BuildContext context, Student student) async {
+    setState(() {
+      // Activar el indicador de carga
+      isLoading = true;
+    });
+
     await _postVisit(student.name, student.lastName, student.course);
     await _postReturnBathroom(student.name, student.lastName, student.course);
+
+    setState(() {
+      // Desactivar el indicador de carga después de que se completan las operaciones
+      isLoading = false;
+    });
+
+    // Cerrar el diálogo modal
+    Navigator.pop(context);
   }
 
   @override
@@ -127,22 +140,10 @@ class _ServicioESAlumnosScreenState extends State<ServicioESAlumnosScreen> {
       appBar: AppBar(
         title: Text(nombreCurso),
       ),
-      body: Center(
-        child: FutureBuilder(
-          future: _loadStudents(), // Aquí puedes cargar los estudiantes
-          builder: (BuildContext context, AsyncSnapshot<void> snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                    content: Text('Error al registrar el regreso o la visita')),
-              );
-              return CircularProgressIndicator();
-            } else if (snapshot.hasError) {
-              // Muestra un mensaje de error si ocurre un error
-              return Text('Error: ${snapshot.error}');
-            } else {
-              // Muestra el ListView.builder si la carga es exitosa
-              return ListView.builder(
+      body: isLoading
+          ? Center(child: CircularProgressIndicator())
+          : Center(
+              child: ListView.builder(
                 itemCount: listadoAlumnos.length,
                 itemBuilder: (BuildContext context, int index) {
                   return GestureDetector(
@@ -181,11 +182,8 @@ class _ServicioESAlumnosScreenState extends State<ServicioESAlumnosScreen> {
                     ),
                   );
                 },
-              );
-            }
-          },
-        ),
-      ),
+              ),
+            ),
     );
   }
 
@@ -218,7 +216,7 @@ class _ServicioESAlumnosScreenState extends State<ServicioESAlumnosScreen> {
                 );
                 final student = listadoAlumnos2
                     .firstWhere((student) => student.course == curso);
-                _confirmAction(student);
+                _confirmAction(context, student);
                 Navigator.pop(context);
               }
             },
