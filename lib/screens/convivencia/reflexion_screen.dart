@@ -352,19 +352,19 @@ class _ReflexionScreenState extends State<_ReflexionScreen> {
                             hintText: "Elige",
                             hintStyle: const TextStyle(color: Colors.black)),
                         borderRadius: BorderRadius.circular(10),
-                        items: listadoAlumnos.map((e) {
+                        items: listadoProfesores.map((e) {
                           return DropdownMenuItem(
                             value: e,
                             child: SizedBox(
                               width: double.infinity,
                               child: Text(
-                                "${e.name} / ${e.course}",
+                                "${e.nombre} , ${e.primerApellido}",
                                 overflow: TextOverflow.ellipsis,
                               ),
                             ),
                           );
                         }).toList(),
-                        onChanged: (Student? value) {},
+                        onChanged: (Profesor? value) {},
                         isDense: true,
                         isExpanded: true,
                       ),

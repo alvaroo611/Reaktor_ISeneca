@@ -13,16 +13,17 @@ class ServicioProvider extends ChangeNotifier {
         '/horarios/get/students/visitas/bathroom?fechaInicio=$fechaInicio&fechaFin=$fechaFin');
     try {
       final response = await http.get(url);
-
       if (response.statusCode == 200) {
-        final data = ServicioResponse.fromJson(response.body);
-        listadoAlumnosServicio = data.result;
+        List<dynamic> data = json.decode(response.body);
+        listadoAlumnosServicio =
+            data.map((item) => Servicio.fromJson(item)).toList();
         notifyListeners();
       } else {
         throw Exception('Failed to load students');
       }
     } catch (error) {
-      throw Exception('Failed to load students: $error');
+      print('Error fetching students: $error');
+      throw error;
     }
   }
   //Google Script Lectura ejecutado

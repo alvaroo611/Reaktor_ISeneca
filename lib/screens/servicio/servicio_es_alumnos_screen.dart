@@ -48,55 +48,66 @@ class _ServicioESAlumnosScreenState extends State<ServicioESAlumnosScreen> {
 
   Future<void> _postVisit(String name, String lastName, String course) async {
     final httpClient = http.Client();
-    final response = await httpClient.post(
-      Uri.parse(WEB_URL + '/horarios/student/visita/bathroom'),
-      body: {
-        'name': name,
-        'lastName': lastName,
-        'course': course,
-      },
-    );
 
-    if (response.statusCode == 200) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Visita registrada correctamente')),
+    while (true) {
+      final response = await httpClient.post(
+        Uri.parse(WEB_URL + '/horarios/student/visita/bathroom'),
+        body: {
+          'name': name,
+          'lastName': lastName,
+          'course': course,
+        },
       );
-      Future.delayed(const Duration(seconds: 2));
 
-      print('Visita registrada correctamente');
-    } else {
-      print('Error al registrar la visita: ${response.statusCode}');
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error al registrar la visita: ')),
-      );
-      Future.delayed(const Duration(seconds: 2));
+      if (response.statusCode == 200) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Visita registrada correctamente')),
+        );
+        print('Visita registrada correctamente');
+        break; // Sale del bucle while si la solicitud es exitosa
+      } else {
+        print('Error al registrar la visita: ${response.statusCode}');
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+              content:
+                  Text('Error al registrar la visita, intentando de nuevo...')),
+        );
+        await Future.delayed(
+            const Duration(seconds: 2)); // Espera antes de intentar de nuevo
+      }
     }
   }
 
   Future<void> _postReturnBathroom(
       String name, String lastName, String course) async {
     final httpClient = http.Client();
-    final response = await httpClient.post(
-      Uri.parse(WEB_URL + '/horarios/student/regreso/bathroom'),
-      body: {
-        'name': name,
-        'lastName': lastName,
-        'course': course,
-      },
-    );
 
-    if (response.statusCode == 200) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Regreso registrada correctamente')),
+    while (true) {
+      final response = await httpClient.post(
+        Uri.parse(WEB_URL + '/horarios/student/regreso/bathroom'),
+        body: {
+          'name': name,
+          'lastName': lastName,
+          'course': course,
+        },
       );
-      Future.delayed(const Duration(seconds: 2));
-      print('Regreso registrado correctamente');
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error al registrar el regreso: ')),
-      );
-      Future.delayed(const Duration(seconds: 2));
-      print('Error al registrar el regreso: ${response.statusCode}');
+
+      if (response.statusCode == 200) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Regreso registrado correctamente')),
+        );
+        print('Regreso registrado correctamente');
+        break; // Sale del bucle while si la solicitud es exitosa
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+              content: Text(
+                  'Error al registrar el regreso, intentando de nuevo...')),
+        );
+        await Future.delayed(
+            const Duration(seconds: 2)); // Espera antes de intentar de nuevo
+        print('Error al registrar el regreso: ${response.statusCode}');
+      }
     }
   }
 
@@ -117,41 +128,61 @@ class _ServicioESAlumnosScreenState extends State<ServicioESAlumnosScreen> {
         title: Text(nombreCurso),
       ),
       body: Center(
-        child: ListView.builder(
-          itemCount: listadoAlumnos.length,
-          itemBuilder: (BuildContext context, int index) {
-            return GestureDetector(
-              onTap: () {
-                controllerTextoNombreAlumno.clear();
-                controllerTextoFechaEntrada.clear();
-                controllerTextoFechaSalida.clear();
+        child: FutureBuilder(
+          future: _loadStudents(), // Aquí puedes cargar los estudiantes
+          builder: (BuildContext context, AsyncSnapshot<void> snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                    content: Text('Error al registrar el regreso o la visita')),
+              );
+              return CircularProgressIndicator();
+            } else if (snapshot.hasError) {
+              // Muestra un mensaje de error si ocurre un error
+              return Text('Error: ${snapshot.error}');
+            } else {
+              // Muestra el ListView.builder si la carga es exitosa
+              return ListView.builder(
+                itemCount: listadoAlumnos.length,
+                itemBuilder: (BuildContext context, int index) {
+                  return GestureDetector(
+                    onTap: () {
+                      controllerTextoNombreAlumno.clear();
+                      controllerTextoFechaEntrada.clear();
+                      controllerTextoFechaSalida.clear();
 
-                showGeneralDialog(
-                  context: context,
-                  barrierDismissible: false,
-                  transitionDuration: const Duration(milliseconds: 300),
-                  pageBuilder: (context, animation, secondaryAnimation) {
-                    controllerTextoNombreAlumno.text =
-                        listadoAlumnos[index].name;
-                    controllerTextoFechaEntrada.text =
-                        DateFormat("dd-MM-yyyy hh:mm").format(DateTime.now());
+                      showGeneralDialog(
+                        context: context,
+                        barrierDismissible: false,
+                        transitionDuration: const Duration(milliseconds: 300),
+                        pageBuilder: (context, animation, secondaryAnimation) {
+                          controllerTextoNombreAlumno.text =
+                              listadoAlumnos[index].name;
+                          controllerTextoFechaEntrada.text =
+                              DateFormat("dd-MM-yyyy hh:mm")
+                                  .format(DateTime.now());
 
-                    return dialogoBotones(
-                      fechaCompleta,
-                      servicioProvider,
-                      controllerTextoNombreAlumno,
-                      controllerTextoFechaEntrada,
-                      controllerTextoFechaSalida,
-                      listadoAlumnos[index].course,
-                    );
-                  },
-                );
-              },
-              child: ListTile(
-                title: Text(listadoAlumnos[index].name,
-                    style: const TextStyle(fontSize: 20)),
-              ),
-            );
+                          return dialogoBotones(
+                            fechaCompleta,
+                            servicioProvider,
+                            controllerTextoNombreAlumno,
+                            controllerTextoFechaEntrada,
+                            controllerTextoFechaSalida,
+                            listadoAlumnos[index].course,
+                          );
+                        },
+                      );
+                    },
+                    child: ListTile(
+                      title: Text(
+                        '${listadoAlumnos[index].name} ${listadoAlumnos[index].lastName}',
+                        style: const TextStyle(fontSize: 20),
+                      ),
+                    ),
+                  );
+                },
+              );
+            }
           },
         ),
       ),

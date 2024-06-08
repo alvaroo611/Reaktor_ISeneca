@@ -57,8 +57,7 @@ class _ServicioESScreenState extends State<ServicioESScreen> {
                     },
                     child: ListTile(
                       title: Text(curso),
-                      trailing:
-                          IconButton(icon: Icon(Icons.check), onPressed: () {}),
+                      
                     ),
                   );
                 },
