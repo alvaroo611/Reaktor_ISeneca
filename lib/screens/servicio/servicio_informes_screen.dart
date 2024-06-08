@@ -22,14 +22,17 @@ class _ServicioInformesScreenState extends State<ServicioInformesScreen> {
   DateTime dateTimeFin = DateTime.now();
   int size = 0;
   int repeticiones = 0;
-  
+
   Future<void> _loadStudentsPorFecha(BuildContext context) async {
     try {
-      final servicioProvider = Provider.of<ServicioProvider>(context, listen: false);
-      await servicioProvider.fetchAlumnosPorFecha(selectedDateInicio, selectedDateFin);
+      final servicioProvider =
+          Provider.of<ServicioProvider>(context, listen: false);
+      await servicioProvider.fetchAlumnosPorFecha(
+          selectedDateInicio, selectedDateFin);
       setState(() {
         listaAlumnosFechas = servicioProvider.listadoAlumnosServicio;
-        listaAlumnosNombres = listaAlumnosFechas.map((e) => e.nombreAlumno).toSet().toList();
+        listaAlumnosNombres =
+            listaAlumnosFechas.map((e) => e.nombreAlumno).toSet().toList();
         listaAlumnosNombres.sort((a, b) => a.compareTo(b));
         size = listaAlumnosNombres.length;
       });
@@ -59,7 +62,8 @@ class _ServicioInformesScreenState extends State<ServicioInformesScreen> {
                       child: TextField(
                         readOnly: true,
                         style: const TextStyle(fontWeight: FontWeight.bold),
-                        controller: TextEditingController(text: selectedDateInicio),
+                        controller:
+                            TextEditingController(text: selectedDateInicio),
                         decoration: InputDecoration(
                           labelText: "FECHA INICIO",
                           border: const OutlineInputBorder(),
@@ -79,7 +83,8 @@ class _ServicioInformesScreenState extends State<ServicioInformesScreen> {
                         enabled: fechaInicioEscogida,
                         readOnly: true,
                         style: const TextStyle(fontWeight: FontWeight.bold),
-                        controller: TextEditingController(text: selectedDateFin),
+                        controller:
+                            TextEditingController(text: selectedDateFin),
                         decoration: InputDecoration(
                           labelText: "FECHA FIN",
                           border: const OutlineInputBorder(),
@@ -89,15 +94,14 @@ class _ServicioInformesScreenState extends State<ServicioInformesScreen> {
                           ),
                         ),
                       ),
-                    )
+                    ),
                   ],
                 ),
                 ElevatedButton(
-                  onPressed: () {
-                    _loadStudentsPorFecha(context);
-                  },
-                  child: const Text("MOSTRAR")
-                )
+                    onPressed: () {
+                      _loadStudentsPorFecha(context);
+                    },
+                    child: const Text("MOSTRAR"))
               ],
             ),
           ),
@@ -105,13 +109,13 @@ class _ServicioInformesScreenState extends State<ServicioInformesScreen> {
             child: ListView.builder(
               itemCount: size,
               itemBuilder: (context, index) {
-                repeticiones = _calcularRepeticiones(listaAlumnosNombres[index]);
+                repeticiones =
+                    _calcularRepeticiones(listaAlumnosNombres[index]);
 
                 return GestureDetector(
                   onTap: () => Navigator.pushNamed(
-                    context, "servicio_informes_detalles_screen",
-                    arguments: listaAlumnosNombres[index]
-                  ),
+                      context, "servicio_informes_detalles_screen",
+                      arguments: listaAlumnosNombres[index]),
                   child: ListTile(
                     title: Text(listaAlumnosNombres[index]),
                     subtitle: Text("Cantidad $repeticiones"),
@@ -127,37 +131,35 @@ class _ServicioInformesScreenState extends State<ServicioInformesScreen> {
 
   void mostrarFecha(String modo, BuildContext context) {
     showCupertinoModalPopup(
-      context: context,
-      builder: (BuildContext builder) {
-        return Container(
-          color: Colors.white,
-          height: MediaQuery.of(context).copyWith().size.height * 0.25,
-          child: CupertinoDatePicker(
-            initialDateTime: DateTime.now(),
-            minimumYear: DateTime.now().year - 1,
-            maximumYear: DateTime.now().year,
-            mode: CupertinoDatePickerMode.date,
-            onDateTimeChanged: (value) {
-              String valueFormat = DateFormat("dd-MM-yyyy").format(value);
+        context: context,
+        builder: (BuildContext builder) {
+          return Container(
+            color: Colors.white,
+            height: MediaQuery.of(context).copyWith().size.height * 0.25,
+            child: CupertinoDatePicker(
+                initialDateTime: DateTime.now(),
+                minimumYear: DateTime.now().year - 1,
+                maximumYear: DateTime.now().year,
+                mode: CupertinoDatePickerMode.date,
+                onDateTimeChanged: (value) {
+                  String valueFormat = DateFormat("dd-MM-yyyy").format(value);
 
-              if (modo == "Inicio") {
-                setState(() {
-                  selectedDateInicio = valueFormat;
-                  dateTimeInicio = value;
-                });
-              }
+                  if (modo == "Inicio") {
+                    setState(() {
+                      selectedDateInicio = valueFormat;
+                      dateTimeInicio = value;
+                    });
+                  }
 
-              if (modo == "Fin") {
-                setState(() {
-                  selectedDateFin = valueFormat;
-                  dateTimeFin = value;
-                });
-              }
-            }
-          ),
-        );
-      }
-    );
+                  if (modo == "Fin") {
+                    setState(() {
+                      selectedDateFin = valueFormat;
+                      dateTimeFin = value;
+                    });
+                  }
+                }),
+          );
+        });
   }
 
   int _calcularRepeticiones(String nombreAlumno) {
