@@ -51,23 +51,36 @@ class ServicioProvider extends ChangeNotifier {
     final url = Uri.parse(WEB_URL +
         '/horarios/get/students/visitas/bathroom?fechaInicio=$fechaInicio&fechaFin=$fechaFin');
 
-    final response = await http.get(url);
+    try {
+      final response = await http.get(url);
 
-    if (response.statusCode == 200) {
-      // Convertir el cuerpo de la respuesta JSON en un mapa
-      visitas = List<Map<String, dynamic>>.from(json.decode(response.body));
-
-      ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Datos cargados correctamente')));
-      // Ahora puedes trabajar con el mapa de visitas
-    } else {
-      // Manejar el caso en que la solicitud no sea exitosa
-      print('Error al obtener la lista de visitas: ${response.statusCode}');
+      if (response.statusCode == 200) {
+        try {
+          // Convertir el cuerpo de la respuesta JSON en un mapa
+          visitas = List<Map<String, dynamic>>.from(json.decode(response.body));
+          ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('Datos cargados correctamente')));
+          // Ahora puedes trabajar con el mapa de visitas
+        } catch (e) {
+          print('Error al decodificar la respuesta JSON: $e');
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+              content: Text('Error al procesar los datos del servidor.')));
+        }
+      } else {
+        // Manejar el caso en que la solicitud no sea exitosa
+        print('Error al obtener la lista de visitas: ${response.statusCode}');
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text(
+                'Error al cargar las visitas de los estudiantes al baño.')));
+      }
+    } catch (e) {
+      // Manejar errores de red u otras excepciones
+      print('Error en la solicitud HTTP: $e');
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content:
-              Text('Error al cargar las visitas de los estudiantes al baño.')));
+          content: Text('Error de red al intentar obtener los datos.')));
     }
   }
+
   //Google Script Lectura ejecutado
   //https://script.google.com/macros/s/AKfycbyPsB_koj3MwkmRFn8IJU-k4sOP8nRfnHHKNNt9xov9INZ1VEsQbu96gDR8Seiz0oDGOQ/exec?spreadsheetId=1u79XugcalPc4aPcymy9OsWu1qdg8aKCBvaPWQOH187I&sheet=Servicio
 

@@ -75,6 +75,7 @@ class _ServicioInformesScreenState extends State<ServicioInformesScreen> {
           Provider.of<ServicioProvider>(context, listen: false);
       await servicioProvider.fetchStudentVisits(
           selectedDateInicio, selectedDateFin, context);
+      Future.delayed(Duration(seconds: 2));
       setState(() {
         listaAlumnosNombres = servicioProvider.getNombresAlumnosFromMap();
         size = listaAlumnosNombres.length;
