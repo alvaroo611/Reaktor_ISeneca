@@ -61,12 +61,15 @@ class _ServicioESAlumnosScreenState extends State<ServicioESAlumnosScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Visita registrada correctamente')),
       );
+      Future.delayed(const Duration(seconds: 2));
+
       print('Visita registrada correctamente');
     } else {
       print('Error al registrar la visita: ${response.statusCode}');
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Error al registrar la visita: ')),
       );
+      Future.delayed(const Duration(seconds: 2));
     }
   }
 
@@ -86,11 +89,13 @@ class _ServicioESAlumnosScreenState extends State<ServicioESAlumnosScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Regreso registrada correctamente')),
       );
+      Future.delayed(const Duration(seconds: 2));
       print('Regreso registrado correctamente');
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Error al registrar el regreso: ')),
       );
+      Future.delayed(const Duration(seconds: 2));
       print('Error al registrar el regreso: ${response.statusCode}');
     }
   }
