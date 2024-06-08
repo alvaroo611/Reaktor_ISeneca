@@ -28,7 +28,7 @@ class _ServicioInformesScreenState extends State<ServicioInformesScreen> {
       final servicioProvider =
           Provider.of<ServicioProvider>(context, listen: false);
       await servicioProvider.fetchAlumnosPorFecha(
-          selectedDateInicio, selectedDateFin);
+          selectedDateInicio, selectedDateFin, context);
       setState(() {
         listaAlumnosFechas = servicioProvider.listadoAlumnosServicio;
         listaAlumnosNombres =
@@ -37,6 +37,9 @@ class _ServicioInformesScreenState extends State<ServicioInformesScreen> {
         size = listaAlumnosNombres.length;
       });
     } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error al cargar estudiantes por fecha.')));
+      Future.delayed(Duration(seconds: 1));
       print('Failed to load students: $e');
     }
   }

@@ -56,9 +56,6 @@ class _ServicioESAlumnosScreenState extends State<ServicioESAlumnosScreen> {
       );
 
       if (response.statusCode == 200) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Visita registrada correctamente')),
-        );
         print('Visita registrada correctamente');
         break; // Sale del bucle while si la solicitud es exitosa
       } else {
@@ -86,7 +83,7 @@ class _ServicioESAlumnosScreenState extends State<ServicioESAlumnosScreen> {
 
       if (response.statusCode == 200) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Regreso registrado correctamente')),
+          SnackBar(content: Text('Datos registrados correctamente.')),
         );
         print('Regreso registrado correctamente');
         break; // Sale del bucle while si la solicitud es exitosa

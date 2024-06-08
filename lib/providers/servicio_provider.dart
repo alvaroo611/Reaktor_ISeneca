@@ -8,7 +8,8 @@ import 'dart:convert';
 class ServicioProvider extends ChangeNotifier {
   List<Servicio> listadoAlumnosServicio = [];
 
-  Future<void> fetchAlumnosPorFecha(String fechaInicio, String fechaFin) async {
+  Future<void> fetchAlumnosPorFecha(
+      String fechaInicio, String fechaFin, BuildContext context) async {
     final url = Uri.parse(WEB_URL +
         '/horarios/get/students/visitas/bathroom?fechaInicio=$fechaInicio&fechaFin=$fechaFin');
     try {
@@ -19,6 +20,9 @@ class ServicioProvider extends ChangeNotifier {
             data.map((item) => Servicio.fromJson(item)).toList();
         notifyListeners();
       } else {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text('Error al cargar estudiantes por fecha endpoint.')));
+        Future.delayed(Duration(seconds: 1));
         throw Exception('Failed to load students');
       }
     } catch (error) {
