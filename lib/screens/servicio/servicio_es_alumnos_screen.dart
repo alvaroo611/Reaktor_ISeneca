@@ -51,12 +51,8 @@ class _ServicioESAlumnosScreenState extends State<ServicioESAlumnosScreen> {
 
     while (true) {
       final response = await httpClient.post(
-        Uri.parse(WEB_URL + '/horarios/student/visita/bathroom'),
-        body: {
-          'name': name,
-          'lastName': lastName,
-          'course': course,
-        },
+        Uri.parse(WEB_URL +
+            '/horarios/student/visita/bathroom?name=$name&lastName=$lastName&course=$course'),
       );
 
       if (response.statusCode == 200) {
@@ -84,12 +80,8 @@ class _ServicioESAlumnosScreenState extends State<ServicioESAlumnosScreen> {
 
     while (true) {
       final response = await httpClient.post(
-        Uri.parse(WEB_URL + '/horarios/student/regreso/bathroom'),
-        body: {
-          'name': name,
-          'lastName': lastName,
-          'course': course,
-        },
+        Uri.parse(WEB_URL +
+            '/horarios/student/visita/bathroom?name=$name&lastName=$lastName&course=$course'),
       );
 
       if (response.statusCode == 200) {
