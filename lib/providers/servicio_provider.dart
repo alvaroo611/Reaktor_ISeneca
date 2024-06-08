@@ -10,7 +10,7 @@ class ServicioProvider extends ChangeNotifier {
 
   Future<void> fetchAlumnosPorFecha(String fechaInicio, String fechaFin) async {
     final url = Uri.parse(WEB_URL +
-        'horarios/get/students/visitas/bathroom?fechaInicio=$fechaInicio&fechaFin=$fechaFin');
+        '/horarios/get/students/visitas/bathroom?fechaInicio=$fechaInicio&fechaFin=$fechaFin');
     try {
       final response = await http.get(url);
       if (response.statusCode == 200) {
