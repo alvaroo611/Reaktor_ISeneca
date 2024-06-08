@@ -52,15 +52,17 @@ class ServicioProvider extends ChangeNotifier {
         '/horarios/get/students/visitas/bathroom?fechaInicio=$fechaInicio&fechaFin=$fechaFin');
 
     try {
+      print('URL: $url'); // Imprime la URL para verificar que es correcta
       final response = await http.get(url);
 
       if (response.statusCode == 200) {
         try {
           // Convertir el cuerpo de la respuesta JSON en un mapa
+          print(
+              'Response Body: ${response.body}'); // Imprime el cuerpo de la respuesta
           visitas = List<Map<String, dynamic>>.from(json.decode(response.body));
           ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(content: Text('Datos cargados correctamente')));
-          // Ahora puedes trabajar con el mapa de visitas
         } catch (e) {
           print('Error al decodificar la respuesta JSON: $e');
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
@@ -69,6 +71,8 @@ class ServicioProvider extends ChangeNotifier {
       } else {
         // Manejar el caso en que la solicitud no sea exitosa
         print('Error al obtener la lista de visitas: ${response.statusCode}');
+        print(
+            'Response Body: ${response.body}'); // Imprime el cuerpo de la respuesta si hay un error
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
             content: Text(
                 'Error al cargar las visitas de los estudiantes al baño.')));

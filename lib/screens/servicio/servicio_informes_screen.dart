@@ -78,6 +78,7 @@ class _ServicioInformesScreenState extends State<ServicioInformesScreen> {
       Future.delayed(Duration(seconds: 2));
       setState(() {
         listaAlumnosNombres = servicioProvider.getNombresAlumnosFromMap();
+        listaAlumnosFechas = servicioProvider.getAlumnoFromMap();
         size = listaAlumnosNombres.length;
       });
     } catch (e) {
