@@ -89,9 +89,9 @@ class ProviderAlumno extends ChangeNotifier {
       // Construir la cadena completa
       String fullName = '${student.name} ${student.lastName} ${student.course}';
       // Convertir la cadena de ISO-8859-1 a UTF-8
-      String utf8FullName = _convertIsoToUtf8(fullName);
+
       // Añadir la cadena convertida a la lista
-      nombresYApellidos.add(utf8FullName);
+      nombresYApellidos.add(fullName);
     }
     return nombresYApellidos;
   }

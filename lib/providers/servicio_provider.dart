@@ -38,7 +38,8 @@ class ServicioProvider extends ChangeNotifier {
     visitas.forEach((mapa) {
       // Obtener el nombre del estudiante del mapa y agregarlo a la lista
       if (mapa.containsKey("alumno")) {
-        nombresAlumnos.add(mapa["alumno"].name);
+        nombresAlumnos
+            .add('${mapa["alumno"].name} ,${mapa["alumno"].lastName}');
       }
     });
 
@@ -48,8 +49,11 @@ class ServicioProvider extends ChangeNotifier {
 
   Future<void> fetchStudentVisits(
       String fechaInicio, String fechaFin, BuildContext context) async {
+    String formattedFechaInicio = fechaInicio.replaceAll('-', '/');
+    String formattedFechaFin = fechaFin.replaceAll('-', '/');
+
     final url = Uri.parse(WEB_URL +
-        '/horarios/get/students/visitas/bathroom?fechaInicio=$fechaInicio&fechaFin=$fechaFin');
+        '/horarios/get/students/visitas/bathroom?fechaInicio=$formattedFechaInicio&fechaFin=$formattedFechaFin');
 
     try {
       print('URL: $url'); // Imprime la URL para verificar que es correcta
