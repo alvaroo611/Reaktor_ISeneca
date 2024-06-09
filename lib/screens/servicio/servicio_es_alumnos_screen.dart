@@ -63,8 +63,6 @@ class _ServicioESAlumnosScreenState extends State<ServicioESAlumnosScreen> {
               content:
                   Text('Error al registrar la visita intentando de nuevo....')),
         );
-
-        _postVisit(name, lastName, course);
       }
     } catch (e) {
       print('Excepción al registrar la visita: $e');
@@ -89,7 +87,7 @@ class _ServicioESAlumnosScreenState extends State<ServicioESAlumnosScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Datos registrados correctamente.')),
         );
-        Future.delayed(const Duration(seconds: 2));
+
         print('Regreso registrado correctamente');
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -97,7 +95,6 @@ class _ServicioESAlumnosScreenState extends State<ServicioESAlumnosScreen> {
               content: Text(
                   'Error al registrar el regreso intentando de nuevo....')),
         );
-        _postReturnBathroom(name, lastName, course);
       }
     } catch (e) {
       print('Excepción al registrar el regreso: $e');

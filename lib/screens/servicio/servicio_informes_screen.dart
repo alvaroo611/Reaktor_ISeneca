@@ -167,8 +167,8 @@ class _ServicioInformesScreenState extends State<ServicioInformesScreen> {
             ),
           ),
           Expanded(
-            child: isLoading
-                ? Center(child: CircularProgressIndicator())
+            child: listaAlumnosNombres.isEmpty
+                ? const Center(child: CircularProgressIndicator())
                 : ListView.builder(
                     itemCount: size,
                     itemBuilder: (context, index) {
