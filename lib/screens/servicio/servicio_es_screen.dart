@@ -57,7 +57,6 @@ class _ServicioESScreenState extends State<ServicioESScreen> {
                     },
                     child: ListTile(
                       title: Text(curso),
-                      
                     ),
                   );
                 },

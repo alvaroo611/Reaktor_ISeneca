@@ -3,7 +3,7 @@ import 'package:iseneca/config/constantas.dart';
 import 'package:iseneca/models/Student.dart';
 import 'package:iseneca/providers/alumno_provider.dart';
 import 'package:provider/provider.dart';
-import 'package:iseneca/models/models.dart';
+
 import 'package:iseneca/providers/providers.dart';
 import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
@@ -59,9 +59,7 @@ class _ServicioESAlumnosScreenState extends State<ServicioESAlumnosScreen> {
       } else {
         print('Error al registrar la visita: ${response.statusCode}');
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-              content:
-                  Text('Error al registrar la visita intentando de nuevo....')),
+          SnackBar(content: Text('Error al registrar la visita ')),
         );
       }
     } catch (e) {
@@ -91,15 +89,13 @@ class _ServicioESAlumnosScreenState extends State<ServicioESAlumnosScreen> {
         print('Regreso registrado correctamente');
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-              content: Text(
-                  'Error al registrar el regreso intentando de nuevo....')),
+          const SnackBar(content: Text('Error al registrar el regreso')),
         );
       }
     } catch (e) {
       print('Excepción al registrar el regreso: $e');
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error al registrar el regreso')),
+        const SnackBar(content: Text('Error al registrar el regreso')),
       );
     } finally {
       httpClient.close();
@@ -135,7 +131,7 @@ class _ServicioESAlumnosScreenState extends State<ServicioESAlumnosScreen> {
         title: Text(nombreCurso),
       ),
       body: isLoading
-          ? Center(child: CircularProgressIndicator())
+          ? const Center(child: CircularProgressIndicator())
           : Center(
               child: ListView.builder(
                 itemCount: listadoAlumnos.length,
