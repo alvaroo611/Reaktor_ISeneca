@@ -89,6 +89,10 @@ class ServicioProvider extends ChangeNotifier {
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
               content: Text('Error al procesar los datos del servidor.')));
         }
+      } else if (response.statusCode == 500) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error servidor')),
+        );
       } else {
         // Manejar el caso en que la solicitud no sea exitosa
         print('Error al obtener la lista de visitas: ${response.statusCode}');

@@ -56,6 +56,10 @@ class _ServicioESAlumnosScreenState extends State<ServicioESAlumnosScreen> {
 
       if (response.statusCode == 200) {
         print('Visita registrada correctamente');
+      } else if (response.statusCode == 500) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error servidor')),
+        );
       } else {
         print('Error al registrar la visita: ${response.statusCode}');
         ScaffoldMessenger.of(context).showSnackBar(
@@ -67,9 +71,7 @@ class _ServicioESAlumnosScreenState extends State<ServicioESAlumnosScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Error al registrar la visita')),
       );
-    } finally {
-      httpClient.close();
-    }
+    } finally {}
   }
 
   Future<void> _postReturnBathroom(
@@ -87,6 +89,10 @@ class _ServicioESAlumnosScreenState extends State<ServicioESAlumnosScreen> {
         );
 
         print('Regreso registrado correctamente');
+      } else if (response.statusCode == 500) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error servidor')),
+        );
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Error al registrar el regreso')),
@@ -97,9 +103,7 @@ class _ServicioESAlumnosScreenState extends State<ServicioESAlumnosScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Error al registrar el regreso')),
       );
-    } finally {
-      httpClient.close();
-    }
+    } finally {}
   }
 
   Future<void> _confirmAction(Student student) async {
@@ -109,7 +113,7 @@ class _ServicioESAlumnosScreenState extends State<ServicioESAlumnosScreen> {
     });
 
     await _postVisit(student.name, student.lastName, student.course);
-    Future.delayed(const Duration(seconds: 2));
+
     await _postReturnBathroom(student.name, student.lastName, student.course);
 
     setState(() {
