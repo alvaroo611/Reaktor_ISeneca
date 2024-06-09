@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:iseneca/models/Student.dart';
+import 'package:iseneca/models/alumno_servcio.dart';
 import 'package:iseneca/models/servicio_response.dart';
 import 'package:iseneca/utils/utilidades.dart';
 import 'package:iseneca/config/constantas.dart';
@@ -9,21 +10,18 @@ import 'dart:convert';
 class ServicioProvider extends ChangeNotifier {
   List<Servicio> listadoAlumnosServicio = [];
   late List<Map<String, dynamic>> visitas;
-
-  List<Student> getAlumnoFromMap() {
+  List<AlumnoServcio> getAlumnoFromMap() {
     // Crear una lista para almacenar los estudiantes
-    List<Student> alumnos = [];
+    List<AlumnoServcio> alumnos = [];
 
     // Iterar sobre cada mapa en la lista
     visitas.forEach((mapa) {
-      // Iterar sobre las entradas del mapa
-      mapa.forEach((clave, valor) {
-        // Verificar si la clave es "alumno" y si el valor es una instancia de Student
-        if (clave == "alumno" && valor is Student) {
-          // Agregar el estudiante a la lista
-          alumnos.add(valor);
-        }
-      });
+      // Verificar si el mapa contiene la clave "alumno"
+      if (mapa.containsKey("alumno")) {
+        // Convertir el valor del mapa a una instancia de AlumnoServicio y agregarla a la lista
+        AlumnoServcio alumno = AlumnoServcio.fromJson(mapa["alumno"]);
+        alumnos.add(alumno);
+      }
     });
 
     // Devolver la lista de estudiantes
@@ -38,8 +36,8 @@ class ServicioProvider extends ChangeNotifier {
     visitas.forEach((mapa) {
       // Obtener el nombre del estudiante del mapa y agregarlo a la lista
       if (mapa.containsKey("alumno")) {
-        nombresAlumnos
-            .add('${mapa["alumno"].name} ,${mapa["alumno"].lastName}');
+        AlumnoServcio alumno = AlumnoServcio.fromJson(mapa["alumno"]);
+        nombresAlumnos.add(alumno.nombreCompleto);
       }
     });
 

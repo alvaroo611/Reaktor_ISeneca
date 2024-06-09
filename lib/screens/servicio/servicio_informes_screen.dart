@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:iseneca/models/Student.dart';
+import 'package:iseneca/models/alumno_servcio.dart';
 import 'package:iseneca/models/servicio_response.dart';
 import 'package:iseneca/providers/servicio_provider.dart';
 import 'package:provider/provider.dart';
@@ -17,7 +18,7 @@ class _ServicioInformesScreenState extends State<ServicioInformesScreen> {
   String selectedDateInicio = "";
   String selectedDateFin = "";
   bool fechaInicioEscogida = false;
-  List<Student> listaAlumnosFechas = [];
+  List<AlumnoServcio> listaAlumnosFechas = [];
   List<String> listaAlumnosNombres = [];
   DateTime dateTimeInicio = DateTime.now();
   DateTime dateTimeFin = DateTime.now();
@@ -27,7 +28,7 @@ class _ServicioInformesScreenState extends State<ServicioInformesScreen> {
   int _calcularRepeticiones(String nombreAlumno) {
     int num = 0;
     for (int i = 0; i < listaAlumnosFechas.length; i++) {
-      if (nombreAlumno == listaAlumnosFechas[i].name) {
+      if (nombreAlumno == listaAlumnosFechas[i].nombreCompleto) {
         num++;
       }
     }
@@ -75,10 +76,10 @@ class _ServicioInformesScreenState extends State<ServicioInformesScreen> {
           Provider.of<ServicioProvider>(context, listen: false);
       await servicioProvider.fetchStudentVisits(
           selectedDateInicio, selectedDateFin, context);
-      Future.delayed(Duration(seconds: 2));
+      Future.delayed(const Duration(seconds: 2));
       setState(() {
         listaAlumnosNombres = servicioProvider.getNombresAlumnosFromMap();
-        //listaAlumnosFechas = servicioProvider.getAlumnoFromMap();
+        listaAlumnosFechas = servicioProvider.getAlumnoFromMap();
         size = listaAlumnosNombres.length;
       });
     } catch (e) {
