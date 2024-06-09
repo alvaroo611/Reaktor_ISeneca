@@ -40,6 +40,7 @@ class _ServicioESAlumnosScreenState extends State<ServicioESAlumnosScreen> {
 
   Future<void> _loadStudents() async {
     final httpClient = http.Client();
+    Future.delayed(const Duration(seconds: 2));
     await _providerAlumno.fetchStudents(httpClient);
     setState(() {
       listadoAlumnos2 = _providerAlumno.students;

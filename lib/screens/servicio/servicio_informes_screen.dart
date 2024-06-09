@@ -77,6 +77,7 @@ class _ServicioInformesScreenState extends State<ServicioInformesScreen> {
     try {
       final servicioProvider =
           Provider.of<ServicioProvider>(context, listen: false);
+      Future.delayed(const Duration(seconds: 2));
       await servicioProvider.fetchStudentVisits(
           DateFormat("dd-MM-yyyy").format(fechaInicio),
           DateFormat("dd-MM-yyyy").format(fechaFin),
