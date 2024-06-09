@@ -90,13 +90,14 @@ class _ServicioESAlumnosScreenState extends State<ServicioESAlumnosScreen> {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text('Datos registrados correctamente.')),
           );
+          Future.delayed(const Duration(seconds: 2));
           print('Regreso registrado correctamente');
           break;
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text('Error al registrar el regreso')),
           );
-          await Future.delayed(const Duration(seconds: 2));
+
           print('Error al registrar el regreso: ${response.statusCode}');
         }
       }
@@ -110,7 +111,7 @@ class _ServicioESAlumnosScreenState extends State<ServicioESAlumnosScreen> {
     }
   }
 
-  Future<void> _confirmAction(BuildContext context, Student student) async {
+  Future<void> _confirmAction(Student student) async {
     setState(() {
       // Activar el indicador de carga
       isLoading = true;
@@ -125,7 +126,6 @@ class _ServicioESAlumnosScreenState extends State<ServicioESAlumnosScreen> {
     });
 
     // Cerrar el diálogo modal
-    Navigator.pop(context);
   }
 
   @override
@@ -215,7 +215,9 @@ class _ServicioESAlumnosScreenState extends State<ServicioESAlumnosScreen> {
                 );
                 final student = listadoAlumnos2
                     .firstWhere((student) => student.course == curso);
-                _confirmAction(context, student);
+                _confirmAction(student);
+
+                Navigator.pop(context);
               }
             },
             child: const Text(
