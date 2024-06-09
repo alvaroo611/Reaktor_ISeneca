@@ -49,22 +49,22 @@ class _ServicioESAlumnosScreenState extends State<ServicioESAlumnosScreen> {
   Future<void> _postVisit(String name, String lastName, String course) async {
     final httpClient = http.Client();
     try {
-      while (true) {
-        final response = await httpClient.post(
-          Uri.parse(WEB_URL +
-              '/horarios/student/visita/bathroom?name=$name&lastName=$lastName&course=$course'),
+      final response = await httpClient.post(
+        Uri.parse(WEB_URL +
+            '/horarios/student/visita/bathroom?name=$name&lastName=$lastName&course=$course'),
+      );
+
+      if (response.statusCode == 200) {
+        print('Visita registrada correctamente');
+      } else {
+        print('Error al registrar la visita: ${response.statusCode}');
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+              content:
+                  Text('Error al registrar la visita intentando de nuevo....')),
         );
 
-        if (response.statusCode == 200) {
-          print('Visita registrada correctamente');
-          break;
-        } else {
-          print('Error al registrar la visita: ${response.statusCode}');
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Error al registrar la visita')),
-          );
-          await Future.delayed(const Duration(seconds: 2));
-        }
+        _postVisit(name, lastName, course);
       }
     } catch (e) {
       print('Excepción al registrar la visita: $e');
@@ -80,26 +80,24 @@ class _ServicioESAlumnosScreenState extends State<ServicioESAlumnosScreen> {
       String name, String lastName, String course) async {
     final httpClient = http.Client();
     try {
-      while (true) {
-        final response = await httpClient.post(
-          Uri.parse(WEB_URL +
-              '/horarios/student/visita/bathroom?name=$name&lastName=$lastName&course=$course'),
+      final response = await httpClient.post(
+        Uri.parse(WEB_URL +
+            '/horarios/student/visita/bathroom?name=$name&lastName=$lastName&course=$course'),
+      );
+
+      if (response.statusCode == 200) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Datos registrados correctamente.')),
         );
-
-        if (response.statusCode == 200) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Datos registrados correctamente.')),
-          );
-          Future.delayed(const Duration(seconds: 2));
-          print('Regreso registrado correctamente');
-          break;
-        } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Error al registrar el regreso')),
-          );
-
-          print('Error al registrar el regreso: ${response.statusCode}');
-        }
+        Future.delayed(const Duration(seconds: 2));
+        print('Regreso registrado correctamente');
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+              content: Text(
+                  'Error al registrar el regreso intentando de nuevo....')),
+        );
+        _postReturnBathroom(name, lastName, course);
       }
     } catch (e) {
       print('Excepción al registrar el regreso: $e');

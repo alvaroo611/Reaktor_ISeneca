@@ -69,7 +69,8 @@ class _ServicioInformesScreenState extends State<ServicioInformesScreen> {
     );
   }
 
-  Future<void> _loadNombresAlumnos(BuildContext context) async {
+  Future<void> _loadNombresAlumnos(
+      BuildContext context, DateTime fechaInicio, DateTime fechaFin) async {
     setState(() {
       isLoading = true;
     });
@@ -77,21 +78,22 @@ class _ServicioInformesScreenState extends State<ServicioInformesScreen> {
       final servicioProvider =
           Provider.of<ServicioProvider>(context, listen: false);
       await servicioProvider.fetchStudentVisits(
-          selectedDateInicio, selectedDateFin, context);
-      await Future.delayed(const Duration(seconds: 2));
+          DateFormat("dd-MM-yyyy").format(fechaInicio),
+          DateFormat("dd-MM-yyyy").format(fechaFin),
+          context);
       setState(() {
         listaAlumnosNombres = servicioProvider.getNombresAlumnosFromMap();
         listaAlumnosFechas = servicioProvider.getAlumnoFromMap();
         size = listaAlumnosNombres.length;
-        isLoading = false;
       });
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Error al cargar estudiantes por fecha.')));
+      print('Failed to load students: $e');
+    } finally {
       setState(() {
         isLoading = false;
       });
-      print('Failed to load students: $e');
     }
   }
 
@@ -153,7 +155,11 @@ class _ServicioInformesScreenState extends State<ServicioInformesScreen> {
                 ),
                 ElevatedButton(
                   onPressed: () {
-                    _loadNombresAlumnos(context);
+                    DateTime fechaInicio =
+                        DateFormat("dd-MM-yyyy").parse(selectedDateInicio);
+                    DateTime fechaFin =
+                        DateFormat("dd-MM-yyyy").parse(selectedDateFin);
+                    _loadNombresAlumnos(context, fechaInicio, fechaFin);
                   },
                   child: const Text("MOSTRAR"),
                 ),
