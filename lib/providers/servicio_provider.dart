@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:iseneca/models/Student.dart';
 import 'package:iseneca/models/alumno_servcio.dart';
+import 'package:iseneca/models/datos_visita.dart';
 import 'package:iseneca/models/servicio_response.dart';
 import 'package:iseneca/utils/utilidades.dart';
 import 'package:iseneca/config/constantas.dart';
@@ -43,6 +44,24 @@ class ServicioProvider extends ChangeNotifier {
 
     // Devolver la lista de nombres de los estudiantes
     return nombresAlumnos;
+  }
+
+  List<DatosVisita> getDatosVisitasFromMap(int alumnoId) {
+    List<DatosVisita> datosVisitas = [];
+
+    visitas.forEach((mapa) {
+      if (mapa.containsKey("alumno") && mapa.containsKey("horas")) {
+        AlumnoServcio alumno = AlumnoServcio.fromJson(mapa['alumno']);
+        String horas = mapa['horas'];
+
+        // Verificar si el ID del alumno coincide
+        if (alumno.alumnoId == alumnoId) {
+          datosVisitas.add(DatosVisita(alumno: alumno, horas: horas));
+        }
+      }
+    });
+
+    return datosVisitas;
   }
 
   Future<void> fetchStudentVisits(

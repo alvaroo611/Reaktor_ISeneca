@@ -1,11 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:iseneca/models/Student.dart';
 import 'package:iseneca/models/alumno_servcio.dart';
-import 'package:iseneca/models/servicio_response.dart';
-import 'package:iseneca/providers/servicio_provider.dart';
 import 'package:provider/provider.dart';
+import 'package:iseneca/providers/servicio_provider.dart';
 
 class ServicioInformesScreen extends StatefulWidget {
   const ServicioInformesScreen({Key? key}) : super(key: key);
@@ -18,6 +16,7 @@ class _ServicioInformesScreenState extends State<ServicioInformesScreen> {
   String selectedDateInicio = "";
   String selectedDateFin = "";
   bool fechaInicioEscogida = false;
+  bool isLoading = false;
   List<AlumnoServcio> listaAlumnosFechas = [];
   List<String> listaAlumnosNombres = [];
   DateTime dateTimeInicio = DateTime.now();
@@ -71,21 +70,27 @@ class _ServicioInformesScreenState extends State<ServicioInformesScreen> {
   }
 
   Future<void> _loadNombresAlumnos(BuildContext context) async {
+    setState(() {
+      isLoading = true;
+    });
     try {
       final servicioProvider =
           Provider.of<ServicioProvider>(context, listen: false);
       await servicioProvider.fetchStudentVisits(
           selectedDateInicio, selectedDateFin, context);
-      Future.delayed(const Duration(seconds: 2));
+      await Future.delayed(const Duration(seconds: 2));
       setState(() {
         listaAlumnosNombres = servicioProvider.getNombresAlumnosFromMap();
         listaAlumnosFechas = servicioProvider.getAlumnoFromMap();
         size = listaAlumnosNombres.length;
+        isLoading = false;
       });
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Error al cargar estudiantes por fecha.')));
-      Future.delayed(Duration(seconds: 1));
+      setState(() {
+        isLoading = false;
+      });
       print('Failed to load students: $e');
     }
   }
@@ -156,24 +161,26 @@ class _ServicioInformesScreenState extends State<ServicioInformesScreen> {
             ),
           ),
           Expanded(
-            child: ListView.builder(
-              itemCount: size,
-              itemBuilder: (context, index) {
-                repeticiones =
-                    _calcularRepeticiones(listaAlumnosNombres[index]);
-                return GestureDetector(
-                  onTap: () => Navigator.pushNamed(
-                    context,
-                    "servicio_informes_detalles_screen",
-                    arguments: listaAlumnosNombres[index],
+            child: isLoading
+                ? Center(child: CircularProgressIndicator())
+                : ListView.builder(
+                    itemCount: size,
+                    itemBuilder: (context, index) {
+                      repeticiones =
+                          _calcularRepeticiones(listaAlumnosNombres[index]);
+                      return GestureDetector(
+                        onTap: () => Navigator.pushNamed(
+                          context,
+                          "servicio_informes_detalles_screen",
+                          arguments: listaAlumnosNombres[index],
+                        ),
+                        child: ListTile(
+                          title: Text(listaAlumnosNombres[index]),
+                          subtitle: Text("Cantidad $repeticiones"),
+                        ),
+                      );
+                    },
                   ),
-                  child: ListTile(
-                    title: Text(listaAlumnosNombres[index]),
-                    subtitle: Text("Cantidad $repeticiones"),
-                  ),
-                );
-              },
-            ),
           ),
         ],
       ),

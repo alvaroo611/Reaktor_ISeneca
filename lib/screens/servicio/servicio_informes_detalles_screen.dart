@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:iseneca/models/alumno_servcio.dart';
+import 'package:iseneca/models/datos_visita.dart';
+
 import 'package:provider/provider.dart';
-import 'package:iseneca/models/Student.dart';
 import 'package:iseneca/providers/alumno_provider.dart';
 import 'package:iseneca/providers/servicio_provider.dart';
 import 'package:url_launcher/url_launcher_string.dart';
@@ -16,13 +18,13 @@ class ServicioInformesDetallesScreen extends StatefulWidget {
 
 class _ServicioInformesDetallesScreenState
     extends State<ServicioInformesDetallesScreen> {
-  List<Student> alumno = [];
-  List<String> fechas = [];
+  AlumnoServcio? alumno;
+  List<DatosVisita> datosVisitas = [];
 
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
+    WidgetsBinding.instance!.addPostFrameCallback((_) {
       _loadData();
     });
   }
@@ -32,38 +34,27 @@ class _ServicioInformesDetallesScreenState
         ModalRoute.of(context)!.settings.arguments as String;
     final servicioProvider =
         Provider.of<ServicioProvider>(context, listen: false);
-    final alumnadoProvider =
-        Provider.of<ProviderAlumno>(context, listen: false);
-    final httpClient = http.Client();
 
-    List<Student> listaAlumnos = [];
+    List<AlumnoServcio> listaAlumnos = [];
 
     try {
-      listaAlumnos = await alumnadoProvider.fetchStudents(httpClient);
+      listaAlumnos = servicioProvider.getAlumnoFromMap();
+      // Buscar el alumno con el nombre proporcionado
+      alumno = listaAlumnos
+          .firstWhere((alumno) => alumno.nombreCompleto == nombreParametro);
+
+      if (alumno != null) {
+        // Si se encuentra el alumno, obtener sus datos de visita
+        datosVisitas =
+            servicioProvider.getDatosVisitasFromMap(alumno!.alumnoId);
+      }
     } catch (e) {
       print('Error loading students: $e');
     }
 
-    List<Student> tempAlumno = [];
-    for (int i = 0; i < listaAlumnos.length; i++) {
-      if (listaAlumnos[i].name == nombreParametro) {
-        tempAlumno.add(listaAlumnos[i]);
-      }
-    }
-
-    final listadoAlumnosDetalles = servicioProvider.listadoAlumnosServicio;
-    List<String> tempFechas = [];
-
-    for (int i = 0; i < listadoAlumnosDetalles.length; i++) {
-      if (listadoAlumnosDetalles[i].nombreAlumno == nombreParametro) {
-        tempFechas.add(
-            "${listadoAlumnosDetalles[i].fechaEntrada} - ${listadoAlumnosDetalles[i].fechaSalida}");
-      }
-    }
-
     setState(() {
-      alumno = tempAlumno;
-      fechas = tempFechas;
+      // Actualiza fechas con los datos de visita específicos del alumno
+      datosVisitas = datosVisitas;
     });
   }
 
@@ -77,85 +68,76 @@ class _ServicioInformesDetallesScreenState
         title: Text(nombreParametro.toString().toUpperCase()),
       ),
       body: SafeArea(
-        child: Stack(children: [
-          ListView.builder(
-            itemCount: fechas.length,
-            itemBuilder: (BuildContext context, int index) {
-              return ListTile(
-                title: Text(fechas[index]),
-              );
-            },
-          ),
-          Container(
-              padding: const EdgeInsets.only(right: 20, bottom: 20),
-              alignment: Alignment.bottomRight,
-              child: FloatingActionButton(
-                  onPressed: () => _mostrarAlert(context, alumno),
-                  child: const Icon(Icons.person)))
-        ]),
+        child: Stack(
+          children: [
+            ListView.builder(
+              itemCount: datosVisitas.length,
+              itemBuilder: (BuildContext context, int index) {
+                final visita = datosVisitas[index];
+                return ListTile(
+                  title: Text('Fecha: ${visita.horas}'),
+                );
+              },
+            ),
+            if (alumno != null)
+              Container(
+                padding: const EdgeInsets.only(right: 20, bottom: 20),
+                alignment: Alignment.bottomRight,
+                child: FloatingActionButton(
+                  onPressed: () => _mostrarAlert(context, alumno!),
+                  child: const Icon(Icons.person),
+                ),
+              ),
+          ],
+        ),
       ),
     );
   }
 
-  void _mostrarAlert(BuildContext context, List<Student> alumno) {
-    if (alumno.isEmpty) return;
-
-    int numeroTlfAlumno = int.parse(alumno[0].tutorPhone);
-
-    String mailAlumno = alumno[0].tutorEmail;
-
+  void _mostrarAlert(BuildContext context, AlumnoServcio alumno) {
     showDialog(
-        context: context,
-        barrierDismissible: true,
-        builder: (context) {
-          TextStyle textStyle = const TextStyle(fontWeight: FontWeight.bold);
-
-          return AlertDialog(
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(20.0)),
-            title: Text(alumno[0].name),
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: <Widget>[
-                const Divider(
-                  color: Colors.black,
-                  thickness: 1,
-                ),
-                Row(
-                  children: [
-                    Text("Correo: ", style: textStyle),
-                    Text(mailAlumno),
-                    IconButton(
-                        onPressed: () {
-                          launchUrlString("mailto: $mailAlumno");
-                        },
-                        icon: const Icon(Icons.mail),
-                        color: Colors.blue),
-                  ],
-                ),
-                Row(
-                  children: [
-                    Text(
-                      "Teléfono Alumno: ",
-                      style: textStyle,
-                    ),
-                    Text("$numeroTlfAlumno"),
-                    IconButton(
-                        onPressed: () {
-                          launchUrlString("tel:$numeroTlfAlumno");
-                        },
-                        icon: const Icon(Icons.phone),
-                        color: Colors.blue),
-                  ],
-                ),
-              ],
-            ),
-            actions: [
-              TextButton(
-                  onPressed: () => Navigator.pop(context),
-                  child: const Text("Cerrar")),
+      context: context,
+      barrierDismissible: true,
+      builder: (context) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20.0),
+          ),
+          title: Text(alumno.nombreCompleto),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              const Divider(
+                color: Colors.black,
+                thickness: 1,
+              ),
+              Text(
+                'Historial de Visitas:',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              SizedBox(
+                height: 8,
+              ),
+              ListView.builder(
+                shrinkWrap: true,
+                itemCount: datosVisitas.length,
+                itemBuilder: (context, index) {
+                  final visita = datosVisitas[index];
+                  return ListTile(
+                    title: Text(visita.horas),
+                  );
+                },
+              ),
             ],
-          );
-        });
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text("Cerrar"),
+            ),
+          ],
+        );
+      },
+    );
   }
 }

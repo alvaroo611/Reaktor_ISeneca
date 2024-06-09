@@ -28,5 +28,5 @@ class AlumnoServcio {
   }
 
   // Obtener el nombre completo del alumno
-  String get nombreCompleto => '$nombre,$apellidos';
+  String get nombreCompleto => '$nombre $apellidos';
 }
