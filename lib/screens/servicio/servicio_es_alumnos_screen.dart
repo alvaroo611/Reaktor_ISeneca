@@ -60,10 +60,7 @@ class _ServicioESAlumnosScreenState extends State<ServicioESAlumnosScreen> {
         print('Error al registrar la visita: ${response.statusCode}');
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Error al registrar la visita ')),
-          
         );
-        // Esperar 2 segundos antes de proceder.
-  Future.delayed(const Duration(seconds: 2));
       }
     } catch (e) {
       print('Excepción al registrar la visita: $e');
@@ -88,15 +85,12 @@ class _ServicioESAlumnosScreenState extends State<ServicioESAlumnosScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Datos registrados correctamente.')),
         );
-        // Esperar 2 segundos antes de proceder.
-  Future.delayed(const Duration(seconds: 2));
+
         print('Regreso registrado correctamente');
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Error al registrar el regreso')),
         );
-        // Esperar 2 segundos antes de proceder.
-  Future.delayed(const Duration(seconds: 2));
       }
     } catch (e) {
       print('Excepción al registrar el regreso: $e');
@@ -113,11 +107,10 @@ class _ServicioESAlumnosScreenState extends State<ServicioESAlumnosScreen> {
       // Activar el indicador de carga
       isLoading = true;
     });
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _postVisit(student.name, student.lastName, student.course);
-      Future.delayed(const Duration(seconds: 2));
-      _postReturnBathroom(student.name, student.lastName, student.course);
-    });
+
+    await _postVisit(student.name, student.lastName, student.course);
+    Future.delayed(const Duration(seconds: 2));
+    await _postReturnBathroom(student.name, student.lastName, student.course);
 
     setState(() {
       // Desactivar el indicador de carga después de que se completan las operaciones
