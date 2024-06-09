@@ -107,9 +107,11 @@ class _ServicioESAlumnosScreenState extends State<ServicioESAlumnosScreen> {
       // Activar el indicador de carga
       isLoading = true;
     });
-
-    await _postVisit(student.name, student.lastName, student.course);
-    await _postReturnBathroom(student.name, student.lastName, student.course);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _postVisit(student.name, student.lastName, student.course);
+      Future.delayed(const Duration(seconds: 2));
+      _postReturnBathroom(student.name, student.lastName, student.course);
+    });
 
     setState(() {
       // Desactivar el indicador de carga después de que se completan las operaciones
