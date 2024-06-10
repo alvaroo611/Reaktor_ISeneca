@@ -48,15 +48,19 @@ class ServicioProvider extends ChangeNotifier {
 
   List<DatosVisita> getDatosVisitasFromMap(int alumnoId) {
     List<DatosVisita> datosVisitas = [];
+    Set<int> alumnoIdsUnicos = Set<int>();
 
     visitas.forEach((mapa) {
       if (mapa.containsKey("alumno") && mapa.containsKey("horas")) {
         AlumnoServcio alumno = AlumnoServcio.fromJson(mapa['alumno']);
         String horas = mapa['horas'];
 
-        // Verificar si el ID del alumno coincide
-        if (alumno.alumnoId == alumnoId) {
+        // Verificar si el ID del alumno coincide y si ya no ha sido añadido
+        if (alumno.alumnoId == alumnoId &&
+            !alumnoIdsUnicos.contains(alumno.alumnoId)) {
           datosVisitas.add(DatosVisita(alumno: alumno, horas: horas));
+          alumnoIdsUnicos
+              .add(alumno.alumnoId); // Añadir el ID al conjunto de IDs únicos
         }
       }
     });
