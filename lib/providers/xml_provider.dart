@@ -28,7 +28,7 @@ class XmlProvider extends ChangeNotifier {
 
       // Enviar la solicitud HTTP con Dio
       Response response = await _dio.post(
-        WEB_URL+'/horarios/send/xml',
+        WEB_URL + '/horarios/send/xml',
         data: formData,
         options: Options(
           headers: {
@@ -38,7 +38,7 @@ class XmlProvider extends ChangeNotifier {
       );
 
       if (response.statusCode == 200) {
-        print("Datos cargados correctamente");
+        print("Datos cargados correctamente de xml");
         LogService.logInfo("Datos cargados correctamente ");
         notifyListeners();
       } else {
