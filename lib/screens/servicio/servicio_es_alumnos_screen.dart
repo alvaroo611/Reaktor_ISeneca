@@ -74,7 +74,7 @@ class _ServicioESAlumnosScreenState extends State<ServicioESAlumnosScreen> {
     try {
       final response = await httpClient.post(
         Uri.parse(WEB_URL +
-            '/horarios/student/visita/bathroom?name=$name&lastName=$lastName&course=$course'),
+            '/horarios/student/regreso/bathroom?name=$name&lastName=$lastName&course=$course'),
       );
 
       if (response.statusCode == 200) {
