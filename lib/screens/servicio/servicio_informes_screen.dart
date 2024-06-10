@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:iseneca/models/alumno_servcio.dart';
@@ -34,39 +33,28 @@ class _ServicioInformesScreenState extends State<ServicioInformesScreen> {
     return num;
   }
 
-  void mostrarFecha(String modo, BuildContext context) {
-    showCupertinoModalPopup(
+  Future<void> mostrarFecha(String modo, BuildContext context) async {
+    DateTime? pickedDate = await showDatePicker(
       context: context,
-      builder: (BuildContext builder) {
-        return Container(
-          color: Colors.white,
-          height: MediaQuery.of(context).copyWith().size.height * 0.25,
-          child: CupertinoDatePicker(
-            initialDateTime: DateTime.now(),
-            minimumYear: DateTime.now().year - 1,
-            maximumYear: DateTime.now().year,
-            mode: CupertinoDatePickerMode.date,
-            onDateTimeChanged: (value) {
-              String valueFormat = DateFormat("dd-MM-yyyy").format(value);
-
-              if (modo == "Inicio") {
-                setState(() {
-                  selectedDateInicio = valueFormat;
-                  dateTimeInicio = value;
-                });
-              }
-
-              if (modo == "Fin") {
-                setState(() {
-                  selectedDateFin = valueFormat;
-                  dateTimeFin = value;
-                });
-              }
-            },
-          ),
-        );
-      },
+      initialDate: DateTime.now(),
+      firstDate: DateTime.now().subtract(const Duration(days: 365)),
+      lastDate: DateTime.now(),
     );
+
+    if (pickedDate != null) {
+      String valueFormat = DateFormat("dd-MM-yyyy").format(pickedDate);
+
+      setState(() {
+        if (modo == "Inicio") {
+          selectedDateInicio = valueFormat;
+          dateTimeInicio = pickedDate;
+          fechaInicioEscogida = true;
+        } else if (modo == "Fin") {
+          selectedDateFin = valueFormat;
+          dateTimeFin = pickedDate;
+        }
+      });
+    }
   }
 
   Future<void> _loadNombresAlumnos(
@@ -127,7 +115,6 @@ class _ServicioInformesScreenState extends State<ServicioInformesScreen> {
                           suffixIcon: IconButton(
                             icon: const Icon(Icons.calendar_today_rounded),
                             onPressed: () {
-                              fechaInicioEscogida = true;
                               mostrarFecha("Inicio", context);
                             },
                           ),
@@ -156,11 +143,17 @@ class _ServicioInformesScreenState extends State<ServicioInformesScreen> {
                 ),
                 ElevatedButton(
                   onPressed: () {
-                    DateTime fechaInicio =
-                        DateFormat("dd-MM-yyyy").parse(selectedDateInicio);
-                    DateTime fechaFin =
-                        DateFormat("dd-MM-yyyy").parse(selectedDateFin);
-                    _loadNombresAlumnos(context, fechaInicio, fechaFin);
+                    if (selectedDateInicio.isNotEmpty &&
+                        selectedDateFin.isNotEmpty) {
+                      DateTime fechaInicio =
+                          DateFormat("dd-MM-yyyy").parse(selectedDateInicio);
+                      DateTime fechaFin =
+                          DateFormat("dd-MM-yyyy").parse(selectedDateFin);
+                      _loadNombresAlumnos(context, fechaInicio, fechaFin);
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text('Seleccione ambas fechas.')));
+                    }
                   },
                   child: const Text("MOSTRAR"),
                 ),

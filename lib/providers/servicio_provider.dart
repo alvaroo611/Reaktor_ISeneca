@@ -39,20 +39,20 @@ class ServicioProvider extends ChangeNotifier {
   }
 
   List<String> getNombresAlumnosFromMap() {
-    // Crear una lista para almacenar los nombres de los estudiantes
-    List<String> nombresAlumnos = [];
+    // Crear un Set para almacenar los nombres de los estudiantes sin duplicados
+    Set<String> nombresAlumnos = {};
 
     // Iterar sobre cada mapa en la lista
     visitas.forEach((mapa) {
-      // Obtener el nombre del estudiante del mapa y agregarlo a la lista
+      // Obtener el nombre del estudiante del mapa y agregarlo al Set
       if (mapa.containsKey("alumno")) {
         AlumnoServcio alumno = AlumnoServcio.fromJson(mapa["alumno"]);
         nombresAlumnos.add(alumno.nombreCompleto);
       }
     });
 
-    // Devolver la lista de nombres de los estudiantes
-    return nombresAlumnos;
+    // Convertir el Set a una lista y devolverla
+    return nombresAlumnos.toList();
   }
 
   List<DatosVisita> getDatosVisitasFromMap(int alumnoId) {
