@@ -17,20 +17,13 @@ class ServicioESAlumnosScreen extends StatefulWidget {
 }
 
 class _ServicioESAlumnosScreenState extends State<ServicioESAlumnosScreen> {
-  bool botonPulsado = true;
-  bool fechaCompleta = false;
-  String fechaFormatoEntrada = "";
-  String fechaFormatoSalida = "";
-  String nombreAlumno = "";
+  bool isLoading = false;
   final servicioProvider = ServicioProvider();
 
   final controllerTextoNombreAlumno = TextEditingController();
-  final controllerTextoFechaEntrada = TextEditingController();
-  final controllerTextoFechaSalida = TextEditingController();
-
   late ProviderAlumno _providerAlumno;
   late List<Student> listadoAlumnos2 = [];
-  bool isLoading = false;
+
   @override
   void initState() {
     super.initState();
@@ -56,23 +49,23 @@ class _ServicioESAlumnosScreenState extends State<ServicioESAlumnosScreen> {
       );
 
       if (response.statusCode == 200) {
-        print('Visita registrada correctamente');
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Visita registrada correctamente')),
+        );
       } else if (response.statusCode == 500) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Error servidor')),
         );
       } else {
-        print('Error al registrar la visita: ${response.statusCode}');
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error al registrar la visita ')),
+          SnackBar(content: Text('Error al registrar la visita')),
         );
       }
     } catch (e) {
-      print('Excepción al registrar la visita: $e');
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Error al registrar la visita')),
       );
-    } finally {}
+    }
   }
 
   Future<void> _postReturnBathroom(
@@ -86,43 +79,22 @@ class _ServicioESAlumnosScreenState extends State<ServicioESAlumnosScreen> {
 
       if (response.statusCode == 200) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Datos registrados correctamente.')),
+          SnackBar(content: Text('Regreso registrado correctamente')),
         );
-
-        print('Regreso registrado correctamente');
       } else if (response.statusCode == 500) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Error servidor')),
         );
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Error al registrar el regreso')),
+          SnackBar(content: Text('Error al registrar el regreso')),
         );
       }
     } catch (e) {
-      print('Excepción al registrar el regreso: $e');
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Error al registrar el regreso')),
+        SnackBar(content: Text('Error al registrar el regreso')),
       );
-    } finally {}
-  }
-
-  Future<void> _confirmAction(Student student) async {
-    setState(() {
-      // Activar el indicador de carga
-      isLoading = true;
-    });
-
-    await _postVisit(student.name, student.lastName, student.course);
-
-    await _postReturnBathroom(student.name, student.lastName, student.course);
-
-    setState(() {
-      // Desactivar el indicador de carga después de que se completan las operaciones
-      isLoading = false;
-    });
-
-    // Cerrar el diálogo modal
+    }
   }
 
   @override
@@ -145,27 +117,18 @@ class _ServicioESAlumnosScreenState extends State<ServicioESAlumnosScreen> {
                   return GestureDetector(
                     onTap: () {
                       controllerTextoNombreAlumno.clear();
-                      controllerTextoFechaEntrada.clear();
-                      controllerTextoFechaSalida.clear();
+                      controllerTextoNombreAlumno.text =
+                          listadoAlumnos[index].name;
 
                       showGeneralDialog(
                         context: context,
                         barrierDismissible: false,
                         transitionDuration: const Duration(milliseconds: 300),
                         pageBuilder: (context, animation, secondaryAnimation) {
-                          controllerTextoNombreAlumno.text =
-                              listadoAlumnos[index].name;
-                          controllerTextoFechaEntrada.text =
-                              DateFormat("dd-MM-yyyy hh:mm")
-                                  .format(DateTime.now());
-
                           return dialogoBotones(
-                            fechaCompleta,
                             servicioProvider,
                             controllerTextoNombreAlumno,
-                            controllerTextoFechaEntrada,
-                            controllerTextoFechaSalida,
-                            listadoAlumnos[index].course,
+                            listadoAlumnos[index],
                           );
                         },
                       );
@@ -184,45 +147,19 @@ class _ServicioESAlumnosScreenState extends State<ServicioESAlumnosScreen> {
   }
 
   Widget dialogoBotones(
-    bool fechaCompleta,
     ServicioProvider servicio,
     TextEditingController controllerTextoNombreAlumno,
-    TextEditingController controllerTextoFechaEntrada,
-    TextEditingController controllerTextoFechaSalida,
-    String curso,
+    Student student,
   ) {
     return Scaffold(
       appBar: AppBar(
         leading: TextButton(
           onPressed: () => Navigator.pop(context),
           child: const Text(
-            "CANCELAR",
-            style: TextStyle(color: Color.fromARGB(255, 255, 0, 0)),
+            "Volver",
+            style: TextStyle(color: Color.fromARGB(255, 0, 20, 197)),
           ),
         ),
-        leadingWidth: 90,
-        actions: [
-          TextButton(
-            onPressed: () {
-              if (fechaCompleta) {
-                servicio.setAlumnosServicio(
-                  controllerTextoNombreAlumno.text,
-                  controllerTextoFechaEntrada.text,
-                  controllerTextoFechaSalida.text,
-                );
-                final student = listadoAlumnos2
-                    .firstWhere((student) => student.course == curso);
-                _confirmAction(student);
-
-                Navigator.pop(context);
-              }
-            },
-            child: const Text(
-              "CONFIRMAR",
-              style: TextStyle(color: Color.fromARGB(255, 95, 168, 0)),
-            ),
-          ),
-        ],
       ),
       body: SafeArea(
         child: Container(
@@ -240,37 +177,21 @@ class _ServicioESAlumnosScreenState extends State<ServicioESAlumnosScreen> {
                 ),
                 enabled: false,
               ),
-              const Divider(color: Colors.transparent),
-              TextField(
-                controller: controllerTextoFechaEntrada,
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10)),
-                  labelText: "FECHA ENTRADA",
-                  labelStyle: const TextStyle(fontWeight: FontWeight.bold),
-                ),
+              const SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: () async {
+                  await _postVisit(
+                      student.name, student.lastName, student.course);
+                },
+                child: const Text("IDA"),
               ),
-              const Divider(color: Colors.transparent),
-              TextField(
-                controller: controllerTextoFechaSalida,
-                decoration: InputDecoration(
-                  suffixIcon: IconButton(
-                    onPressed: () {
-                      setState(() {
-                        fechaCompleta = true;
-                        debugPrint("fechaCompleta: $fechaCompleta");
-                        controllerTextoFechaSalida.text =
-                            DateFormat("dd-MM-yyyy hh:mm")
-                                .format(DateTime.now());
-                      });
-                    },
-                    icon: const Icon(Icons.add_box_outlined, size: 30),
-                  ),
-                  border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10)),
-                  labelText: "FECHA SALIDA",
-                  labelStyle: const TextStyle(fontWeight: FontWeight.bold),
-                ),
+              const SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: () async {
+                  await _postReturnBathroom(
+                      student.name, student.lastName, student.course);
+                },
+                child: const Text("VUELTA"),
               ),
             ],
           ),

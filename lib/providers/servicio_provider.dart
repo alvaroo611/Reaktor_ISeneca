@@ -11,17 +11,26 @@ import 'dart:convert';
 class ServicioProvider extends ChangeNotifier {
   List<Servicio> listadoAlumnosServicio = [];
   late List<Map<String, dynamic>> visitas;
+
   List<AlumnoServcio> getAlumnoFromMap() {
     // Crear una lista para almacenar los estudiantes
     List<AlumnoServcio> alumnos = [];
+    // Crear un conjunto para almacenar los IDs únicos de los alumnos
+    Set<int> alumnoIdsUnicos = Set<int>();
 
     // Iterar sobre cada mapa en la lista
     visitas.forEach((mapa) {
       // Verificar si el mapa contiene la clave "alumno"
       if (mapa.containsKey("alumno")) {
-        // Convertir el valor del mapa a una instancia de AlumnoServicio y agregarla a la lista
+        // Convertir el valor del mapa a una instancia de AlumnoServcio
         AlumnoServcio alumno = AlumnoServcio.fromJson(mapa["alumno"]);
-        alumnos.add(alumno);
+
+        // Verificar si el ID del alumno ya está en el conjunto de IDs únicos
+        if (!alumnoIdsUnicos.contains(alumno.alumnoId)) {
+          // Agregar el alumno a la lista y su ID al conjunto de IDs únicos
+          alumnos.add(alumno);
+          alumnoIdsUnicos.add(alumno.alumnoId);
+        }
       }
     });
 
@@ -48,19 +57,15 @@ class ServicioProvider extends ChangeNotifier {
 
   List<DatosVisita> getDatosVisitasFromMap(int alumnoId) {
     List<DatosVisita> datosVisitas = [];
-    Set<int> alumnoIdsUnicos = Set<int>();
 
     visitas.forEach((mapa) {
       if (mapa.containsKey("alumno") && mapa.containsKey("horas")) {
         AlumnoServcio alumno = AlumnoServcio.fromJson(mapa['alumno']);
         String horas = mapa['horas'];
 
-        // Verificar si el ID del alumno coincide y si ya no ha sido añadido
-        if (alumno.alumnoId == alumnoId &&
-            !alumnoIdsUnicos.contains(alumno.alumnoId)) {
+        // Verificar si el ID del alumno coincide
+        if (alumno.alumnoId == alumnoId) {
           datosVisitas.add(DatosVisita(alumno: alumno, horas: horas));
-          alumnoIdsUnicos
-              .add(alumno.alumnoId); // Añadir el ID al conjunto de IDs únicos
         }
       }
     });
