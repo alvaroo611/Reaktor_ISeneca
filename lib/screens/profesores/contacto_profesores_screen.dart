@@ -1,40 +1,55 @@
 import 'dart:math';
-
 import 'package:flutter/material.dart';
+import 'package:iseneca/models/profesor.dart';
+import 'package:iseneca/providers/profesores_provider.dart';
 import 'package:provider/provider.dart';
-import 'package:iseneca/models/centro_response.dart';
-import 'package:iseneca/providers/providers.dart';
-//import 'package:url_launcher/url_launcher.dart';
-import 'package:url_launcher/url_launcher_string.dart';
 
-class ContactoProfesoresScreen extends StatelessWidget {
+import 'package:iseneca/providers/providers.dart';
+import 'package:url_launcher/url_launcher_string.dart';
+import 'package:http/http.dart' as http;
+
+class ContactoProfesoresScreen extends StatefulWidget {
   const ContactoProfesoresScreen({super.key});
 
   @override
+  _ContactoProfesoresScreenState createState() =>
+      _ContactoProfesoresScreenState();
+}
+
+class _ContactoProfesoresScreenState extends State<ContactoProfesoresScreen> {
+  List<Profesor> listaOrdenadaProfesores = [];
+  bool isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchProfesores();
+  }
+
+  Future<void> _fetchProfesores() async {
+    final centroProvider =
+        Provider.of<ProfesoresProvider>(context, listen: false);
+    final listadoProfesores =
+        await centroProvider.fetchProfesores(http.Client());
+
+    setState(() {
+      listaOrdenadaProfesores = listadoProfesores;
+      listaOrdenadaProfesores.sort((a, b) => a.nombre.compareTo(b.nombre));
+      isLoading = false;
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final centroProvider = Provider.of<CentroProvider>(context);
-    final listadoProfesores = centroProvider.listaProfesores;
-    List<Profesor> listaOrdenadaProfesores = [];
-
-    listaOrdenadaProfesores.addAll(listadoProfesores);
-
-    listaOrdenadaProfesores.sort(((a, b) => a.nombre.compareTo(b.nombre)));
-
     return Scaffold(
       appBar: AppBar(
         title: const Text("CONTACTO"),
       ),
-      body: Center(
-        child: ListView.builder(
-            itemCount: listaOrdenadaProfesores.length,
-            itemBuilder: (BuildContext context, int index) {
-              if (index == 0) {
-                return GestureDetector(
-                    onTap: () {
-                      null;
-                    },
-                    child: Container());
-              } else {
+      body: isLoading
+          ? Center(child: CircularProgressIndicator())
+          : ListView.builder(
+              itemCount: listaOrdenadaProfesores.length,
+              itemBuilder: (BuildContext context, int index) {
                 return GestureDetector(
                   onTap: () {
                     _mostrarAlert(context, index, listaOrdenadaProfesores);
@@ -43,9 +58,8 @@ class ContactoProfesoresScreen extends StatelessWidget {
                     title: Text(listaOrdenadaProfesores[index].nombre),
                   ),
                 );
-              }
-            }),
-      ),
+              },
+            ),
     );
   }
 }
@@ -56,62 +70,66 @@ void _mostrarAlert(
   const String mailProfesor = "Correo@gmail.com";
 
   showDialog(
-      context: context,
-      barrierDismissible: true,
-      builder: (context) {
-        TextStyle textStyle = const TextStyle(fontWeight: FontWeight.bold);
+    context: context,
+    barrierDismissible: true,
+    builder: (context) {
+      TextStyle textStyle = const TextStyle(fontWeight: FontWeight.bold);
 
-        return AlertDialog(
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
-          title: Text(listadoProfesores[index].nombre),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              const Divider(
-                color: Colors.black,
-                thickness: 1,
-              ),
-              Row(
-                children: [
-                  Text(
-                    "Correo: ",
-                    style: textStyle,
-                  ),
-                  const Text(mailProfesor),
-                  IconButton(
-                    onPressed: () {
-                      launchUrlString("mailto: $mailProfesor");
-                    },
-                    icon: const Icon(Icons.mail),
-                    color: Colors.blue,
-                  ),
-                ],
-              ),
-              Row(
-                children: [
-                  Text(
-                    "Teléfono: ",
-                    style: textStyle,
-                  ),
-                  Text("$numeroTlf"),
-                  IconButton(
-                      onPressed: () {
-                        launchUrlString("tel:$numeroTlf");
-                      },
-                      icon: const Icon(Icons.phone),
-                      color: Colors.blue)
-                ],
-              )
-            ],
-          ),
-          actions: [
-            TextButton(
-                onPressed: () => Navigator.pop(context), child: const Text("Cerrar")),
+      return AlertDialog(
+        shape:
+            RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
+        title: Text(listadoProfesores[index].nombre),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            const Divider(
+              color: Colors.black,
+              thickness: 1,
+            ),
+            Row(
+              children: [
+                Text(
+                  "Correo: ",
+                  style: textStyle,
+                ),
+                const Text(mailProfesor),
+                IconButton(
+                  onPressed: () {
+                    launchUrlString("mailto:$mailProfesor");
+                  },
+                  icon: const Icon(Icons.mail),
+                  color: Colors.blue,
+                ),
+              ],
+            ),
+            Row(
+              children: [
+                Text(
+                  "Teléfono: ",
+                  style: textStyle,
+                ),
+                Text("$numeroTlf"),
+                IconButton(
+                  onPressed: () {
+                    launchUrlString("tel:$numeroTlf");
+                  },
+                  icon: const Icon(Icons.phone),
+                  color: Colors.blue,
+                )
+              ],
+            )
           ],
-        );
-      });
+        ),
+        actions: [
+          TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text("Cerrar")),
+        ],
+      );
+    },
+  );
 }
+
 
 /*List<String> _averiguarHorario(BuildContext context, int tramo, int id_prof) {
   final centroProvider = Provider.of<CentroProvider>(context, listen: false);
