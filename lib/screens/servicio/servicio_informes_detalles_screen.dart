@@ -72,10 +72,35 @@ class _ServicioInformesDetallesScreenState
           children: [
             ListView.builder(
               itemCount: datosVisitas.length,
+              padding: const EdgeInsets.all(10),
               itemBuilder: (BuildContext context, int index) {
                 final visita = datosVisitas[index];
-                return ListTile(
-                  title: Text('Fecha: ${visita.horas}'),
+                return Card(
+                  margin: const EdgeInsets.symmetric(vertical: 10),
+                  elevation: 5,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(15),
+                  ),
+                  child: ListTile(
+                    leading: Icon(Icons.date_range, color: Colors.blueAccent),
+                    title: Text(
+                      'Fecha: ${visita.dia}',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black87,
+                      ),
+                    ),
+                    subtitle: Row(
+                      children: [
+                        Icon(Icons.access_time, color: Colors.blueAccent),
+                        SizedBox(width: 5),
+                        Text(
+                          'Hora: ${visita.horas}',
+                          style: TextStyle(color: Colors.black54),
+                        ),
+                      ],
+                    ),
+                  ),
                 );
               },
             ),

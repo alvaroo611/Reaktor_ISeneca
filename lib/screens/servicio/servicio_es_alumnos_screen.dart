@@ -2,9 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:iseneca/config/constantas.dart';
 import 'package:iseneca/models/Student.dart';
 import 'package:iseneca/providers/alumno_provider.dart';
-import 'package:provider/provider.dart';
-
 import 'package:iseneca/providers/providers.dart';
+import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
 
@@ -18,6 +17,8 @@ class ServicioESAlumnosScreen extends StatefulWidget {
 
 class _ServicioESAlumnosScreenState extends State<ServicioESAlumnosScreen> {
   bool isLoading = false;
+  bool isIdaPressed = false;
+  bool isVueltaPressed = false;
   final servicioProvider = ServicioProvider();
 
   final controllerTextoNombreAlumno = TextEditingController();
@@ -179,18 +180,46 @@ class _ServicioESAlumnosScreenState extends State<ServicioESAlumnosScreen> {
               ),
               const SizedBox(height: 20),
               ElevatedButton(
-                onPressed: () async {
-                  await _postVisit(
-                      student.name, student.lastName, student.course);
-                },
+                onPressed: isIdaPressed
+                    ? null
+                    : () async {
+                        await _postVisit(
+                            student.name, student.lastName, student.course);
+                        setState(() {
+                          isIdaPressed = true;
+                        });
+                      },
+                style: ElevatedButton.styleFrom(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 50, vertical: 20),
+                  textStyle: const TextStyle(
+                      fontSize: 18, fontWeight: FontWeight.bold),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
                 child: const Text("IDA"),
               ),
               const SizedBox(height: 20),
               ElevatedButton(
-                onPressed: () async {
-                  await _postReturnBathroom(
-                      student.name, student.lastName, student.course);
-                },
+                onPressed: isVueltaPressed
+                    ? null
+                    : () async {
+                        await _postReturnBathroom(
+                            student.name, student.lastName, student.course);
+                        setState(() {
+                          isVueltaPressed = true;
+                        });
+                      },
+                style: ElevatedButton.styleFrom(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 50, vertical: 20),
+                  textStyle: const TextStyle(
+                      fontSize: 18, fontWeight: FontWeight.bold),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
                 child: const Text("VUELTA"),
               ),
             ],

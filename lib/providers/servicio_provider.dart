@@ -62,10 +62,10 @@ class ServicioProvider extends ChangeNotifier {
       if (mapa.containsKey("alumno") && mapa.containsKey("horas")) {
         AlumnoServcio alumno = AlumnoServcio.fromJson(mapa['alumno']);
         String horas = mapa['horas'];
-
+        String dia = mapa['dia'];
         // Verificar si el ID del alumno coincide
         if (alumno.alumnoId == alumnoId) {
-          datosVisitas.add(DatosVisita(alumno: alumno, horas: horas));
+          datosVisitas.add(DatosVisita(alumno: alumno, horas: horas, dia: dia));
         }
       }
     });
