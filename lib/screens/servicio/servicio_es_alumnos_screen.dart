@@ -107,7 +107,14 @@ class _ServicioESAlumnosScreenState extends State<ServicioESAlumnosScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(nombreCurso),
+        backgroundColor: Colors.blue,
+        title: Text(
+          nombreCurso,
+          style: const TextStyle(
+            fontWeight: FontWeight.bold,
+            color: Colors.black87,
+          ),
+        ),
       ),
       body: isLoading
           ? const Center(child: CircularProgressIndicator())

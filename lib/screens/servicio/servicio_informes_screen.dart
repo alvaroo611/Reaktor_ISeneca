@@ -92,7 +92,14 @@ class _ServicioInformesScreenState extends State<ServicioInformesScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text("INFORMES"),
+        backgroundColor: Colors.blue,
+        title: const Text(
+          "INFORMES",
+          style: const TextStyle(
+            fontWeight: FontWeight.bold,
+            color: Colors.black87,
+          ),
+        ),
       ),
       body: Column(
         children: [

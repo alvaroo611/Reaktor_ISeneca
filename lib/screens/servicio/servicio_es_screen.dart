@@ -38,7 +38,14 @@ class _ServicioESScreenState extends State<ServicioESScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("CURSOS"),
+        backgroundColor: Colors.blue,
+        title: const Text(
+          "CURSOS",
+          style: const TextStyle(
+            fontWeight: FontWeight.bold,
+            color: Colors.black87,
+          ),
+        ),
       ),
       body: Center(
         child: listadoAlumnos.isEmpty

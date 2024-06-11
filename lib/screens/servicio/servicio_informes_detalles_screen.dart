@@ -65,7 +65,14 @@ class _ServicioInformesDetallesScreenState
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(nombreParametro.toString().toUpperCase()),
+        backgroundColor: Colors.blue,
+        title: Text(
+          nombreParametro.toString().toUpperCase(),
+          style: const TextStyle(
+            fontWeight: FontWeight.bold,
+            color: Colors.black87,
+          ),
+        ),
       ),
       body: SafeArea(
         child: Stack(

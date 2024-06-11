@@ -8,7 +8,14 @@ class ServicioScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("BAÑO"),
+        backgroundColor: Colors.blue,
+        title: const Text(
+          "BAÑO",
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            color: Colors.black87,
+          ),
+        ),
       ),
       body: ListView(
         children: [
