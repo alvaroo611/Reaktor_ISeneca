@@ -32,9 +32,29 @@ class _ContactoProfesoresScreenState extends State<ContactoProfesoresScreen> {
     final listadoProfesores =
         await centroProvider.fetchProfesores(http.Client());
 
+    // Conjunto para almacenar nombres y apellidos únicos
+    Set<String> nombresApellidosSet = Set();
+
+    // Lista para almacenar los profesores sin nombres y apellidos repetidos
+    List<Profesor> listaProfesoresSinRepetidos = [];
+
+    for (Profesor profesor in listadoProfesores) {
+      // Concatenar nombre y apellido del profesor
+      String nombreCompleto = profesor.nombreCompleto;
+
+      // Verificar si el nombre y apellido ya están en el conjunto
+      if (!nombresApellidosSet.contains(nombreCompleto)) {
+        // Agregar el nombre y apellido al conjunto y a la lista
+        nombresApellidosSet.add(nombreCompleto);
+        listaProfesoresSinRepetidos.add(profesor);
+      }
+    }
+
+    // Ordenar la lista por nombre
+    listaProfesoresSinRepetidos.sort((a, b) => a.nombre.compareTo(b.nombre));
+
     setState(() {
-      listaOrdenadaProfesores = listadoProfesores;
-      listaOrdenadaProfesores.sort((a, b) => a.nombre.compareTo(b.nombre));
+      listaOrdenadaProfesores = listaProfesoresSinRepetidos;
       isLoading = false;
     });
   }
@@ -43,7 +63,14 @@ class _ContactoProfesoresScreenState extends State<ContactoProfesoresScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Colors.blue,
         title: const Text("CONTACTO"),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
       ),
       body: isLoading
           ? Center(child: CircularProgressIndicator())
@@ -55,7 +82,7 @@ class _ContactoProfesoresScreenState extends State<ContactoProfesoresScreen> {
                     _mostrarAlert(context, index, listaOrdenadaProfesores);
                   },
                   child: ListTile(
-                    title: Text(listaOrdenadaProfesores[index].nombre),
+                    title: Text(listaOrdenadaProfesores[index].nombreCompleto),
                   ),
                 );
               },

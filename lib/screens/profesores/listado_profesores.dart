@@ -13,6 +13,13 @@ class ListadoProfesores extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
+        backgroundColor: Colors.blue,
         title: const Text("LISTA PROFESORES"),
       ),
       body: ListView.builder(
@@ -169,7 +176,8 @@ void _mostrarLocalizacion(BuildContext context, int index) {
             ),
             actions: [
               TextButton(
-                  onPressed: () => Navigator.pop(context), child: const Text("OK")),
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text("OK")),
             ],
           );
         });
@@ -191,7 +199,8 @@ void _mostrarLocalizacion(BuildContext context, int index) {
             ),
             actions: [
               TextButton(
-                  onPressed: () => Navigator.pop(context), child: const Text("OK")),
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text("OK")),
             ],
           );
         });

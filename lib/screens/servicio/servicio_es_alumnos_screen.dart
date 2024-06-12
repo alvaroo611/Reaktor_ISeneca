@@ -115,6 +115,12 @@ class _ServicioESAlumnosScreenState extends State<ServicioESAlumnosScreen> {
             color: Colors.black87,
           ),
         ),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
       ),
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
@@ -159,14 +165,15 @@ class _ServicioESAlumnosScreenState extends State<ServicioESAlumnosScreen> {
     TextEditingController controllerTextoNombreAlumno,
     Student student,
   ) {
+    final double maxWidth = MediaQuery.of(context).size.width * 0.8;
     return Scaffold(
       appBar: AppBar(
-        leading: TextButton(
-          onPressed: () => Navigator.pop(context),
-          child: const Text(
-            "Volver",
-            style: TextStyle(color: Color.fromARGB(255, 0, 20, 197)),
-          ),
+        backgroundColor: Colors.blue,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.pop(context);
+          },
         ),
       ),
       body: SafeArea(
@@ -179,55 +186,81 @@ class _ServicioESAlumnosScreenState extends State<ServicioESAlumnosScreen> {
                 controller: controllerTextoNombreAlumno,
                 decoration: InputDecoration(
                   border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10)),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
                   labelText: "NOMBRE ALUMNO",
                   labelStyle: const TextStyle(fontWeight: FontWeight.bold),
                 ),
                 enabled: false,
               ),
-              const SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: isIdaPressed
-                    ? null
-                    : () async {
-                        await _postVisit(
-                            student.name, student.lastName, student.course);
-                        setState(() {
-                          isIdaPressed = true;
-                        });
-                      },
-                style: ElevatedButton.styleFrom(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 50, vertical: 20),
-                  textStyle: const TextStyle(
-                      fontSize: 18, fontWeight: FontWeight.bold),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                ),
-                child: const Text("IDA"),
+              SizedBox(
+                height: MediaQuery.of(context).size.height * 0.1,
               ),
-              const SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: isVueltaPressed
-                    ? null
-                    : () async {
-                        await _postReturnBathroom(
-                            student.name, student.lastName, student.course);
-                        setState(() {
-                          isVueltaPressed = true;
-                        });
-                      },
-                style: ElevatedButton.styleFrom(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 50, vertical: 20),
-                  textStyle: const TextStyle(
-                      fontSize: 18, fontWeight: FontWeight.bold),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
+              Expanded(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Container(
+                      constraints: BoxConstraints(
+                          maxWidth: maxWidth), // Ancho máximo del botón
+                      child: RawMaterialButton(
+                        onPressed: () async {
+                          if (!isIdaPressed) {
+                            await _postVisit(
+                                student.name, student.lastName, student.course);
+                            setState(() {
+                              isIdaPressed = true;
+                            });
+                          }
+                        },
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(
+                              50), // Haciendo el botón completamente circular
+                        ),
+                        fillColor: Colors.blue,
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 50, vertical: 20),
+                        child: const Text(
+                          "IDA",
+                          style: TextStyle(
+                              color: Colors.black87,
+                              fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                    ),
+                    SizedBox(
+                      height: MediaQuery.of(context).size.height * 0.1,
+                    ),
+                    Container(
+                      constraints: BoxConstraints(
+                          maxWidth: maxWidth), // Ancho máximo del botón
+                      child: RawMaterialButton(
+                        onPressed: () async {
+                          if (!isVueltaPressed) {
+                            await _postReturnBathroom(
+                                student.name, student.lastName, student.course);
+                            setState(() {
+                              isVueltaPressed = true;
+                            });
+                          }
+                        },
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(
+                              50), // Haciendo el botón completamente circular
+                        ),
+                        fillColor: Colors.red,
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 50, vertical: 20),
+                        child: const Text(
+                          "VUELTA",
+                          style: TextStyle(
+                              color: Colors.black87,
+                              fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
-                child: const Text("VUELTA"),
               ),
             ],
           ),

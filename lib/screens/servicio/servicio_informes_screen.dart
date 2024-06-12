@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
 import 'package:iseneca/models/alumno_servcio.dart';
 import 'package:provider/provider.dart';
@@ -95,10 +96,16 @@ class _ServicioInformesScreenState extends State<ServicioInformesScreen> {
         backgroundColor: Colors.blue,
         title: const Text(
           "INFORMES",
-          style: const TextStyle(
+          style: TextStyle(
             fontWeight: FontWeight.bold,
             color: Colors.black87,
           ),
+        ),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.pop(context);
+          },
         ),
       ),
       body: Column(
@@ -148,6 +155,7 @@ class _ServicioInformesScreenState extends State<ServicioInformesScreen> {
                     ),
                   ],
                 ),
+                const SizedBox(height: 15),
                 ElevatedButton(
                   onPressed: () {
                     if (selectedDateInicio.isNotEmpty &&
@@ -162,8 +170,15 @@ class _ServicioInformesScreenState extends State<ServicioInformesScreen> {
                           SnackBar(content: Text('Seleccione ambas fechas.')));
                     }
                   },
-                  child: const Text("MOSTRAR"),
+                  child: const Text(
+                    "MOSTRAR",
+                    style: const TextStyle(
+                      color: Color.fromARGB(255, 0, 0, 0),
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
                 ),
+                const SizedBox(height: 5.0),
               ],
             ),
           ),
@@ -182,8 +197,32 @@ class _ServicioInformesScreenState extends State<ServicioInformesScreen> {
                           arguments: listaAlumnosNombres[index],
                         ),
                         child: ListTile(
-                          title: Text(listaAlumnosNombres[index]),
-                          subtitle: Text("Cantidad $repeticiones"),
+                          leading: const CircleAvatar(
+                            backgroundColor: Colors.blueAccent,
+                            child: Icon(
+                              Icons.person,
+                              color: Colors.white,
+                            ),
+                          ),
+                          title: Text(
+                            listaAlumnosNombres[index],
+                            style: const TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                              color: Color.fromARGB(255, 8, 8, 8),
+                            ),
+                          ),
+                          subtitle: Text(
+                            "Veces visitado hoy:  $repeticiones",
+                            style: const TextStyle(
+                              fontSize: 16,
+                              color: Color.fromARGB(227, 112, 121, 131),
+                            ),
+                          ),
+                          trailing: const Icon(
+                            Icons.arrow_forward,
+                            color: Colors.blueAccent,
+                          ),
                         ),
                       );
                     },

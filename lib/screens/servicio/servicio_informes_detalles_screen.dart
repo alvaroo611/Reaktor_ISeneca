@@ -73,6 +73,12 @@ class _ServicioInformesDetallesScreenState
             color: Colors.black87,
           ),
         ),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
       ),
       body: SafeArea(
         child: Stack(
