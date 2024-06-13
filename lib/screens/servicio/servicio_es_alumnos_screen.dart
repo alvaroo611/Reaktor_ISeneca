@@ -266,12 +266,16 @@ class _ServicioESAlumnosScreenState extends State<ServicioESAlumnosScreen> {
                         fillColor: Colors.blue,
                         padding: const EdgeInsets.symmetric(
                             horizontal: 120, vertical: 60),
-                        child: const Text(
-                          "IDA",
-                          style: TextStyle(
-                              color: Colors.black87,
-                              fontSize: 24,
-                              fontWeight: FontWeight.bold),
+                        child: const FittedBox(
+                          // FittedBox para ajustar el texto
+                          fit: BoxFit.scaleDown,
+                          child: Text(
+                            "IDA",
+                            style: TextStyle(
+                                color: Colors.black87,
+                                fontSize: 24,
+                                fontWeight: FontWeight.bold),
+                          ),
                         ),
                       ),
                     ),
@@ -299,12 +303,16 @@ class _ServicioESAlumnosScreenState extends State<ServicioESAlumnosScreen> {
                         fillColor: Colors.red,
                         padding: const EdgeInsets.symmetric(
                             horizontal: 120, vertical: 60),
-                        child: const Text(
-                          "VUELTA",
-                          style: TextStyle(
-                              color: Colors.black87,
-                              fontSize: 24,
-                              fontWeight: FontWeight.bold),
+                        child: const FittedBox(
+                          // FittedBox para ajustar el texto
+                          fit: BoxFit.scaleDown,
+                          child: Text(
+                            "VUELTA",
+                            style: TextStyle(
+                                color: Colors.black87,
+                                fontSize: 24,
+                                fontWeight: FontWeight.bold),
+                          ),
                         ),
                       ),
                     ),

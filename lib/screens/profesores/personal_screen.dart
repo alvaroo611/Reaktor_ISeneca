@@ -28,8 +28,8 @@ class PersonalScreen extends StatelessWidget {
                 borderRadius: BorderRadius.circular(15),
               ),
               child: const ListTile(
-                leading:
-                    FaIcon(FontAwesomeIcons.peopleCarry, color: Colors.blue),
+                leading: FaIcon(FontAwesomeIcons.peopleCarry,
+                    color: Color.fromARGB(255, 96, 153, 199)),
                 title: Text(
                   'Mail/Teléfono',
                   style: TextStyle(
@@ -50,8 +50,8 @@ class PersonalScreen extends StatelessWidget {
                 borderRadius: BorderRadius.circular(15),
               ),
               child: const ListTile(
-                leading:
-                    FaIcon(FontAwesomeIcons.peopleCarry, color: Colors.blue),
+                leading: FaIcon(FontAwesomeIcons.peopleCarry,
+                    color: Color.fromARGB(255, 96, 153, 199)),
                 title: Text(
                   'Profesores',
                   style: TextStyle(
@@ -72,8 +72,8 @@ class PersonalScreen extends StatelessWidget {
                 borderRadius: BorderRadius.circular(15),
               ),
               child: const ListTile(
-                leading:
-                    FaIcon(FontAwesomeIcons.peopleCarry, color: Colors.blue),
+                leading: FaIcon(FontAwesomeIcons.peopleCarry,
+                    color: Color.fromARGB(255, 96, 153, 199)),
                 title: Text(
                   'Horario',
                   style: TextStyle(

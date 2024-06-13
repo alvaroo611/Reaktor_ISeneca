@@ -28,7 +28,8 @@ class ServicioScreen extends StatelessWidget {
                 borderRadius: BorderRadius.circular(15),
               ),
               child: ListTile(
-                leading: FaIcon(FontAwesomeIcons.doorOpen, color: Colors.blue),
+                leading: FaIcon(FontAwesomeIcons.doorOpen,
+                    color: Color.fromARGB(255, 96, 153, 199)),
                 title: Text(
                   'Entrada/Salida',
                   style: TextStyle(
@@ -52,7 +53,7 @@ class ServicioScreen extends StatelessWidget {
               ),
               child: ListTile(
                 leading: const FaIcon(FontAwesomeIcons.solidFolder,
-                    color: Colors.blue),
+                    color: Color.fromARGB(255, 96, 153, 199)),
                 title: const Text(
                   'Informes',
                   style: TextStyle(
