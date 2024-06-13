@@ -80,27 +80,58 @@ class _ContactoProfesoresScreenState extends State<ContactoProfesoresScreen> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.blue,
-        title: TextField(
-          controller: _controller,
-          onChanged: (value) {
-            filterSearchResults(value);
-          },
-          style: TextStyle(color: Colors.white),
-          decoration: InputDecoration(
-            hintText: "Buscar profesor...",
-            hintStyle: TextStyle(color: Colors.white54),
-            border: InputBorder.none,
-          ),
+        title: Row(
+          children: [
+            const Text(
+              'Contacto profesor',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const Spacer(),
+            Container(
+              width: 200, // Ajusta el ancho según sea necesario
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(30),
+                border: Border.all(color: Colors.grey),
+              ),
+              child: Row(
+                children: [
+                  const Padding(
+                    padding: EdgeInsets.all(8.0),
+                    child: Icon(Icons.search, color: Colors.white),
+                  ),
+                  Expanded(
+                    child: TextField(
+                      controller: _controller,
+                      onChanged: (value) {
+                        filterSearchResults(value);
+                      },
+                      style: const TextStyle(color: Colors.white),
+                      decoration: const InputDecoration(
+                        hintText: 'Buscar profesor...',
+                        hintStyle: TextStyle(color: Colors.white54),
+                        border: InputBorder.none,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
         ),
         leading: IconButton(
-          icon: Icon(Icons.arrow_back),
+          icon: const Icon(Icons.arrow_back),
           onPressed: () {
             Navigator.pop(context);
           },
         ),
       ),
       body: isLoading
-          ? Center(child: CircularProgressIndicator())
+          ? const Center(child: CircularProgressIndicator())
           : ListView.builder(
               padding: const EdgeInsets.all(10),
               itemCount: profesoresFiltrados.length,
@@ -142,7 +173,7 @@ class _ContactoProfesoresScreenState extends State<ContactoProfesoresScreen> {
                           color: Color.fromARGB(255, 8, 8, 8),
                         ),
                       ),
-                      trailing: Icon(
+                      trailing: const Icon(
                         Icons.arrow_forward,
                         color: Colors.blueAccent,
                       ),

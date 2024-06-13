@@ -50,17 +50,50 @@ class _ServicioESScreenState extends State<ServicioESScreen> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.blue,
-        title: TextField(
-          controller: _controller,
-          onChanged: (value) {
-            filterSearchResults(value);
-          },
-          style: const TextStyle(color: Colors.white),
-          decoration: const InputDecoration(
-            hintText: "Buscar curso...",
-            hintStyle: TextStyle(color: Colors.white54),
-            border: InputBorder.none,
-          ),
+        title: Row(
+          children: [
+            const Text(
+              'Cursos',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const Spacer(),
+            Expanded(
+              child: Container(
+                margin: const EdgeInsets.only(left: 20),
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(30),
+                  border: Border.all(color: Colors.grey),
+                ),
+                child: Row(
+                  children: [
+                    const Padding(
+                      padding: EdgeInsets.all(8.0),
+                      child: Icon(Icons.search, color: Colors.white),
+                    ),
+                    Expanded(
+                      child: TextField(
+                        controller: _controller,
+                        onChanged: (value) {
+                          filterSearchResults(value);
+                        },
+                        style: const TextStyle(color: Colors.white),
+                        decoration: const InputDecoration(
+                          hintText: 'Buscar curso...',
+                          hintStyle: TextStyle(color: Colors.white54),
+                          border: InputBorder.none,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
         ),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),

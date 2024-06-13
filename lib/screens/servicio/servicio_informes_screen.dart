@@ -111,12 +111,47 @@ class _ServicioInformesScreenState extends State<ServicioInformesScreen> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.blue,
-        title: const Text(
-          "INFORMES",
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            color: Colors.black87,
-          ),
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            const Text(
+              "INFORMES",
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
+            ),
+            Container(
+              width: anchura * 0.3, // Ajusta el ancho según sea necesario
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(30),
+                border: Border.all(color: Colors.grey),
+              ),
+              child: Row(
+                children: [
+                  const Padding(
+                    padding: EdgeInsets.all(8.0),
+                    child: Icon(Icons.search, color: Colors.white),
+                  ),
+                  Expanded(
+                    child: TextField(
+                      controller: _controller,
+                      onChanged: (value) {
+                        filtrarAlumnos(value);
+                      },
+                      style: const TextStyle(color: Colors.white),
+                      decoration: const InputDecoration(
+                        hintText: 'Buscar alumno...',
+                        hintStyle: TextStyle(color: Colors.white54),
+                        border: InputBorder.none,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
         ),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
@@ -184,7 +219,9 @@ class _ServicioInformesScreenState extends State<ServicioInformesScreen> {
                       _loadNombresAlumnos(context, fechaInicio, fechaFin);
                     } else {
                       ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text('Seleccione ambas fechas.')));
+                        const SnackBar(
+                            content: Text('Seleccione ambas fechas.')),
+                      );
                     }
                   },
                   child: const Text(
@@ -196,33 +233,6 @@ class _ServicioInformesScreenState extends State<ServicioInformesScreen> {
                   ),
                 ),
                 const SizedBox(height: 7),
-                Container(
-                  margin: const EdgeInsets.symmetric(horizontal: 20),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(30),
-                    border: Border.all(color: Colors.grey),
-                  ),
-                  child: Row(
-                    children: [
-                      const Padding(
-                        padding: EdgeInsets.all(8.0),
-                        child: Icon(Icons.search),
-                      ),
-                      Expanded(
-                        child: TextField(
-                          controller: _controller,
-                          onChanged: (value) {
-                            filtrarAlumnos(value);
-                          },
-                          decoration: const InputDecoration(
-                            border: InputBorder.none,
-                            hintText: 'Buscar alumno...',
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
               ],
             ),
           ),
@@ -235,49 +245,50 @@ class _ServicioInformesScreenState extends State<ServicioInformesScreen> {
                       repeticiones =
                           _calcularRepeticiones(listaAlumnosNombres[index]);
                       return GestureDetector(
-                          onTap: () => Navigator.pushNamed(
-                                context,
-                                "servicio_informes_detalles_screen",
-                                arguments: listaAlumnosNombres[index],
-                              ),
-                          child: Container(
-                            margin: const EdgeInsets.symmetric(
-                                vertical: 5, horizontal: 10),
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              border: Border.all(
-                                  color: Colors.blueAccent, width: 2),
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            child: ListTile(
-                              leading: CircleAvatar(
-                                backgroundColor: Colors.blue,
-                                child: Text(
-                                  alumnosFiltrados[index][0],
-                                  style: const TextStyle(color: Colors.white),
-                                ),
-                              ),
-                              title: Text(
-                                alumnosFiltrados[index],
-                                style: const TextStyle(
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.bold,
-                                  color: Color.fromARGB(255, 8, 8, 8),
-                                ),
-                              ),
-                              subtitle: Text(
-                                "Veces visitado hoy: $repeticiones",
-                                style: const TextStyle(
-                                  fontSize: 16,
-                                  color: Color.fromARGB(227, 112, 121, 131),
-                                ),
-                              ),
-                              trailing: const Icon(
-                                Icons.arrow_forward,
-                                color: Colors.blueAccent,
+                        onTap: () => Navigator.pushNamed(
+                          context,
+                          "servicio_informes_detalles_screen",
+                          arguments: listaAlumnosNombres[index],
+                        ),
+                        child: Container(
+                          margin: const EdgeInsets.symmetric(
+                              vertical: 5, horizontal: 10),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            border:
+                                Border.all(color: Colors.blueAccent, width: 2),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: ListTile(
+                            leading: CircleAvatar(
+                              backgroundColor: Colors.blue,
+                              child: Text(
+                                alumnosFiltrados[index][0],
+                                style: const TextStyle(color: Colors.white),
                               ),
                             ),
-                          ));
+                            title: Text(
+                              alumnosFiltrados[index],
+                              style: const TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                                color: Color.fromARGB(255, 8, 8, 8),
+                              ),
+                            ),
+                            subtitle: Text(
+                              "Veces visitado hoy: $repeticiones",
+                              style: const TextStyle(
+                                fontSize: 16,
+                                color: Color.fromARGB(227, 112, 121, 131),
+                              ),
+                            ),
+                            trailing: const Icon(
+                              Icons.arrow_forward,
+                              color: Colors.blueAccent,
+                            ),
+                          ),
+                        ),
+                      );
                     },
                   ),
           ),

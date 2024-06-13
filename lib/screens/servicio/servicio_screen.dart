@@ -13,7 +13,7 @@ class ServicioScreen extends StatelessWidget {
           "BAÑO",
           style: TextStyle(
             fontWeight: FontWeight.bold,
-            color: Colors.black87,
+            color: Colors.white,
           ),
         ),
       ),

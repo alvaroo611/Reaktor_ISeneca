@@ -112,7 +112,7 @@ class _ServicioESAlumnosScreenState extends State<ServicioESAlumnosScreen> {
           nombreCurso,
           style: const TextStyle(
             fontWeight: FontWeight.bold,
-            color: Colors.black87,
+            color: Colors.white,
           ),
         ),
         leading: IconButton(

@@ -70,7 +70,7 @@ class _ServicioInformesDetallesScreenState
           nombreParametro.toString().toUpperCase(),
           style: const TextStyle(
             fontWeight: FontWeight.bold,
-            color: Colors.black87,
+            color: Colors.white,
           ),
         ),
         leading: IconButton(

@@ -15,7 +15,13 @@ class PersonalScreen extends StatelessWidget {
           },
         ),
         backgroundColor: Colors.blue,
-        title: const Text("PERSONAL"),
+        title: const Text(
+          "PERSONAL",
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
+        ),
       ),
       body: ListView(
         children: [
