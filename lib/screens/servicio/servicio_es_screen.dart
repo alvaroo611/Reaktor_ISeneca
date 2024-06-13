@@ -3,7 +3,6 @@ import 'package:provider/provider.dart';
 import 'package:iseneca/providers/alumno_provider.dart';
 import 'package:iseneca/models/Student.dart';
 import 'package:http/http.dart' as http;
-import 'package:iseneca/config/constantas.dart';
 
 class ServicioESScreen extends StatefulWidget {
   const ServicioESScreen({Key? key}) : super(key: key);
@@ -16,6 +15,7 @@ class _ServicioESScreenState extends State<ServicioESScreen> {
   late ProviderAlumno _providerAlumno;
   late List<Student> listadoAlumnos = [];
   late List<String> cursosUnicos = [];
+  TextEditingController _controller = TextEditingController();
 
   @override
   void initState() {
@@ -34,16 +34,32 @@ class _ServicioESScreenState extends State<ServicioESScreen> {
     });
   }
 
+  void filterSearchResults(String query) {
+    setState(() {
+      cursosUnicos = listadoAlumnos
+          .where((student) =>
+              student.course.toLowerCase().contains(query.toLowerCase()))
+          .map((student) => student.course)
+          .toSet()
+          .toList();
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.blue,
-        title: const Text(
-          "CURSOS",
-          style: const TextStyle(
-            fontWeight: FontWeight.bold,
-            color: Colors.black87,
+        title: TextField(
+          controller: _controller,
+          onChanged: (value) {
+            filterSearchResults(value);
+          },
+          style: const TextStyle(color: Colors.white),
+          decoration: const InputDecoration(
+            hintText: "Buscar curso...",
+            hintStyle: TextStyle(color: Colors.white54),
+            border: InputBorder.none,
           ),
         ),
         leading: IconButton(
@@ -55,7 +71,7 @@ class _ServicioESScreenState extends State<ServicioESScreen> {
       ),
       body: Center(
         child: listadoAlumnos.isEmpty
-            ? CircularProgressIndicator()
+            ? const CircularProgressIndicator()
             : ListView.builder(
                 itemCount: cursosUnicos.length,
                 itemBuilder: (BuildContext context, int index) {
@@ -68,8 +84,33 @@ class _ServicioESScreenState extends State<ServicioESScreen> {
                         arguments: curso,
                       );
                     },
-                    child: ListTile(
-                      title: Text(curso),
+                    child: Card(
+                      elevation: 5,
+                      margin: const EdgeInsets.symmetric(
+                          vertical: 10, horizontal: 20),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(15),
+                      ),
+                      child: ListTile(
+                        contentPadding: const EdgeInsets.symmetric(
+                            vertical: 15, horizontal: 20),
+                        leading: const Icon(
+                          Icons.school,
+                          color: Colors.blue,
+                          size: 30,
+                        ),
+                        title: Text(
+                          curso,
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 18,
+                          ),
+                        ),
+                        trailing: const Icon(
+                          Icons.arrow_forward_ios,
+                          color: Colors.blue,
+                        ),
+                      ),
                     ),
                   );
                 },

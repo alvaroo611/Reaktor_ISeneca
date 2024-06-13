@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
 import 'package:iseneca/models/alumno_servcio.dart';
 import 'package:provider/provider.dart';
@@ -23,7 +22,8 @@ class _ServicioInformesScreenState extends State<ServicioInformesScreen> {
   DateTime dateTimeFin = DateTime.now();
   int size = 0;
   int repeticiones = 0;
-
+  TextEditingController _controller = TextEditingController();
+  List<String> alumnosFiltrados = []; // Lista para almacenar alumnos filtrados
   int _calcularRepeticiones(String nombreAlumno) {
     int num = 0;
     for (int i = 0; i < listaAlumnosFechas.length; i++) {
@@ -73,6 +73,7 @@ class _ServicioInformesScreenState extends State<ServicioInformesScreen> {
           context);
       setState(() {
         listaAlumnosNombres = servicioProvider.getNombresAlumnosFromMap();
+        alumnosFiltrados = listaAlumnosNombres;
         listaAlumnosFechas = servicioProvider.getAlumnoFromMap();
         size = listaAlumnosNombres.length;
       });
@@ -85,6 +86,22 @@ class _ServicioInformesScreenState extends State<ServicioInformesScreen> {
         isLoading = false;
       });
     }
+  }
+
+  // Método para filtrar alumnos por nombre
+  void filtrarAlumnos(String query) {
+    setState(() {
+      if (query.isEmpty) {
+        // Si la consulta está vacía, mostramos todos los alumnos
+        alumnosFiltrados = List.from(listaAlumnosNombres);
+      } else {
+        // Filtramos la lista de alumnos según la consulta
+        alumnosFiltrados = listaAlumnosNombres
+            .where(
+                (nombre) => nombre.toLowerCase().contains(query.toLowerCase()))
+            .toList();
+      }
+    });
   }
 
   @override
@@ -172,13 +189,40 @@ class _ServicioInformesScreenState extends State<ServicioInformesScreen> {
                   },
                   child: const Text(
                     "MOSTRAR",
-                    style: const TextStyle(
+                    style: TextStyle(
                       color: Color.fromARGB(255, 0, 0, 0),
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                 ),
-                const SizedBox(height: 5.0),
+                const SizedBox(height: 7),
+                Container(
+                  margin: const EdgeInsets.symmetric(horizontal: 20),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(30),
+                    border: Border.all(color: Colors.grey),
+                  ),
+                  child: Row(
+                    children: [
+                      const Padding(
+                        padding: EdgeInsets.all(8.0),
+                        child: Icon(Icons.search),
+                      ),
+                      Expanded(
+                        child: TextField(
+                          controller: _controller,
+                          onChanged: (value) {
+                            filtrarAlumnos(value);
+                          },
+                          decoration: const InputDecoration(
+                            border: InputBorder.none,
+                            hintText: 'Buscar alumno...',
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
               ],
             ),
           ),
@@ -186,45 +230,54 @@ class _ServicioInformesScreenState extends State<ServicioInformesScreen> {
             child: isLoading
                 ? const Center(child: CircularProgressIndicator())
                 : ListView.builder(
-                    itemCount: size,
+                    itemCount: alumnosFiltrados.length,
                     itemBuilder: (context, index) {
                       repeticiones =
                           _calcularRepeticiones(listaAlumnosNombres[index]);
                       return GestureDetector(
-                        onTap: () => Navigator.pushNamed(
-                          context,
-                          "servicio_informes_detalles_screen",
-                          arguments: listaAlumnosNombres[index],
-                        ),
-                        child: ListTile(
-                          leading: const CircleAvatar(
-                            backgroundColor: Colors.blueAccent,
-                            child: Icon(
-                              Icons.person,
+                          onTap: () => Navigator.pushNamed(
+                                context,
+                                "servicio_informes_detalles_screen",
+                                arguments: listaAlumnosNombres[index],
+                              ),
+                          child: Container(
+                            margin: const EdgeInsets.symmetric(
+                                vertical: 5, horizontal: 10),
+                            decoration: BoxDecoration(
                               color: Colors.white,
+                              border: Border.all(
+                                  color: Colors.blueAccent, width: 2),
+                              borderRadius: BorderRadius.circular(10),
                             ),
-                          ),
-                          title: Text(
-                            listaAlumnosNombres[index],
-                            style: const TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                              color: Color.fromARGB(255, 8, 8, 8),
+                            child: ListTile(
+                              leading: CircleAvatar(
+                                backgroundColor: Colors.blue,
+                                child: Text(
+                                  alumnosFiltrados[index][0],
+                                  style: const TextStyle(color: Colors.white),
+                                ),
+                              ),
+                              title: Text(
+                                alumnosFiltrados[index],
+                                style: const TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                  color: Color.fromARGB(255, 8, 8, 8),
+                                ),
+                              ),
+                              subtitle: Text(
+                                "Veces visitado hoy: $repeticiones",
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                  color: Color.fromARGB(227, 112, 121, 131),
+                                ),
+                              ),
+                              trailing: const Icon(
+                                Icons.arrow_forward,
+                                color: Colors.blueAccent,
+                              ),
                             ),
-                          ),
-                          subtitle: Text(
-                            "Veces visitado hoy:  $repeticiones",
-                            style: const TextStyle(
-                              fontSize: 16,
-                              color: Color.fromARGB(227, 112, 121, 131),
-                            ),
-                          ),
-                          trailing: const Icon(
-                            Icons.arrow_forward,
-                            color: Colors.blueAccent,
-                          ),
-                        ),
-                      );
+                          ));
                     },
                   ),
           ),

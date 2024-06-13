@@ -126,6 +126,7 @@ class _ServicioESAlumnosScreenState extends State<ServicioESAlumnosScreen> {
           ? const Center(child: CircularProgressIndicator())
           : Center(
               child: ListView.builder(
+                padding: const EdgeInsets.all(10),
                 itemCount: listadoAlumnos.length,
                 itemBuilder: (BuildContext context, int index) {
                   return GestureDetector(
@@ -147,10 +148,51 @@ class _ServicioESAlumnosScreenState extends State<ServicioESAlumnosScreen> {
                         },
                       );
                     },
-                    child: ListTile(
-                      title: Text(
-                        '${listadoAlumnos[index].name} ${listadoAlumnos[index].lastName}',
-                        style: const TextStyle(fontSize: 20),
+                    child: Container(
+                      margin: const EdgeInsets.symmetric(vertical: 10),
+                      padding: const EdgeInsets.all(15),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        border: Border.all(color: Colors.blueAccent, width: 2),
+                        borderRadius: BorderRadius.circular(15),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey.withOpacity(0.5),
+                            spreadRadius: 3,
+                            blurRadius: 7,
+                            offset: const Offset(
+                                0, 3), // changes position of shadow
+                          ),
+                        ],
+                      ),
+                      child: Row(
+                        children: [
+                          Container(
+                            margin: const EdgeInsets.symmetric(
+                                vertical: 5, horizontal: 10),
+                            child: CircleAvatar(
+                              backgroundColor: Colors.blue,
+                              child: Text(
+                                listadoAlumnos[index].name[0],
+                                style: TextStyle(color: Colors.white),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 15),
+                          Expanded(
+                            child: Text(
+                              '${listadoAlumnos[index].name} ${listadoAlumnos[index].lastName}',
+                              style: const TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                          const Icon(
+                            Icons.arrow_forward,
+                            color: Colors.blueAccent,
+                          ),
+                        ],
                       ),
                     ),
                   );
@@ -182,6 +224,9 @@ class _ServicioESAlumnosScreenState extends State<ServicioESAlumnosScreen> {
           color: Colors.white,
           child: Column(
             children: [
+              SizedBox(
+                height: MediaQuery.of(context).size.height * 0.05,
+              ),
               TextField(
                 controller: controllerTextoNombreAlumno,
                 decoration: InputDecoration(
@@ -194,7 +239,8 @@ class _ServicioESAlumnosScreenState extends State<ServicioESAlumnosScreen> {
                 enabled: false,
               ),
               SizedBox(
-                height: MediaQuery.of(context).size.height * 0.1,
+                height: MediaQuery.of(context).size.height *
+                    0.01, // Espacio entre el campo de texto y los botones
               ),
               Expanded(
                 child: Column(
@@ -202,7 +248,8 @@ class _ServicioESAlumnosScreenState extends State<ServicioESAlumnosScreen> {
                   children: [
                     Container(
                       constraints: BoxConstraints(
-                          maxWidth: maxWidth), // Ancho máximo del botón
+                          maxWidth: MediaQuery.of(context).size.width *
+                              0.8), // Ancho máximo del botón
                       child: RawMaterialButton(
                         onPressed: () async {
                           if (!isIdaPressed) {
@@ -214,26 +261,28 @@ class _ServicioESAlumnosScreenState extends State<ServicioESAlumnosScreen> {
                           }
                         },
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(
-                              50), // Haciendo el botón completamente circular
+                          borderRadius: BorderRadius.circular(50),
                         ),
                         fillColor: Colors.blue,
                         padding: const EdgeInsets.symmetric(
-                            horizontal: 50, vertical: 20),
+                            horizontal: 120, vertical: 60),
                         child: const Text(
                           "IDA",
                           style: TextStyle(
                               color: Colors.black87,
+                              fontSize: 24,
                               fontWeight: FontWeight.bold),
                         ),
                       ),
                     ),
                     SizedBox(
-                      height: MediaQuery.of(context).size.height * 0.1,
+                      height: MediaQuery.of(context).size.height *
+                          0.05, // Espacio entre los botones
                     ),
                     Container(
                       constraints: BoxConstraints(
-                          maxWidth: maxWidth), // Ancho máximo del botón
+                          maxWidth: MediaQuery.of(context).size.width *
+                              0.8), // Ancho máximo del botón
                       child: RawMaterialButton(
                         onPressed: () async {
                           if (!isVueltaPressed) {
@@ -245,16 +294,16 @@ class _ServicioESAlumnosScreenState extends State<ServicioESAlumnosScreen> {
                           }
                         },
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(
-                              50), // Haciendo el botón completamente circular
+                          borderRadius: BorderRadius.circular(50),
                         ),
                         fillColor: Colors.red,
                         padding: const EdgeInsets.symmetric(
-                            horizontal: 50, vertical: 20),
+                            horizontal: 120, vertical: 60),
                         child: const Text(
                           "VUELTA",
                           style: TextStyle(
                               color: Colors.black87,
+                              fontSize: 24,
                               fontWeight: FontWeight.bold),
                         ),
                       ),

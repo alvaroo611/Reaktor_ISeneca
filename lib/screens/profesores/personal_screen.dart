@@ -22,30 +22,66 @@ class PersonalScreen extends StatelessWidget {
           GestureDetector(
             onTap: () =>
                 Navigator.pushNamed(context, "contacto_profesores_screen"),
-            child: const Card(
-              child: ListTile(
-                leading: FaIcon(FontAwesomeIcons.peopleCarry),
-                title: Text('Mail/Teléfono'),
+            child: Card(
+              elevation: 5,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(15),
+              ),
+              child: const ListTile(
+                leading:
+                    FaIcon(FontAwesomeIcons.peopleCarry, color: Colors.blue),
+                title: Text(
+                  'Mail/Teléfono',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 18,
+                  ),
+                ),
+                trailing: Icon(Icons.arrow_forward_ios, color: Colors.blue),
               ),
             ),
           ),
           GestureDetector(
             onTap: () =>
                 Navigator.pushNamed(context, "listado_profesores_screen"),
-            child: const Card(
-              child: ListTile(
-                leading: FaIcon(FontAwesomeIcons.peopleCarry),
-                title: Text('Profesores'),
+            child: Card(
+              elevation: 5,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(15),
+              ),
+              child: const ListTile(
+                leading:
+                    FaIcon(FontAwesomeIcons.peopleCarry, color: Colors.blue),
+                title: Text(
+                  'Profesores',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 18,
+                  ),
+                ),
+                trailing: Icon(Icons.arrow_forward_ios, color: Colors.blue),
               ),
             ),
           ),
           GestureDetector(
             onTap: () =>
                 Navigator.pushNamed(context, "horario_profesores_screen"),
-            child: const Card(
-              child: ListTile(
-                leading: FaIcon(FontAwesomeIcons.peopleCarry),
-                title: Text('Horario'),
+            child: Card(
+              elevation: 5,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(15),
+              ),
+              child: const ListTile(
+                leading:
+                    FaIcon(FontAwesomeIcons.peopleCarry, color: Colors.blue),
+                title: Text(
+                  'Horario',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 18,
+                  ),
+                ),
+                trailing: Icon(Icons.arrow_forward_ios, color: Colors.blue),
               ),
             ),
           )

@@ -3,13 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:iseneca/models/profesor.dart';
 import 'package:iseneca/providers/profesores_provider.dart';
 import 'package:provider/provider.dart';
-
-import 'package:iseneca/providers/providers.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 import 'package:http/http.dart' as http;
 
 class ContactoProfesoresScreen extends StatefulWidget {
-  const ContactoProfesoresScreen({super.key});
+  const ContactoProfesoresScreen({Key? key}) : super(key: key);
 
   @override
   _ContactoProfesoresScreenState createState() =>
@@ -18,7 +16,9 @@ class ContactoProfesoresScreen extends StatefulWidget {
 
 class _ContactoProfesoresScreenState extends State<ContactoProfesoresScreen> {
   List<Profesor> listaOrdenadaProfesores = [];
+  List<Profesor> profesoresFiltrados = [];
   bool isLoading = true;
+  TextEditingController _controller = TextEditingController();
 
   @override
   void initState() {
@@ -55,7 +55,23 @@ class _ContactoProfesoresScreenState extends State<ContactoProfesoresScreen> {
 
     setState(() {
       listaOrdenadaProfesores = listaProfesoresSinRepetidos;
+      profesoresFiltrados =
+          listaOrdenadaProfesores; // Inicialmente muestra todos los profesores
       isLoading = false;
+    });
+  }
+
+  void filterSearchResults(String query) {
+    setState(() {
+      if (query.isEmpty) {
+        profesoresFiltrados = List.from(listaOrdenadaProfesores);
+      } else {
+        profesoresFiltrados = listaOrdenadaProfesores
+            .where((profesor) => profesor.nombreCompleto
+                .toLowerCase()
+                .contains(query.toLowerCase()))
+            .toList();
+      }
     });
   }
 
@@ -64,9 +80,20 @@ class _ContactoProfesoresScreenState extends State<ContactoProfesoresScreen> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.blue,
-        title: const Text("CONTACTO"),
+        title: TextField(
+          controller: _controller,
+          onChanged: (value) {
+            filterSearchResults(value);
+          },
+          style: TextStyle(color: Colors.white),
+          decoration: InputDecoration(
+            hintText: "Buscar profesor...",
+            hintStyle: TextStyle(color: Colors.white54),
+            border: InputBorder.none,
+          ),
+        ),
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
+          icon: Icon(Icons.arrow_back),
           onPressed: () {
             Navigator.pop(context);
           },
@@ -75,114 +102,121 @@ class _ContactoProfesoresScreenState extends State<ContactoProfesoresScreen> {
       body: isLoading
           ? Center(child: CircularProgressIndicator())
           : ListView.builder(
-              itemCount: listaOrdenadaProfesores.length,
+              padding: const EdgeInsets.all(10),
+              itemCount: profesoresFiltrados.length,
               itemBuilder: (BuildContext context, int index) {
                 return GestureDetector(
                   onTap: () {
-                    _mostrarAlert(context, index, listaOrdenadaProfesores);
+                    _mostrarAlert(context, index, profesoresFiltrados);
                   },
-                  child: ListTile(
-                    title: Text(listaOrdenadaProfesores[index].nombreCompleto),
+                  child: Container(
+                    margin: const EdgeInsets.symmetric(vertical: 10),
+                    padding: const EdgeInsets.all(15),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      border: Border.all(color: Colors.blueAccent, width: 2),
+                      borderRadius: BorderRadius.circular(15),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.grey.withOpacity(0.5),
+                          spreadRadius: 3,
+                          blurRadius: 7,
+                          offset: const Offset(0, 3),
+                        ),
+                      ],
+                    ),
+                    child: ListTile(
+                      leading: CircleAvatar(
+                        backgroundColor: Colors.blue,
+                        child: Text(
+                          profesoresFiltrados[index].nombreCompleto[
+                              0], // Muestra la primera letra del nombre
+                          style: const TextStyle(color: Colors.white),
+                        ),
+                      ),
+                      title: Text(
+                        profesoresFiltrados[index].nombreCompleto,
+                        style: const TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: Color.fromARGB(255, 8, 8, 8),
+                        ),
+                      ),
+                      trailing: Icon(
+                        Icons.arrow_forward,
+                        color: Colors.blueAccent,
+                      ),
+                    ),
                   ),
                 );
               },
             ),
     );
   }
-}
 
-void _mostrarAlert(
-    BuildContext context, int index, List<Profesor> listadoProfesores) {
-  final int numeroTlf = (Random().nextInt(99999999) + 600000000);
-  const String mailProfesor = "Correo@gmail.com";
+  void _mostrarAlert(
+      BuildContext context, int index, List<Profesor> listadoProfesores) {
+    final int numeroTlf = (Random().nextInt(99999999) + 600000000);
+    const String mailProfesor = "Correo@gmail.com";
 
-  showDialog(
-    context: context,
-    barrierDismissible: true,
-    builder: (context) {
-      TextStyle textStyle = const TextStyle(fontWeight: FontWeight.bold);
+    showDialog(
+      context: context,
+      barrierDismissible: true,
+      builder: (context) {
+        TextStyle textStyle = const TextStyle(fontWeight: FontWeight.bold);
 
-      return AlertDialog(
-        shape:
-            RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
-        title: Text(listadoProfesores[index].nombre),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: <Widget>[
-            const Divider(
-              color: Colors.black,
-              thickness: 1,
-            ),
-            Row(
-              children: [
-                Text(
-                  "Correo: ",
-                  style: textStyle,
-                ),
-                const Text(mailProfesor),
-                IconButton(
-                  onPressed: () {
-                    launchUrlString("mailto:$mailProfesor");
-                  },
-                  icon: const Icon(Icons.mail),
-                  color: Colors.blue,
-                ),
-              ],
-            ),
-            Row(
-              children: [
-                Text(
-                  "Teléfono: ",
-                  style: textStyle,
-                ),
-                Text("$numeroTlf"),
-                IconButton(
-                  onPressed: () {
-                    launchUrlString("tel:$numeroTlf");
-                  },
-                  icon: const Icon(Icons.phone),
-                  color: Colors.blue,
-                )
-              ],
-            )
+        return AlertDialog(
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
+          title: Text(listadoProfesores[index].nombre),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              const Divider(
+                color: Colors.black,
+                thickness: 1,
+              ),
+              Row(
+                children: [
+                  Text(
+                    "Correo: ",
+                    style: textStyle,
+                  ),
+                  const Text(mailProfesor),
+                  IconButton(
+                    onPressed: () {
+                      launchUrlString("mailto:$mailProfesor");
+                    },
+                    icon: const Icon(Icons.mail),
+                    color: Colors.blue,
+                  ),
+                ],
+              ),
+              Row(
+                children: [
+                  Text(
+                    "Teléfono: ",
+                    style: textStyle,
+                  ),
+                  Text("$numeroTlf"),
+                  IconButton(
+                    onPressed: () {
+                      launchUrlString("tel:$numeroTlf");
+                    },
+                    icon: const Icon(Icons.phone),
+                    color: Colors.blue,
+                  )
+                ],
+              )
+            ],
+          ),
+          actions: [
+            TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text("Cerrar")),
           ],
-        ),
-        actions: [
-          TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text("Cerrar")),
-        ],
-      );
-    },
-  );
-}
-
-
-/*List<String> _averiguarHorario(BuildContext context, int tramo, int id_prof) {
-  final centroProvider = Provider.of<CentroProvider>(context, listen: false);
-  final listadoHorariosProfesores = centroProvider.listaHorariosProfesores;
-  List<String> horario = [];
-
-  for (int i = 0; i < listadoHorariosProfesores.length; i++) {
-    if (int.parse(listadoHorariosProfesores[i].horNumIntPr) == id_prof) {
-      debugPrint("id iguales");
-      for (int j = 0; j < listadoHorariosProfesores[i].actividad.length; j++) {
-        debugPrint("Tramo JSON: ${listadoHorariosProfesores[i].actividad[j].tramo}");
-        debugPrint("Tramo: $tramo");
-
-        if (int.parse(listadoHorariosProfesores[i].actividad[j].tramo) ==
-            tramo) {
-          debugPrint("bruh");
-          horario.add(listadoHorariosProfesores[i].actividad[j].asignatura);
-
-          horario.add(listadoHorariosProfesores[i].actividad[j].aula);
-
-          debugPrint("Asignatura: " + horario[0]);
-          debugPrint("Aula: " + horario[1]);
-        }
-      }
-    }
+        );
+      },
+    );
   }
-
-  return horario;
-}*/
+}

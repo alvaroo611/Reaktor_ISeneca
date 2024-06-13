@@ -18,23 +18,50 @@ class ServicioScreen extends StatelessWidget {
         ),
       ),
       body: ListView(
+        padding: EdgeInsets.all(10),
         children: [
           GestureDetector(
             onTap: () => Navigator.pushNamed(context, "servicio_es_screen"),
-            child: const Card(
+            child: Card(
+              elevation: 5,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(15),
+              ),
               child: ListTile(
-                leading: FaIcon(FontAwesomeIcons.doorOpen),
-                title: Text('Entrada/Salida'),
+                leading: FaIcon(FontAwesomeIcons.doorOpen, color: Colors.blue),
+                title: Text(
+                  'Entrada/Salida',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 18,
+                  ),
+                ),
+                trailing:
+                    const Icon(Icons.arrow_forward_ios, color: Colors.blue),
               ),
             ),
           ),
+          SizedBox(height: 10),
           GestureDetector(
             onTap: () =>
                 Navigator.pushNamed(context, "servicio_informes_screen"),
-            child: const Card(
+            child: Card(
+              elevation: 5,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(15),
+              ),
               child: ListTile(
-                leading: FaIcon(FontAwesomeIcons.solidFolder),
-                title: Text('Informes'),
+                leading: const FaIcon(FontAwesomeIcons.solidFolder,
+                    color: Colors.blue),
+                title: const Text(
+                  'Informes',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 18,
+                  ),
+                ),
+                trailing:
+                    const Icon(Icons.arrow_forward_ios, color: Colors.blue),
               ),
             ),
           ),
