@@ -53,7 +53,7 @@ class ProfesoresProvider extends ChangeNotifier {
       String name, String lastname, BuildContext context) async {
     // Construir la URL completa con los parámetros
     String url =
-        '$WEB_URL horarios/teacher/get/classroom?name=$name&lastname=$lastname';
+        '$WEB_URL /horarios/teacher/get/classroom?name=$name&lastname=$lastname';
 
     try {
       final response = await http.get(Uri.parse(url));
