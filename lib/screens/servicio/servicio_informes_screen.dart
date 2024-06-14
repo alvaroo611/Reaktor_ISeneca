@@ -142,7 +142,7 @@ class _ServicioInformesScreenState extends State<ServicioInformesScreen> {
                       },
                       style: const TextStyle(color: Colors.white),
                       decoration: const InputDecoration(
-                        hintText: 'Buscar alumno...',
+                        hintText: 'Buscar ',
                         hintStyle: TextStyle(color: Colors.white54),
                         border: InputBorder.none,
                       ),

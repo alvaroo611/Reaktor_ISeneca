@@ -77,6 +77,7 @@ class _ContactoProfesoresScreenState extends State<ContactoProfesoresScreen> {
 
   @override
   Widget build(BuildContext context) {
+    double screenWidth = MediaQuery.of(context).size.width;
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.blue,
@@ -90,7 +91,7 @@ class _ContactoProfesoresScreenState extends State<ContactoProfesoresScreen> {
                 fontWeight: FontWeight.bold,
               ),
             ),
-            const Spacer(),
+            SizedBox(width: screenWidth * 0.15),
             Container(
               width: 200, // Ajusta el ancho según sea necesario
               decoration: BoxDecoration(

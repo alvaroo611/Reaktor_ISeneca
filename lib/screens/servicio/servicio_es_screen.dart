@@ -47,20 +47,21 @@ class _ServicioESScreenState extends State<ServicioESScreen> {
 
   @override
   Widget build(BuildContext context) {
+    double screenWidth = MediaQuery.of(context).size.width;
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.blue,
         title: Row(
           children: [
             const Text(
-              'Cursos',
+              'CURSOS',
               style: TextStyle(
                 color: Colors.white,
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
               ),
             ),
-            const Spacer(),
+            SizedBox(width: screenWidth * 0.25),
             Expanded(
               child: Container(
                 margin: const EdgeInsets.only(left: 20),
@@ -83,7 +84,7 @@ class _ServicioESScreenState extends State<ServicioESScreen> {
                         },
                         style: const TextStyle(color: Colors.white),
                         decoration: const InputDecoration(
-                          hintText: 'Buscar curso...',
+                          hintText: 'Buscar',
                           hintStyle: TextStyle(color: Colors.white54),
                           border: InputBorder.none,
                         ),
