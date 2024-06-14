@@ -38,6 +38,6 @@ class Profesor {
         "segundoApellido": segundoApellido,
       };
   String get nombreCompleto {
-    return '$primerApellido $segundoApellido $nombre';
+    return '$nombre $primerApellido $segundoApellido';
   }
 }

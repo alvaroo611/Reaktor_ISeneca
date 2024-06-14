@@ -2,11 +2,12 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:iseneca/config/constantas.dart';
+import 'package:iseneca/models/localizacion_profesor.dart';
 import 'package:iseneca/models/profesor.dart';
 
 class ProfesoresProvider extends ChangeNotifier {
   List<Profesor> _profesores = [];
-
+  late Map<String, dynamic> localizacionProfesores;
   List<Profesor> get profesores => _profesores;
 
   Future<List<Profesor>> fetchProfesores(http.Client client) async {
@@ -46,6 +47,39 @@ class ProfesoresProvider extends ChangeNotifier {
       throw error;
     }
     return _profesores;
+  }
+
+  Future<LocalizacionProfesor> getClassroomTeacher(
+      String name, String lastname, BuildContext context) async {
+    // Construir la URL completa con los parámetros
+    String url =
+        '$WEB_URL horarios/teacher/get/classroom?name=$name&lastname=$lastname';
+
+    try {
+      final response = await http.get(Uri.parse(url));
+
+      if (response.statusCode == 200) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Datos cargados'),
+          ),
+        );
+        // Si la solicitud es exitosa, parsea la respuesta JSON
+        localizacionProfesores = json.decode(response.body);
+        return LocalizacionProfesor.fromMap(localizacionProfesores);
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Error: Failed to load data'),
+          ),
+        );
+        // Si la solicitud no es exitosa, lanza una excepción
+        throw Exception('Failed to load data');
+      }
+    } catch (e) {
+      // Captura cualquier error y lanza una excepción
+      throw Exception('Failed to connect to server');
+    }
   }
 
   // Método para obtener nombres y apellidos de todos los profesores
