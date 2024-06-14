@@ -82,6 +82,7 @@ class _ContactoProfesoresScreenState extends State<ContactoProfesoresScreen> {
       appBar: AppBar(
         backgroundColor: Colors.blue,
         title: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             const Text(
               'Contacto profesor',
@@ -91,9 +92,8 @@ class _ContactoProfesoresScreenState extends State<ContactoProfesoresScreen> {
                 fontWeight: FontWeight.bold,
               ),
             ),
-            SizedBox(width: screenWidth * 0.15),
             Container(
-              width: 200, // Ajusta el ancho según sea necesario
+              width: screenWidth * 0.3,
               decoration: BoxDecoration(
                 color: Colors.white.withOpacity(0.1),
                 borderRadius: BorderRadius.circular(30),
@@ -113,7 +113,7 @@ class _ContactoProfesoresScreenState extends State<ContactoProfesoresScreen> {
                       },
                       style: const TextStyle(color: Colors.white),
                       decoration: const InputDecoration(
-                        hintText: 'Buscar profesor...',
+                        hintText: 'Buscar',
                         hintStyle: TextStyle(color: Colors.white54),
                         border: InputBorder.none,
                       ),

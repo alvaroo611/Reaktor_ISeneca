@@ -52,6 +52,7 @@ class _ServicioESScreenState extends State<ServicioESScreen> {
       appBar: AppBar(
         backgroundColor: Colors.blue,
         title: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             const Text(
               'CURSOS',
@@ -61,37 +62,35 @@ class _ServicioESScreenState extends State<ServicioESScreen> {
                 fontWeight: FontWeight.bold,
               ),
             ),
-            SizedBox(width: screenWidth * 0.25),
-            Expanded(
-              child: Container(
-                margin: const EdgeInsets.only(left: 20),
-                decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(30),
-                  border: Border.all(color: Colors.grey),
-                ),
-                child: Row(
-                  children: [
-                    const Padding(
-                      padding: EdgeInsets.all(8.0),
-                      child: Icon(Icons.search, color: Colors.white),
-                    ),
-                    Expanded(
-                      child: TextField(
-                        controller: _controller,
-                        onChanged: (value) {
-                          filterSearchResults(value);
-                        },
-                        style: const TextStyle(color: Colors.white),
-                        decoration: const InputDecoration(
-                          hintText: 'Buscar',
-                          hintStyle: TextStyle(color: Colors.white54),
-                          border: InputBorder.none,
-                        ),
+            Container(
+              width: screenWidth * 0.3,
+              margin: const EdgeInsets.only(left: 20),
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(30),
+                border: Border.all(color: Colors.grey),
+              ),
+              child: Row(
+                children: [
+                  const Padding(
+                    padding: EdgeInsets.all(8.0),
+                    child: Icon(Icons.search, color: Colors.white),
+                  ),
+                  Expanded(
+                    child: TextField(
+                      controller: _controller,
+                      onChanged: (value) {
+                        filterSearchResults(value);
+                      },
+                      style: const TextStyle(color: Colors.white),
+                      decoration: const InputDecoration(
+                        hintText: 'Buscar',
+                        hintStyle: TextStyle(color: Colors.white54),
+                        border: InputBorder.none,
                       ),
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
           ],
