@@ -123,7 +123,7 @@ class MyApp extends StatelessWidget {
         "horario_profesores_screen": (BuildContext context) =>
             const HorarioProfesoresScreen(),
         "horario_profesores_detalles_screen": (BuildContext context) =>
-            const HorarioProfesoresDetallesScreen(),
+            HorarioProfesoresDetallesScreen(),
         "alumnado_screen": (BuildContext context) => const AlumnadoScreen(),
         "contacto_alumnado_screen": (BuildContext context) =>
             const ContactoAlumnadoScreen(),

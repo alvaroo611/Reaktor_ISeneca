@@ -11,47 +11,39 @@ import 'dart:convert';
 class ServicioProvider extends ChangeNotifier {
   List<Servicio> listadoAlumnosServicio = [];
   late List<Map<String, dynamic>> visitas;
+  final baseUrl =
+      'https://script.google.com/macros/s/AKfycbww17NqHZU5opz9SkMtUASKZOg1Hg6KsExRSvlqAMyrx4i0Ax9P5I7IQtKRcnsMKVivdw/exec';
+  final spreadsheetId = '1u79XugcalPc4aPcymy9OsWu1qdg8aKCBvaPWQOH187I';
+  final sheet = 'Servicio';
 
   List<AlumnoServcio> getAlumnoFromMap() {
-    // Crear una lista para almacenar los estudiantes
     List<AlumnoServcio> alumnos = [];
-    // Crear un conjunto para almacenar los IDs únicos de los alumnos
     Set<int> alumnoIdsUnicos = Set<int>();
 
-    // Iterar sobre cada mapa en la lista
     visitas.forEach((mapa) {
-      // Verificar si el mapa contiene la clave "alumno"
       if (mapa.containsKey("alumno")) {
-        // Convertir el valor del mapa a una instancia de AlumnoServcio
         AlumnoServcio alumno = AlumnoServcio.fromJson(mapa["alumno"]);
 
-        // Verificar si el ID del alumno ya está en el conjunto de IDs únicos
         if (!alumnoIdsUnicos.contains(alumno.alumnoId)) {
-          // Agregar el alumno a la lista y su ID al conjunto de IDs únicos
           alumnos.add(alumno);
           alumnoIdsUnicos.add(alumno.alumnoId);
         }
       }
     });
 
-    // Devolver la lista de estudiantes
     return alumnos;
   }
 
   List<String> getNombresAlumnosFromMap() {
-    // Crear un Set para almacenar los nombres de los estudiantes sin duplicados
     Set<String> nombresAlumnos = {};
 
-    // Iterar sobre cada mapa en la lista
     visitas.forEach((mapa) {
-      // Obtener el nombre del estudiante del mapa y agregarlo al Set
       if (mapa.containsKey("alumno")) {
         AlumnoServcio alumno = AlumnoServcio.fromJson(mapa["alumno"]);
         nombresAlumnos.add(alumno.nombreCompleto);
       }
     });
 
-    // Convertir el Set a una lista y devolverla
     return nombresAlumnos.toList();
   }
 
@@ -63,7 +55,6 @@ class ServicioProvider extends ChangeNotifier {
         AlumnoServcio alumno = AlumnoServcio.fromJson(mapa['alumno']);
         String horas = mapa['horas'];
         String dia = mapa['dia'];
-        // Verificar si el ID del alumno coincide
         if (alumno.alumnoId == alumnoId) {
           datosVisitas.add(DatosVisita(alumno: alumno, horas: horas, dia: dia));
         }
@@ -82,14 +73,12 @@ class ServicioProvider extends ChangeNotifier {
         '/horarios/get/students/visitas/bathroom?fechaInicio=$formattedFechaInicio&fechaFin=$formattedFechaFin');
 
     try {
-      print('URL: $url'); // Imprime la URL para verificar que es correcta
+      print('URL: $url');
       final response = await http.get(url);
 
       if (response.statusCode == 200) {
         try {
-          // Convertir el cuerpo de la respuesta JSON en un mapa
-          print(
-              'Response Body: ${response.body}'); // Imprime el cuerpo de la respuesta
+          print('Response Body: ${response.body}');
           visitas = List<Map<String, dynamic>>.from(json.decode(response.body));
           ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(content: Text('Datos cargados correctamente')));
@@ -103,30 +92,18 @@ class ServicioProvider extends ChangeNotifier {
           SnackBar(content: Text('Error servidor')),
         );
       } else {
-        // Manejar el caso en que la solicitud no sea exitosa
         print('Error al obtener la lista de visitas: ${response.statusCode}');
-        print(
-            'Response Body: ${response.body}'); // Imprime el cuerpo de la respuesta si hay un error
+        print('Response Body: ${response.body}');
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
             content: Text(
-                'Error al cargar las visitas de los estudiantes al baño.')));
+                'Error al cargar las visitas de los estudiantes al baño. ${response.body}')));
       }
     } catch (e) {
-      // Manejar errores de red u otras excepciones
       print('Error en la solicitud HTTP: $e');
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content: Text('Error de red al intentar obtener los datos.')));
     }
   }
-
-  //Google Script Lectura ejecutado
-  //https://script.google.com/macros/s/AKfycbyPsB_koj3MwkmRFn8IJU-k4sOP8nRfnHHKNNt9xov9INZ1VEsQbu96gDR8Seiz0oDGOQ/exec?spreadsheetId=1u79XugcalPc4aPcymy9OsWu1qdg8aKCBvaPWQOH187I&sheet=Servicio
-
-  //Google Script Escritura
-  //https://script.google.com/macros/s/AKfycbz7ZwCTn2XXpXuPO2-m9tyR1sIC9lOMgvPPOsbDehda2NRoko871PvZvzF1jQnaq8Du/exec?spreadsheetId=1Jq4ihUzE5r4fqK9HHZQv1dg4AAgzdjPbGkpJRByu-Ds&sheet=Servicio&nombreAlumno=Alumno2&fechaEntrada=fecha2&fechaSalida=fecha2
-
-  //Google Docs Baño
-  //https://docs.google.com/spreadsheets/d/1u79XugcalPc4aPcymy9OsWu1qdg8aKCBvaPWQOH187I/edit#gid=0
 
   final _url = "script.google.com";
   final _apiEscritura =
@@ -137,8 +114,6 @@ class ServicioProvider extends ChangeNotifier {
   ServicioProvider() {
     debugPrint("Servicio Provider inicializado");
     getAlumnosServicio();
-
-    notifyListeners();
   }
 
   getAlumnosServicio() async {
@@ -151,8 +126,47 @@ class ServicioProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  _setAlumnos(String baseurl, String api, String pagina, String hoja,
-      String nombre, String fechaEntrada, String fechaSalida) async {
+  Future<void> sendData(
+      String nombreAlumno,
+      String fechaEntrada,
+      String horaEntrada,
+      String fechaSalida,
+      String horaSalida,
+      BuildContext context) async {
+    final Uri url = Uri.parse(
+        'https://script.google.com/macros/s/AKfycbww17NqHZU5opz9SkMtUASKZOg1Hg6KsExRSvlqAMyrx4i0Ax9P5I7IQtKRcnsMKVivdw/exec?spreadsheetId=1u79XugcalPc4aPcymy9OsWu1qdg8aKCBvaPWQOH187I&sheet=Servicio&nombreAlumno=$nombreAlumno&fechaEntrada=$fechaEntrada&horaEntrada=$horaEntrada&fechaSalida=$fechaSalida&horaSalida=$horaSalida');
+
+    try {
+      final response = await http.get(url);
+
+      if (response.statusCode == 200) {
+        final String data = json.decode(response.body) as String;
+        print('Respuesta: $data');
+        showSnackBar('$data', context);
+      } else {
+        print('Error en la solicitud: ${response.statusCode}');
+        showSnackBar('Error en la solicitud: ${response.statusCode}', context);
+      }
+    } catch (e) {
+      print('Error: $e');
+      showSnackBar('Error: $e', context);
+    }
+  }
+
+  void showSnackBar(String message, BuildContext context) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(message)),
+    );
+  }
+
+  Future<void> _setAlumnos(
+      String baseurl,
+      String api,
+      String pagina,
+      String hoja,
+      String nombre,
+      String fechaEntrada,
+      String fechaSalida) async {
     final url = Uri.https(baseurl, api, {
       "spreadsheetId": pagina,
       "sheet": hoja,
@@ -164,7 +178,7 @@ class ServicioProvider extends ChangeNotifier {
     await http.get(url);
   }
 
-  setAlumnosServicio(
+  void setAlumnosServicio(
       String nombreAlumno, String fechaEntrada, String fechaSalida) {
     _setAlumnos(_url, _apiEscritura, _idHoja, _hojaServicio, nombreAlumno,
         fechaEntrada, fechaSalida);
@@ -172,5 +186,3 @@ class ServicioProvider extends ChangeNotifier {
     notifyListeners();
   }
 }
-
-final servicio = ServicioProvider();

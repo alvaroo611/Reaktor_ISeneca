@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:iseneca/models/localizacion_profesor.dart';
-
+import 'package:intl/intl.dart';
+import 'package:iseneca/models/centro_response.dart';
+import 'package:iseneca/models/credenciales_response.dart';
+import 'package:iseneca/models/horario_response.dart';
+import 'package:iseneca/providers/centro_provider.dart';
+import 'package:iseneca/providers/credenciales_provider.dart';
 import 'package:provider/provider.dart';
-import 'package:iseneca/models/profesor.dart';
-import 'package:iseneca/providers/profesores_provider.dart';
-import 'package:http/http.dart' as http;
 
 class ListadoProfesores extends StatefulWidget {
   const ListadoProfesores({Key? key}) : super(key: key);
@@ -14,50 +15,60 @@ class ListadoProfesores extends StatefulWidget {
 }
 
 class _ListadoProfesoresState extends State<ListadoProfesores> {
-  List<Profesor> listaOrdenadaProfesores = [];
-  List<Profesor> profesoresFiltrados = [];
+  List<Credenciales> listaOrdenadaProfesores = [];
+  List<Credenciales> profesoresFiltrados = [];
   bool isLoading = true;
-  final TextEditingController _controller = TextEditingController();
-  late ProfesoresProvider centroProvider = new ProfesoresProvider();
+  TextEditingController _controller = TextEditingController();
+  late CentroProvider horarioProvider;
+  late HorarioResponse horarioResponse = HorarioResponse(result: []);
+  late HorarioResult profesorActual;
+
   @override
   void initState() {
     super.initState();
-    _fetchProfesores();
+    WidgetsBinding.instance!.addPostFrameCallback((_) {
+      horarioProvider = Provider.of<CentroProvider>(context, listen: false);
+      final credencialesProvider =
+          Provider.of<CredencialesProvider>(context, listen: false);
+      _fetchProfesores(credencialesProvider);
+      _fetchHorario(horarioProvider);
+    });
   }
 
-  Future<void> _fetchProfesores() async {
-    final centroProvider =
-        Provider.of<ProfesoresProvider>(context, listen: false);
-    final listadoProfesores =
-        await centroProvider.fetchProfesores(http.Client());
-
-    // Conjunto para almacenar nombres y apellidos únicos
-    Set<String> nombresApellidosSet = Set();
-
-    // Lista para almacenar los profesores sin nombres y apellidos repetidos
-    List<Profesor> listaProfesoresSinRepetidos = [];
-
-    for (Profesor profesor in listadoProfesores) {
-      // Concatenar nombre y apellido del profesor
-      String nombreCompleto = profesor.nombreCompleto;
-
-      // Verificar si el nombre y apellido ya están en el conjunto
-      if (!nombresApellidosSet.contains(nombreCompleto)) {
-        // Agregar el nombre y apellido al conjunto y a la lista
-        nombresApellidosSet.add(nombreCompleto);
-        listaProfesoresSinRepetidos.add(profesor);
-      }
-    }
-
-    // Ordenar la lista por nombre
-    listaProfesoresSinRepetidos.sort((a, b) => a.nombre.compareTo(b.nombre));
-
+  Future<void> _fetchHorario(CentroProvider horarioProvider) async {
+    await horarioProvider.getHorario();
     setState(() {
-      listaOrdenadaProfesores = listaProfesoresSinRepetidos;
-      profesoresFiltrados =
-          listaOrdenadaProfesores; // Inicialmente muestra todos los profesores
-      isLoading = false;
+      horarioResponse = horarioProvider.listaHorariosProfesores;
     });
+  }
+
+  Future<void> _fetchProfesores(
+      CredencialesProvider credencialesProvider) async {
+    setState(() {
+      isLoading = true;
+    });
+
+    try {
+      await credencialesProvider.getCredencialesUsuario();
+      if (credencialesProvider.listaCredenciales.isEmpty) {
+        Future.delayed(const Duration(seconds: 2), () {
+          _fetchProfesores(credencialesProvider);
+        });
+      }
+      setState(() {
+        listaOrdenadaProfesores = credencialesProvider.listaCredenciales;
+        listaOrdenadaProfesores.sort((a, b) => a.nombre.compareTo(b.nombre));
+        profesoresFiltrados = List.from(listaOrdenadaProfesores);
+      });
+    } catch (e) {
+      Future.delayed(const Duration(seconds: 2), () {
+        _fetchProfesores(credencialesProvider);
+      });
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
+    }
   }
 
   void filterSearchResults(String query) {
@@ -66,7 +77,7 @@ class _ListadoProfesoresState extends State<ListadoProfesores> {
         profesoresFiltrados = List.from(listaOrdenadaProfesores);
       } else {
         profesoresFiltrados = listaOrdenadaProfesores
-            .where((profesor) => profesor.nombreCompleto
+            .where((profesor) => "${profesor.nombre} ${profesor.apellidos}"
                 .toLowerCase()
                 .contains(query.toLowerCase()))
             .toList();
@@ -74,74 +85,224 @@ class _ListadoProfesoresState extends State<ListadoProfesores> {
     });
   }
 
-  void showDetailsDialog(
-      BuildContext context, String nombre, String apellido) async {
+  String _obtenerDiaActual(DateTime now) {
+    List<String> dias = ["L", "M", "X", "J", "V", "S", "D"];
+    String diaSemana = dias[
+        now.weekday - 1]; // now.weekday devuelve 1 para lunes a 7 para domingo
+
+    // Obtener la parte del día
+    int hora = now.hour;
+    int minutos = now.minute;
+    String parteDelDia;
+
+    if (hora >= 8 && hora < 9 && minutos >= 0) {
+      parteDelDia = "1";
+    } else if (hora >= 9 && hora < 10 && minutos >= 0) {
+      parteDelDia = "2";
+    } else if (hora >= 10 && hora < 11 && minutos >= 0) {
+      parteDelDia = "3";
+    } else if ((hora >= 11 && minutos >= 30) || (hora < 12 && minutos <= 30)) {
+      parteDelDia = "4";
+    } else if ((hora >= 12 && minutos >= 30) || (hora < 13 && minutos <= 30)) {
+      parteDelDia = "5";
+    } else if ((hora >= 13 && minutos >= 30) || (hora < 14 && minutos <= 30)) {
+      parteDelDia = "6";
+    } else {
+      // Fuera de las horas válidas para las partes del día
+      parteDelDia = "";
+    }
+
+    return diaSemana + parteDelDia;
+  }
+
+  String _obtenerHoraActual() {
+    DateTime now = DateTime.now();
+    String hora = now.hour
+        .toString()
+        .padLeft(2, '0'); // Formatear la hora con dos dígitos
+    String minutos = now.minute
+        .toString()
+        .padLeft(2, '0'); // Formatear los minutos con dos dígitos
+    return '$hora:$minutos';
+  }
+
+  void _mostrarLocalizacion(
+      BuildContext context, String nombreProfesor, String apellidoProfesor) {
+    DateTime now = DateTime.now();
+    String diaActual = _obtenerDiaActual(now);
+    String horaActualString = _obtenerHoraActual();
+    DateTime horaActual = DateFormat('H:mm').parse(horaActualString);
+
     setState(() {
-      isLoading = true;
+      profesorActual = horarioResponse.result.firstWhere(
+        (horario) =>
+            horario.nombreProfesor == nombreProfesor &&
+            horario.apellidoProfesor == apellidoProfesor &&
+            horario.dia == diaActual &&
+            horaActual.isAfter(DateFormat('H:mm').parse(horario.hora)) &&
+            horaActual.isBefore(DateFormat('H:mm')
+                .parse(horario.hora)
+                .add(const Duration(hours: 1))),
+        orElse: () => HorarioResult(
+          curso: '',
+          dia: '',
+          hora: '',
+          asignatura: '',
+          aulas: '',
+          nombreProfesor: '',
+          apellidoProfesor: '',
+        ),
+      );
     });
 
-    try {
-      LocalizacionProfesor localizacionProfesor =
-          await centroProvider.getClassroomTeacher(nombre, apellido, context);
-
-      setState(() {
-        isLoading = false;
-      });
-
+    // Mostrar el dialogo según la disponibilidad de la información
+    if (profesorActual.nombreProfesor.isNotEmpty) {
+      // Mostrar dialogo con la información del profesor
       showDialog(
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: Text('Detalles de Profesor'),
-            content: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(15.0),
+            ),
+            backgroundColor: Colors.white,
+            title: Row(
               children: [
-                Text(
-                  'Detalles del Aula:\n${localizacionProfesor.classroom.toFormattedString()}',
-                  style: TextStyle(fontSize: 16),
+                const Icon(
+                  Icons.info,
+                  color: Colors.green,
                 ),
-                SizedBox(height: 10),
-                Text(
-                  'Detalles de la Asignatura:\n${localizacionProfesor.asignatura.toFormattedString()}',
-                  style: TextStyle(fontSize: 16),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Text(
+                    'Horario Actual de ${profesorActual.nombreProfesor} ${profesorActual.apellidoProfesor}',
+                    style: const TextStyle(color: Colors.black),
+                  ),
                 ),
               ],
             ),
+            content: SingleChildScrollView(
+              child: ListBody(
+                children: <Widget>[
+                  Row(
+                    children: [
+                      const Icon(Icons.school, color: Colors.blue),
+                      const SizedBox(width: 10),
+                      Text(
+                        'Curso: ${profesorActual.curso}',
+                        style:
+                            const TextStyle(fontSize: 16, color: Colors.black),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 10),
+                  Row(
+                    children: [
+                      const Icon(Icons.access_time, color: Colors.blue),
+                      const SizedBox(width: 10),
+                      Text(
+                        'Hora: ${profesorActual.hora}',
+                        style:
+                            const TextStyle(fontSize: 16, color: Colors.black),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 10),
+                  Row(
+                    children: [
+                      const Icon(Icons.book, color: Colors.blue),
+                      const SizedBox(width: 10),
+                      Text(
+                        'Asignatura: ${profesorActual.asignatura}',
+                        style:
+                            const TextStyle(fontSize: 16, color: Colors.black),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 10),
+                  Row(
+                    children: [
+                      const Icon(Icons.location_on, color: Colors.blue),
+                      const SizedBox(width: 10),
+                      Text(
+                        'Aula en la que se encuentra: ${profesorActual.aulas}',
+                        style:
+                            const TextStyle(fontSize: 16, color: Colors.black),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
             actions: <Widget>[
               TextButton(
+                style: TextButton.styleFrom(
+                  backgroundColor: Colors.blue,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10.0),
+                  ),
+                ),
+                child: const Text(
+                  'Cerrar',
+                  style: TextStyle(color: Colors.white),
+                ),
                 onPressed: () {
                   Navigator.of(context).pop();
                 },
-                child: Text('Cerrar'),
               ),
             ],
           );
         },
       );
-    } catch (e) {
-      setState(() {
-        isLoading = false;
-      });
-      // Manejar errores aquí
+    } else {
+      // Mostrar dialogo indicando que la información no está disponible
       showDialog(
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: Text('Error'),
-            content: Text('No se pudieron cargar los detalles del profesor.'),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(15.0),
+            ),
+            backgroundColor: Colors.white,
+            title: const Row(
+              children: [
+                Icon(
+                  Icons.error,
+                  color: Colors.red,
+                ),
+                SizedBox(width: 10),
+                Expanded(
+                  child: Text(
+                    'Información No Disponible',
+                    style: TextStyle(color: Colors.red),
+                  ),
+                ),
+              ],
+            ),
+            content: const Text(
+              'El profesor seleccionado no tiene horario disponible en este momento.',
+              style: TextStyle(color: Colors.black),
+            ),
             actions: <Widget>[
               TextButton(
+                style: TextButton.styleFrom(
+                  backgroundColor: Colors.blue,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10.0),
+                  ),
+                ),
+                child: const Text(
+                  'Cerrar',
+                  style: TextStyle(color: Colors.white),
+                ),
                 onPressed: () {
                   Navigator.of(context).pop();
                 },
-                child: Text('Cerrar'),
               ),
             ],
           );
         },
       );
-      print('Error: $e');
     }
   }
 
@@ -156,7 +317,7 @@ class _ListadoProfesoresState extends State<ListadoProfesores> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             const Text(
-              'LISTA PROFESORES',
+              'LOCALIZACIÓN',
               style: TextStyle(
                 color: Colors.white,
                 fontSize: 20,
@@ -202,233 +363,241 @@ class _ListadoProfesoresState extends State<ListadoProfesores> {
           },
         ),
       ),
-      body: isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : ListView.builder(
-              padding: const EdgeInsets.all(10),
-              itemCount: profesoresFiltrados.length,
-              itemBuilder: (BuildContext context, int index) {
-                return GestureDetector(
-                  onTap: () {
-                    showDetailsDialog(
-                      context,
-                      profesoresFiltrados[index].nombre,
-                      '${profesoresFiltrados[index].primerApellido} ${profesoresFiltrados[index].segundoApellido} '
-                          .toLowerCase(),
-                    );
-                  },
-                  child: Container(
-                    margin: const EdgeInsets.symmetric(vertical: 10),
-                    padding: const EdgeInsets.all(15),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      border: Border.all(color: Colors.blueAccent, width: 2),
-                      borderRadius: BorderRadius.circular(15),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.grey.withOpacity(0.5),
-                          spreadRadius: 3,
-                          blurRadius: 7,
-                          offset: const Offset(0, 3),
+      body: Column(
+        children: [
+          Expanded(
+            child: isLoading
+                ? const Center(child: CircularProgressIndicator())
+                : ListView.builder(
+                    padding: const EdgeInsets.all(10),
+                    itemCount: profesoresFiltrados.length,
+                    itemBuilder: (BuildContext context, int index) {
+                      return GestureDetector(
+                        onTap: () {
+                          _mostrarLocalizacion(
+                              context,
+                              profesoresFiltrados[index].nombre,
+                              profesoresFiltrados[index].apellidos);
+                        },
+                        child: Container(
+                          margin: const EdgeInsets.symmetric(
+                              horizontal: 10, vertical: 5),
+                          padding: const EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(10),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.grey.withOpacity(0.5),
+                                spreadRadius: 2,
+                                blurRadius: 5,
+                                offset: const Offset(0, 3),
+                              ),
+                            ],
+                          ),
+                          child: ListTile(
+                            leading: CircleAvatar(
+                              backgroundColor: Colors.blue,
+                              child: Text(
+                                profesoresFiltrados[index].nombre[0],
+                                style: const TextStyle(color: Colors.white),
+                              ),
+                            ),
+                            title: Text(
+                              '${profesoresFiltrados[index].nombre} ${profesoresFiltrados[index].apellidos}',
+                              style: const TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                                color: Color.fromARGB(255, 8, 8, 8),
+                              ),
+                            ),
+                            trailing: const Icon(
+                              Icons.arrow_forward,
+                              color: Colors.blueAccent,
+                            ),
+                          ),
                         ),
-                      ],
-                    ),
-                    child: ListTile(
-                      leading: CircleAvatar(
-                        backgroundColor: Colors.blue,
-                        child: Text(
-                          profesoresFiltrados[index].nombreCompleto[0],
-                          style: const TextStyle(color: Colors.white),
-                        ),
-                      ),
-                      title: Text(
-                        profesoresFiltrados[index].nombreCompleto,
-                        style: const TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                          color: Color.fromARGB(255, 8, 8, 8),
-                        ),
-                      ),
-                      trailing: const Icon(
-                        Icons.arrow_forward,
-                        color: Colors.blueAccent,
-                      ),
-                    ),
+                      );
+                    },
                   ),
-                );
-              },
-            ),
+          ),
+        ],
+      ),
     );
   }
 }
+
+
+
+
+
 /*
-List<String> _averiguarHorario(BuildContext context, int idProf, int tramo) {
-  final centroProvider = Provider.of<CentroProvider>(context, listen: false);
-  final listadoHorariosProfesores = centroProvider.listaHorariosProfesores;
-  List<String> horario = List.filled(2, "0");
+  List<String> _averiguarHorario(BuildContext context, String nombreProfesor,
+      String apellidoProfesor, String hora) {
+    final centroProvider = Provider.of<CentroProvider>(context, listen: false);
+    final listadoHorariosProfesores =
+        centroProvider.listaHorariosProfesores.result;
+    List<String> horario = List.filled(2, "0");
 
-  for (int i = 0; i < listadoHorariosProfesores.length; i++) {
-    if (int.parse(listadoHorariosProfesores[i].horNumIntPr) == idProf + 1) {
-      for (int j = 0; j < listadoHorariosProfesores[i].actividad.length; j++) {
-        if (int.parse(listadoHorariosProfesores[i].actividad[j].tramo) ==
-            tramo) {
-          horario[0] = listadoHorariosProfesores[i].actividad[j].asignatura;
-
-          horario[1] = listadoHorariosProfesores[i].actividad[j].aula;
-
+    for (int i = 0; i < listadoHorariosProfesores.length; i++) {
+      if (listadoHorariosProfesores[i].nombreProfesor == nombreProfesor &&
+          listadoHorariosProfesores[i].apellidoProfesor == apellidoProfesor) {
+        if (listadoHorariosProfesores[i].hora == hora) {
+          horario[0] = listadoHorariosProfesores[i].asignatura;
+          horario[1] = listadoHorariosProfesores[i].aulas;
           debugPrint("Asignatura: ${horario[0]}");
           debugPrint("Aula: ${horario[1]}");
         }
       }
     }
+
+    return horario;
   }
 
-  return horario;
-}
+  int _averiguarTramo(BuildContext context, List<Tramo> listadoTramos) {
+    DateTime now = DateTime.now();
+    debugPrint(now.weekday.toString());
 
-int _averiguarTramo(
-    BuildContext context, List<Tramo> listadoTramos, int index) {
-  DateTime now = DateTime.now();
-  debugPrint(now.weekday.toString());
+    List<String> splitHoraInicio = [];
+    List<String> splitHoraFinal = [];
+    List<int> tramosProhibidos = [5, 10, 25, 30, 45, 50, 65, 70, 85, 90];
+    int tramo = 0;
+    int tramoCorrecto = 0;
 
-  List<String> splitHoraInicio = [];
-  List<String> splitHoraFinal = [];
-  List<int> tramosProhibidos = [5, 10, 25, 30, 45, 50, 65, 70, 85, 90];
-  int tramo = 0;
-  int tramoCorrecto = 0;
+    for (int i = 0; i < listadoTramos.length; i++) {
+      splitHoraInicio = (listadoTramos[i].horaInicio.split(":"));
+      splitHoraFinal = (listadoTramos[i].horaFinal.split(":"));
 
-  for (int i = 0; i < listadoTramos.length; i++) {
-    splitHoraInicio = (listadoTramos[i].horaInicio.split(":"));
-    splitHoraFinal = (listadoTramos[i].horaFinal.split(":"));
-
-    if (int.parse(splitHoraInicio[0]) * 60 + int.parse(splitHoraInicio[1]) <=
-            (now.minute + now.hour * 60) &&
-        (now.minute + now.hour * 60) <
-            int.parse(splitHoraFinal[0]) * 60 + int.parse(splitHoraFinal[1]) &&
-        int.parse(listadoTramos[i].numeroDia) == now.weekday) {
-      tramo = int.parse(listadoTramos[i].numTr);
-      debugPrint("Número de tramo: $tramo");
-      if (tramosProhibidos.contains(tramo)) {
-        return tramo - 1;
-      } else {
-        if (comprobarTramo(context, tramo, index)) {
-          tramoCorrecto = tramo;
-          debugPrint("Tramo correcto: $tramoCorrecto");
-          return tramoCorrecto;
+      if (int.parse(splitHoraInicio[0]) * 60 + int.parse(splitHoraInicio[1]) <=
+              (now.minute + now.hour * 60) &&
+          (now.minute + now.hour * 60) <
+              int.parse(splitHoraFinal[0]) * 60 +
+                  int.parse(splitHoraFinal[1]) &&
+          int.parse(listadoTramos[i].numeroDia) == now.weekday) {
+        tramo = int.parse(listadoTramos[i].numTr);
+        debugPrint("Número de tramo: $tramo");
+        if (tramosProhibidos.contains(tramo)) {
+          return tramo - 1;
+        } else {
+          if (comprobarTramo(context, tramo)) {
+            tramoCorrecto = tramo;
+            debugPrint("Tramo correcto: $tramoCorrecto");
+            return tramoCorrecto;
+          }
         }
       }
     }
+    return tramo;
   }
-  return tramo;
-}
 
-bool comprobarTramo(BuildContext context, int tramo, int index) {
-  final centroProvider = Provider.of<CentroProvider>(context, listen: false);
-  final listadoHorarioProfesores = centroProvider.listaHorariosProfesores;
-  bool tramoCorrecto = false;
+  bool comprobarTramo(BuildContext context, int tramo) {
+    final centroProvider = Provider.of<CentroProvider>(context, listen: false);
+    final listadoHorariosProfesores =
+        centroProvider.listaHorariosProfesores.result;
+    bool tramoCorrecto = false;
 
-  for (int i = 0;
-      i < listadoHorarioProfesores[index - 1].actividad.length;
-      i++) {
-    if (int.parse(listadoHorarioProfesores[index - 1].actividad[i].tramo) ==
-        tramo) {
-      tramoCorrecto = true;
+    for (int i = 0; i < listadoHorariosProfesores.length; i++) {
+      if (listadoHorariosProfesores[i].hora == tramo.toString()) {
+        tramoCorrecto = true;
+      }
     }
+
+    return tramoCorrecto;
   }
 
-  return tramoCorrecto;
-}
+  void _mostrarLocalizacion(
+      BuildContext context, String nombreProfesor, String apellidoProfesor) {
+    final centroProvider = Provider.of<CentroProvider>(context, listen: false);
+    final listadoProfesores = centroProvider.listaProfesores;
+    final listadoTramos = centroProvider.listaTramos;
+    final listadoAsignaturas = centroProvider.listaAsignaturas;
+    final listadoAulas = centroProvider.listaAulas;
 
-void _mostrarLocalizacion(BuildContext context, int index) {
-  final centroProvider = Provider.of<CentroProvider>(context, listen: false);
-  final listadoProfesores = centroProvider.listaProfesores;
-  final listadoTramos = centroProvider.listaTramos;
-  final listadoAsignaturas = centroProvider.listaAsignaturas;
-  final listadoAulas = centroProvider.listaAulas;
+    int tramo = _averiguarTramo(context, listadoTramos);
 
-  int tramo = _averiguarTramo(context, listadoTramos, index);
+    debugPrint("Tramo obtenido del método: $tramo");
+    List<String> horario = _averiguarHorario(
+        context, nombreProfesor, apellidoProfesor, tramo.toString());
+    String horaInicio = "";
+    String horaFinal = "";
+    DateTime now = DateTime.now();
+    String asignatura = "";
+    String aula = "";
 
-  debugPrint(" Tramo obtenido del método: $tramo");
-  List<String> horario = _averiguarHorario(context, index, tramo);
-  String horaInicio = "";
-  String horaFinal = "";
-  DateTime now = DateTime.now();
-  String asignatura = "";
-  String aula = "";
-
-  for (int i = 0; i < listadoAsignaturas.length; i++) {
-    if (int.parse(listadoAsignaturas[i].numIntAs) == int.parse(horario[0])) {
-      asignatura = listadoAsignaturas[i].nombre;
+    for (int i = 0; i < listadoAsignaturas.length; i++) {
+      if (listadoAsignaturas[i].nombre == horario[0]) {
+        asignatura = listadoAsignaturas[i].nombre;
+      }
     }
-  }
 
-  for (int i = 0; i < listadoAulas.length; i++) {
-    if (int.parse(listadoAulas[i].numIntAu) == int.parse(horario[1])) {
-      aula = listadoAulas[i].nombre;
+    for (int i = 0; i < listadoAulas.length; i++) {
+      if (listadoAulas[i].nombre == horario[1]) {
+        aula = listadoAulas[i].nombre;
+      }
     }
-  }
-  for (int i = 0; i < listadoTramos.length; i++) {
-    if (int.parse(listadoTramos[i].numTr) == tramo &&
-        int.parse(listadoTramos[i].numeroDia) == now.weekday) {
-      horaInicio = listadoTramos[i].horaInicio;
-      horaFinal = listadoTramos[i].horaFinal;
+    for (int i = 0; i < listadoTramos.length; i++) {
+      if (int.parse(listadoTramos[i].numTr) == tramo &&
+          int.parse(listadoTramos[i].numeroDia) == now.weekday) {
+        horaInicio = listadoTramos[i].horaInicio;
+        horaFinal = listadoTramos[i].horaFinal;
+      }
     }
-  }
 
-  if (horario.isNotEmpty) {
-    showDialog(
-        context: context,
-        barrierDismissible: true,
-        builder: (context) {
-          return AlertDialog(
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(20.0)),
-            title: Text(listadoProfesores[index].nombre),
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: <Widget>[
-                mostrarHorario(aula, asignatura, horaInicio, horaFinal)
+    if (horario.isNotEmpty) {
+      showDialog(
+          context: context,
+          barrierDismissible: true,
+          builder: (context) {
+            return AlertDialog(
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20.0)),
+              title: Text("$nombreProfesor $apellidoProfesor"),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  mostrarHorario(aula, asignatura, horaInicio, horaFinal)
+                ],
+              ),
+              actions: [
+                TextButton(
+                    onPressed: () => Navigator.pop(context),
+                    child: const Text("OK")),
               ],
-            ),
-            actions: [
-              TextButton(
-                  onPressed: () => Navigator.pop(context),
-                  child: const Text("OK")),
-            ],
-          );
-        });
-  } else {
-    showDialog(
-        context: context,
-        barrierDismissible: true,
-        builder: (context) {
-          return AlertDialog(
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(20.0)),
-            title: Text(listadoProfesores[index].nombre),
-            content: const Column(
-              mainAxisSize: MainAxisSize.min,
-              children: <Widget>[
-                Text("No se encuentra en clase actualmente"),
-                Text(" "),
+            );
+          });
+    } else {
+      showDialog(
+          context: context,
+          barrierDismissible: true,
+          builder: (context) {
+            return AlertDialog(
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20.0)),
+              title: Text("$nombreProfesor $apellidoProfesor"),
+              content: const Column(
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  Text("No se encuentra en clase actualmente"),
+                  Text(" "),
+                ],
+              ),
+              actions: [
+                TextButton(
+                    onPressed: () => Navigator.pop(context),
+                    child: const Text("OK")),
               ],
-            ),
-            actions: [
-              TextButton(
-                  onPressed: () => Navigator.pop(context),
-                  child: const Text("OK")),
-            ],
-          );
-        });
-  }
-}
-
-Widget mostrarHorario(aula, asignatura, horaInicio, horaFinal) {
-  if (aula == "" && asignatura == "") {
-    return const Text("No se encuentra disponible");
+            );
+          });
+    }
   }
 
-  return Text(
-      "Se encuentra en el aula $aula impartiendo la asignatura $asignatura, de $horaInicio a $horaFinal");
-}
-*/
+  Widget mostrarHorario(
+      String aula, String asignatura, String horaInicio, String horaFinal) {
+    if (aula.isEmpty && asignatura.isEmpty) {
+      return const Text("No se encuentra disponible");
+    }
+
+    return Text(
+        "Se encuentra en el aula $aula impartiendo la asignatura $asignatura, de $horaInicio a $horaFinal");
+  }*/
+

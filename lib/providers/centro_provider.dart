@@ -1,34 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:iseneca/models/centro_response.dart';
+import 'package:iseneca/models/horario_response.dart';
+import 'package:iseneca/utils/utilidades.dart';
 
 class CentroProvider extends ChangeNotifier {
-  List<Profesor> listaProfesores = [];
-  List<HorarioProf> listaHorariosProfesores = [];
-  List<Tramo> listaTramos = [];
-  List<Asignatura> listaAsignaturas = [];
-  List<Aula> listaAulas = [];
+  
+  late HorarioResponse listaHorariosProfesores;
+ 
 
   CentroProvider() {
     debugPrint("Centro Provider inicializado");
 
-    getDatosCentro();
+    getHorario();
   }
 
-  Future<String> _getJsonData() async {
-    return rootBundle.loadString('assets/horario.json');
-  }
-
-  getDatosCentro() async {
-    final respuesta = await _getJsonData();
-    final centroResponse = CentroResponse.fromJson(respuesta);
-
-    listaProfesores = centroResponse.centro.datos.profesores.profesor;
-    listaHorariosProfesores =
-        centroResponse.centro.horarios.horariosProfesores.horarioProf;
-    listaTramos = centroResponse.centro.datos.tramosHorarios.tramo;
-    listaAsignaturas = centroResponse.centro.datos.asignaturas.asignatura;
-    listaAulas = centroResponse.centro.datos.aulas.aula;
+  getHorario() async {
+    const url =
+        "https://script.google.com/macros/s/AKfycbyPsB_koj3MwkmRFn8IJU-k4sOP8nRfnHHKNNt9xov9INZ1VEsQbu96gDR8Seiz0oDGOQ/exec?spreadsheetId=11Y4M52bYFMCIa5uU52vKll2-OY0VtFiGK2PhMWShngg&sheet=Horarios";
+    String jsonData = await Utilidades.getJsonData(url);
+    jsonData = '{"results":$jsonData}';
+    listaHorariosProfesores = HorarioResponse.fromJson(jsonData);
 
     notifyListeners();
   }

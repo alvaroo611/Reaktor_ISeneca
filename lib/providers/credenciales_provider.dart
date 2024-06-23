@@ -26,4 +26,14 @@ class CredencialesProvider extends ChangeNotifier {
     listaCredenciales = credencialesResponse.results;
     notifyListeners();
   }
+
+  List<String> getNombresApellidosProfesores() {
+    // Ordenar por nombre
+    listaCredenciales.sort((a, b) => a.nombre.compareTo(b.nombre));
+
+    // Devolver la lista de nombres y apellidos
+    return listaCredenciales
+        .map((credencial) => '${credencial.nombre} ${credencial.apellidos}')
+        .toList();
+  }
 }

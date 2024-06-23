@@ -19,7 +19,7 @@ class _ServicioESAlumnosScreenState extends State<ServicioESAlumnosScreen> {
   bool isLoading = false;
   bool isIdaPressed = false;
   bool isVueltaPressed = false;
-  final servicioProvider = ServicioProvider();
+  late ServicioProvider servicioProvider = ServicioProvider();
 
   final controllerTextoNombreAlumno = TextEditingController();
   late ProviderAlumno _providerAlumno;
@@ -28,74 +28,21 @@ class _ServicioESAlumnosScreenState extends State<ServicioESAlumnosScreen> {
   @override
   void initState() {
     super.initState();
+    servicioProvider = Provider.of<ServicioProvider>(context, listen: false);
     _providerAlumno = Provider.of<ProviderAlumno>(context, listen: false);
     _loadStudents();
   }
 
   Future<void> _loadStudents() async {
-    final httpClient = http.Client();
+    setState(() {
+      isLoading = true;
+    });
     Future.delayed(const Duration(seconds: 2));
-    await _providerAlumno.fetchStudents(httpClient);
+    await _providerAlumno.fetchData(context);
     setState(() {
       listadoAlumnos2 = _providerAlumno.students;
+      isLoading = false;
     });
-  }
-
-  Future<void> _postVisit(String name, String lastName, String course) async {
-    final httpClient = http.Client();
-    try {
-      final response = await httpClient.post(
-        Uri.parse(WEB_URL +
-            '/horarios/student/visita/bathroom?name=$name&lastName=$lastName&course=$course'),
-      );
-
-      if (response.statusCode == 200) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Visita registrada correctamente')),
-        );
-      } else if (response.statusCode == 500) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error servidor')),
-        );
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error al registrar la visita')),
-        );
-      }
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error al registrar la visita')),
-      );
-    }
-  }
-
-  Future<void> _postReturnBathroom(
-      String name, String lastName, String course) async {
-    final httpClient = http.Client();
-    try {
-      final response = await httpClient.post(
-        Uri.parse(WEB_URL +
-            '/horarios/student/regreso/bathroom?name=$name&lastName=$lastName&course=$course'),
-      );
-
-      if (response.statusCode == 200) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Regreso registrado correctamente')),
-        );
-      } else if (response.statusCode == 500) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error servidor')),
-        );
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error al registrar el regreso')),
-        );
-      }
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error al registrar el regreso')),
-      );
-    }
   }
 
   @override
@@ -149,22 +96,21 @@ class _ServicioESAlumnosScreenState extends State<ServicioESAlumnosScreen> {
                       );
                     },
                     child: Container(
-                      margin: const EdgeInsets.symmetric(vertical: 10),
-                      padding: const EdgeInsets.all(15),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        border: Border.all(color: Colors.blueAccent, width: 2),
-                        borderRadius: BorderRadius.circular(15),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.grey.withOpacity(0.5),
-                            spreadRadius: 3,
-                            blurRadius: 7,
-                            offset: const Offset(
-                                0, 3), // changes position of shadow
+                          margin: const EdgeInsets.symmetric(
+                              horizontal: 10, vertical: 5),
+                          padding: const EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(10),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.grey.withOpacity(0.5),
+                                spreadRadius: 2,
+                                blurRadius: 5,
+                                offset: const Offset(0, 3),
+                              ),
+                            ],
                           ),
-                        ],
-                      ),
                       child: Row(
                         children: [
                           Container(
@@ -181,7 +127,7 @@ class _ServicioESAlumnosScreenState extends State<ServicioESAlumnosScreen> {
                           const SizedBox(width: 15),
                           Expanded(
                             child: Text(
-                              '${listadoAlumnos[index].name} ${listadoAlumnos[index].lastName}',
+                              '${listadoAlumnos[index].name}',
                               style: const TextStyle(
                                 fontSize: 20,
                                 fontWeight: FontWeight.bold,
@@ -207,6 +153,8 @@ class _ServicioESAlumnosScreenState extends State<ServicioESAlumnosScreen> {
     TextEditingController controllerTextoNombreAlumno,
     Student student,
   ) {
+    String horaEntrada = '';
+    String fechaEntrada = '';
     final double maxWidth = MediaQuery.of(context).size.width * 0.8;
     return Scaffold(
       appBar: AppBar(
@@ -239,8 +187,7 @@ class _ServicioESAlumnosScreenState extends State<ServicioESAlumnosScreen> {
                 enabled: false,
               ),
               SizedBox(
-                height: MediaQuery.of(context).size.height *
-                    0.01, // Espacio entre el campo de texto y los botones
+                height: MediaQuery.of(context).size.height * 0.01,
               ),
               Expanded(
                 child: Column(
@@ -248,15 +195,16 @@ class _ServicioESAlumnosScreenState extends State<ServicioESAlumnosScreen> {
                   children: [
                     Container(
                       constraints: BoxConstraints(
-                          maxWidth: MediaQuery.of(context).size.width *
-                              0.8), // Ancho máximo del botón
+                          maxWidth: MediaQuery.of(context).size.width * 0.8),
                       child: RawMaterialButton(
-                        onPressed: () async {
+                        onPressed: () {
                           if (!isIdaPressed) {
-                            await _postVisit(
-                                student.name, student.lastName, student.course);
                             setState(() {
                               isIdaPressed = true;
+                              DateTime now = DateTime.now();
+                              fechaEntrada =
+                                  DateFormat('dd/MM/yyyy').format(now);
+                              horaEntrada = DateFormat('HH:mm:ss').format(now);
                             });
                           }
                         },
@@ -267,7 +215,6 @@ class _ServicioESAlumnosScreenState extends State<ServicioESAlumnosScreen> {
                         padding: const EdgeInsets.symmetric(
                             horizontal: 120, vertical: 60),
                         child: const FittedBox(
-                          // FittedBox para ajustar el texto
                           fit: BoxFit.scaleDown,
                           child: Text(
                             "IDA",
@@ -280,21 +227,31 @@ class _ServicioESAlumnosScreenState extends State<ServicioESAlumnosScreen> {
                       ),
                     ),
                     SizedBox(
-                      height: MediaQuery.of(context).size.height *
-                          0.05, // Espacio entre los botones
+                      height: MediaQuery.of(context).size.height * 0.05,
                     ),
                     Container(
                       constraints: BoxConstraints(
-                          maxWidth: MediaQuery.of(context).size.width *
-                              0.8), // Ancho máximo del botón
+                          maxWidth: MediaQuery.of(context).size.width * 0.8),
                       child: RawMaterialButton(
                         onPressed: () async {
                           if (!isVueltaPressed) {
-                            await _postReturnBathroom(
-                                student.name, student.lastName, student.course);
                             setState(() {
                               isVueltaPressed = true;
                             });
+                            DateTime now = DateTime.now();
+                            String fechaSalida =
+                                DateFormat('dd/MM/yyyy').format(now);
+                            String horaSalida =
+                                DateFormat('HH:mm:ss').format(now);
+
+                            await servicioProvider.sendData(
+                              controllerTextoNombreAlumno.text.toString(),
+                              fechaEntrada,
+                              horaEntrada,
+                              fechaSalida,
+                              horaSalida,
+                              context,
+                            );
                           }
                         },
                         shape: RoundedRectangleBorder(
@@ -304,7 +261,6 @@ class _ServicioESAlumnosScreenState extends State<ServicioESAlumnosScreen> {
                         padding: const EdgeInsets.symmetric(
                             horizontal: 120, vertical: 60),
                         child: const FittedBox(
-                          // FittedBox para ajustar el texto
                           fit: BoxFit.scaleDown,
                           child: Text(
                             "VUELTA",

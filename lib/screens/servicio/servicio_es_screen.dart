@@ -13,25 +13,33 @@ class ServicioESScreen extends StatefulWidget {
 
 class _ServicioESScreenState extends State<ServicioESScreen> {
   late ProviderAlumno _providerAlumno;
-  late List<Student> listadoAlumnos = [];
-  late List<String> cursosUnicos = [];
+  List<Student> listadoAlumnos = [];
+  List<String> cursosUnicos = [];
   TextEditingController _controller = TextEditingController();
+  bool _isLoading = false;
 
   @override
   void initState() {
     super.initState();
-    _providerAlumno = Provider.of<ProviderAlumno>(context, listen: false);
-    _loadStudents();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _providerAlumno = Provider.of<ProviderAlumno>(context, listen: false);
+      _loadStudents();
+    });
   }
 
   Future<void> _loadStudents() async {
-    final httpClient = http.Client();
-    await _providerAlumno.fetchStudents(httpClient);
-    setState(() {
-      listadoAlumnos = _providerAlumno.students;
-      cursosUnicos =
-          listadoAlumnos.map((student) => student.course).toSet().toList();
-    });
+    try {
+      await _providerAlumno.fetchData(context);
+      setState(() {
+        listadoAlumnos = _providerAlumno.students;
+        cursosUnicos =
+            listadoAlumnos.map((student) => student.course).toSet().toList();
+        _isLoading = false; // Indicar que la carga ha terminado
+      });
+    } catch (e) {
+      print('Error al cargar estudiantes: $e');
+      // Puedes manejar el error aquí si lo necesitas
+    }
   }
 
   void filterSearchResults(String query) {

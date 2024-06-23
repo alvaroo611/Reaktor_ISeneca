@@ -1,168 +1,249 @@
 import 'package:flutter/material.dart';
+import 'package:iseneca/models/credenciales_response.dart';
+import 'package:iseneca/models/horario_response.dart';
+import 'package:iseneca/providers/centro_provider.dart';
 import 'package:provider/provider.dart';
-import 'package:iseneca/providers/providers.dart';
 
-//Tramos correspondiente a las horas acabas en y 15, incluyendo el recreo
-final tramosHorarios = [
-  [2, 22, 42, 62, 82],
-  [4, 24, 44, 64, 84],
-  [6, 26, 46, 66, 86],
-  [7, 27, 47, 67, 87],
-  [9, 29, 49, 69, 89],
-  [12, 32, 52, 72, 92],
-  [14, 34, 54, 74, 94]
-];
+class HorarioProfesoresDetallesScreen extends StatefulWidget {
+  @override
+  _HorarioProfesoresDetallesScreenState createState() =>
+      _HorarioProfesoresDetallesScreenState();
+}
 
-List<String> horario = [
-  "8:15 a 9:15",
-  "9:15 a 10:15",
-  "10:15 a 11:15",
-  "11:15 a 11:45",
-  "11:45 a 12:45",
-  "12:45 a 13:45",
-  "13:45 a 14:45"
-];
+class _HorarioProfesoresDetallesScreenState
+    extends State<HorarioProfesoresDetallesScreen> {
+  late Credenciales profesor;
+  late List<HorarioResult> horarios;
+  late List<HorarioResult> horarioProfesor;
+  late CentroProvider centroProvider;
+  late Set<String> asignaturasProfesor;
 
-class HorarioProfesoresDetallesScreen extends StatelessWidget {
-  const HorarioProfesoresDetallesScreen({super.key});
+  final List<String> horas = [
+    '8:00 - 9:00',
+    '9:00 - 10:00',
+    '10:00 - 11:00',
+    '11:30 - 12:30',
+    '12:30 - 13:30',
+    '13:30 - 14:30'
+  ];
+
+  @override
+  void initState() {
+    super.initState();
+    final credenciales =
+        ModalRoute.of(context)!.settings.arguments as Credenciales;
+    profesor = credenciales;
+    centroProvider = Provider.of<CentroProvider>(context, listen: false);
+    _fetchHorario(centroProvider, profesor);
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final newProfesor =
+        ModalRoute.of(context)!.settings.arguments as Credenciales?;
+    if (newProfesor != null &&
+        (profesor.nombre != newProfesor.nombre ||
+            profesor.apellidos != newProfesor.apellidos)) {
+      setState(() {
+        profesor = newProfesor;
+      });
+      _fetchHorario(centroProvider, profesor);
+    }
+  }
+
+  Future<void> _fetchHorario(
+    CentroProvider horarioProvider,
+    Credenciales profesor,
+  ) async {
+    await horarioProvider.getHorario();
+    horarios = horarioProvider.listaHorariosProfesores.result;
+    setState(() {
+      horarioProfesor =
+          obtenerHorarioDelProfesor(profesor.nombre, profesor.apellidos);
+      asignaturasProfesor = _obtenerAsignaturasUnicas(horarioProfesor);
+    });
+  }
+
+  List<HorarioResult> obtenerHorarioDelProfesor(
+      String nombre, String apellido) {
+    return horarios
+        .where((horario) =>
+            horario.nombreProfesor == nombre &&
+            horario.apellidoProfesor == apellido)
+        .toList();
+  }
+
+  Set<String> _obtenerAsignaturasUnicas(List<HorarioResult> horarioProfesor) {
+    return horarioProfesor.map((horario) => horario.asignatura).toSet();
+  }
+
+  String obtenerTresPrimerasLetras(String texto) {
+    if (texto.length < 3) {
+      return texto.toUpperCase();
+    }
+    return texto.substring(0, 3).toUpperCase();
+  }
 
   @override
   Widget build(BuildContext context) {
-    final index = ModalRoute.of(context)!.settings.arguments as int;
-    final centroProvider = Provider.of<CentroProvider>(context, listen: false);
-    final listadoProfesores = centroProvider.listaProfesores;
-
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          "HORARIO DE ${listadoProfesores[index].nombre} ",
-          style: const TextStyle(fontSize: 16),
+          'Horario de ${profesor.nombre} ${profesor.apellidos}',
+          style: TextStyle(color: Colors.white),
+        ),
+        backgroundColor: Colors.blue,
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          children: [
+            Expanded(
+              child: Table(
+                border: TableBorder.all(color: Colors.blueAccent, width: 2),
+                children: [
+                  TableRow(
+                    children: [
+                      _buildTableHeaderCell('Hora'),
+                      _buildTableHeaderCell('Lunes'),
+                      _buildTableHeaderCell('Martes'),
+                      _buildTableHeaderCell('Miércoles'),
+                      _buildTableHeaderCell('Jueves'),
+                      _buildTableHeaderCell('Viernes'),
+                    ],
+                  ),
+                  for (var hora in horas)
+                    TableRow(
+                      children: [
+                        _buildTableCell(hora),
+                        for (var dia in ['L', 'M', 'X', 'J', 'V'])
+                          TableCell(
+                            child: _obtenerCeldaHorario(
+                                horarioProfesor, dia, hora),
+                          ),
+                      ],
+                    ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 10),
+            Container(
+              padding: const EdgeInsets.all(16.0),
+              margin: const EdgeInsets.symmetric(vertical: 20.0),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                border: Border.all(color: Colors.blueAccent),
+                borderRadius: BorderRadius.circular(10.0),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.grey.withOpacity(0.5),
+                    spreadRadius: 2,
+                    blurRadius: 5,
+                    offset: Offset(0, 3),
+                  ),
+                ],
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  const Text(
+                    'ASIGNATURAS',
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                  ),
+                  const SizedBox(height: 10),
+                  Text(
+                    asignaturasProfesor.map((asignatura) {
+                      final abreviatura = obtenerTresPrimerasLetras(asignatura);
+                      return '$abreviatura - $asignatura';
+                    }).join('\n'),
+                    style: TextStyle(fontSize: 14),
+                  ),
+                ],
+              ),
+            ),
+          ],
         ),
       ),
-      body: Container(
-          decoration: const BoxDecoration(color: Colors.white),
-          child: Column(
-            children: [
-              Container(
-                color: Colors.blue,
-                child: Table(
-                  border: TableBorder.all(style: BorderStyle.solid),
-                  children: [
-                    diasSemana(),
-                    //8:15-9:15
-                    diaHorario(
-                        context, centroProvider, index, tramosHorarios[0], 0),
-                    //9:15-10:15
-                    diaHorario(
-                        context, centroProvider, index, tramosHorarios[1], 1),
-                    //10:15-11:15
-                    diaHorario(
-                        context, centroProvider, index, tramosHorarios[2], 2),
-                    //11:15-11:45
-                    diaHorario(
-                        context, centroProvider, index, tramosHorarios[3], 3),
-                    //11:45-12:45
-                    diaHorario(
-                        context, centroProvider, index, tramosHorarios[4], 4),
-                    //12:45-13:45
-                    diaHorario(
-                        context, centroProvider, index, tramosHorarios[5], 5),
-                    //13:45-14:45
-                    diaHorario(
-                        context, centroProvider, index, tramosHorarios[6], 6),
-                  ],
-                ),
-              ),
-            ],
-          )),
     );
   }
 
-  TableRow diasSemana() {
-    return TableRow(children: [
-      Container(),
-      const Text("L", textAlign: TextAlign.center),
-      const Text("M", textAlign: TextAlign.center),
-      const Text("X", textAlign: TextAlign.center),
-      const Text("J", textAlign: TextAlign.center),
-      const Text("V", textAlign: TextAlign.center),
-    ]);
+  Widget _buildTableHeaderCell(String text) {
+    return Container(
+      color: Colors.blueAccent,
+      padding: const EdgeInsets.all(8.0),
+      child: Center(
+        child: Text(
+          text,
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+        ),
+      ),
+    );
   }
 
-  TableRow diaHorario(BuildContext context, CentroProvider centroProvider,
-      int index, List<int> tramosHorarios, int i) {
-    return TableRow(decoration: const BoxDecoration(color: Colors.white), children: [
-      Container(
-          color: Colors.blue,
-          child: Text(
-            horario[i],
-            style: const TextStyle(fontWeight: FontWeight.bold),
-          )),
-      devolverClase(context, centroProvider, index, tramosHorarios[0]),
-      devolverClase(context, centroProvider, index, tramosHorarios[1]),
-      devolverClase(context, centroProvider, index, tramosHorarios[2]),
-      devolverClase(context, centroProvider, index, tramosHorarios[3]),
-      devolverClase(context, centroProvider, index, tramosHorarios[4]),
-    ]);
+  Widget _buildTableCell(String text) {
+    return Container(
+      padding: const EdgeInsets.all(8.0),
+      child: Center(
+        child: Text(text),
+      ),
+    );
   }
-}
 
-Widget devolverClase(
-    BuildContext context, CentroProvider centroProvider, int index, int hora) {
-  final listadoAulas = centroProvider.listaAulas;
-  final listadoAsignaturas = centroProvider.listaAsignaturas;
-  List<String> nuestroHorario = _averiguarHorario(context, index, hora);
+  Widget _obtenerCeldaHorario(
+      List<HorarioResult> horarioProfesor, String dia, String hora) {
+    final horario = horarioProfesor.firstWhere(
+        (horario) =>
+            horario.dia == dia + _obtenerNumeroHora(hora) &&
+            horario.hora == hora.split(' ')[0], // ajuste aquí
+        orElse: () => HorarioResult(
+              curso: '',
+              dia: '',
+              hora: '',
+              asignatura: '',
+              aulas: '',
+              nombreProfesor: '',
+              apellidoProfesor: '',
+            ));
+    final abreviatura = obtenerTresPrimerasLetras(horario.asignatura);
+    return horario.asignatura.isEmpty
+        ? Container(
+            decoration: BoxDecoration(
+              border: Border.all(color: Colors.blueAccent, width: 1),
+            ),
+            child: const SizedBox.shrink())
+        : Container(
+            padding: const EdgeInsets.all(8.0),
+            decoration: BoxDecoration(
+              color: Colors.lightBlueAccent,
+              border: Border.all(color: Colors.blueAccent, width: 1),
+            ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text('$abreviatura - ${horario.asignatura}'),
+                Text(horario.aulas),
+              ],
+            ),
+          );
+  }
 
-  String asignatura = "";
-  String aula = "";
-
-  //Buscamos la asignatura y el aula correspondientes a la hora actual
-  for (int i = 0; i < listadoAulas.length; i++) {
-    if (int.parse(nuestroHorario[1]) == int.parse(listadoAulas[i].numIntAu)) {
-      aula = listadoAulas[i].abreviatura;
+  String _obtenerNumeroHora(String hora) {
+    switch (hora) {
+      case '8:00 - 9:00':
+        return '1';
+      case '9:00 - 10:00':
+        return '2';
+      case '10:00 - 11:00':
+        return '3';
+      case '11:30 - 12:30':
+        return '4';
+      case '12:30 - 13:30':
+        return '5';
+      case '13:30 - 14:30':
+        return '6';
+      default:
+        return '';
     }
   }
-
-  for (int i = 0; i < listadoAsignaturas.length; i++) {
-    if (int.parse(nuestroHorario[0]) ==
-        int.parse(listadoAsignaturas[i].numIntAs)) {
-      asignatura = listadoAsignaturas[i].abreviatura;
-    }
-  }
-
-  //Contenedor con la asignatura y el aula correspondiente
-  return Column(children: [
-    Text(asignatura,
-        textAlign: TextAlign.center,
-        style: const TextStyle(
-          fontWeight: FontWeight.bold,
-          fontSize: 14,
-        )),
-    Text(aula.toUpperCase(), style: const TextStyle(fontWeight: FontWeight.bold))
-  ]);
-}
-
-List<String> _averiguarHorario(BuildContext context, int idProf, int tramo) {
-  final centroProvider = Provider.of<CentroProvider>(context, listen: false);
-  final listadoHorariosProfesores = centroProvider.listaHorariosProfesores;
-  List<String> horario = List.filled(2, "0");
-  //debugPrint("Tramo que entra en el método de averiguar horario: $tramo");
-
-  for (int i = 0; i < listadoHorariosProfesores.length; i++) {
-    if (int.parse(listadoHorariosProfesores[i].horNumIntPr) == idProf + 1) {
-      for (int j = 0; j < listadoHorariosProfesores[i].actividad.length; j++) {
-        if (int.parse(listadoHorariosProfesores[i].actividad[j].tramo) ==
-            tramo) {
-          horario[0] = listadoHorariosProfesores[i].actividad[j].asignatura;
-
-          horario[1] = listadoHorariosProfesores[i].actividad[j].aula;
-
-          // debugPrint("Asignatura: " + horario[0]);
-          // debugPrint("Aula: " + horario[1]);
-        }
-      }
-    }
-  }
-
-  return horario;
 }

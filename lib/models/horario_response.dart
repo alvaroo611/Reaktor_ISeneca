@@ -23,6 +23,8 @@ class HorarioResult {
     required this.hora,
     required this.asignatura,
     required this.aulas,
+    required this.nombreProfesor,
+    required this.apellidoProfesor,
   });
 
   String curso;
@@ -30,6 +32,8 @@ class HorarioResult {
   String hora;
   String asignatura;
   String aulas;
+  String nombreProfesor;
+  String apellidoProfesor;
 
   factory HorarioResult.fromJson(String str) =>
       HorarioResult.fromMap(json.decode(str));
@@ -40,5 +44,7 @@ class HorarioResult {
         hora: json["Hora"],
         asignatura: json["Asignatura"],
         aulas: json["Aulas"],
+        nombreProfesor: json["NombreProfesor"],
+        apellidoProfesor: json["ApellidoProfesor"],
       );
 }

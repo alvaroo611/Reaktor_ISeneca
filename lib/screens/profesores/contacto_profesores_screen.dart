@@ -1,10 +1,8 @@
-import 'dart:math';
 import 'package:flutter/material.dart';
-import 'package:iseneca/models/profesor.dart';
-import 'package:iseneca/providers/profesores_provider.dart';
+import 'package:iseneca/models/credenciales_response.dart';
+import 'package:iseneca/providers/credenciales_provider.dart';
 import 'package:provider/provider.dart';
-import 'package:url_launcher/url_launcher_string.dart';
-import 'package:http/http.dart' as http;
+import 'package:url_launcher/url_launcher.dart';
 
 class ContactoProfesoresScreen extends StatefulWidget {
   const ContactoProfesoresScreen({Key? key}) : super(key: key);
@@ -15,50 +13,49 @@ class ContactoProfesoresScreen extends StatefulWidget {
 }
 
 class _ContactoProfesoresScreenState extends State<ContactoProfesoresScreen> {
-  List<Profesor> listaOrdenadaProfesores = [];
-  List<Profesor> profesoresFiltrados = [];
+  List<Credenciales> listaOrdenadaProfesores = [];
+  List<Credenciales> profesoresFiltrados = [];
+
   bool isLoading = true;
   TextEditingController _controller = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-    _fetchProfesores();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final credencialesProvider =
+          Provider.of<CredencialesProvider>(context, listen: false);
+      _fetchProfesores(credencialesProvider);
+    });
   }
 
-  Future<void> _fetchProfesores() async {
-    final centroProvider =
-        Provider.of<ProfesoresProvider>(context, listen: false);
-    final listadoProfesores =
-        await centroProvider.fetchProfesores(http.Client());
-
-    // Conjunto para almacenar nombres y apellidos únicos
-    Set<String> nombresApellidosSet = Set();
-
-    // Lista para almacenar los profesores sin nombres y apellidos repetidos
-    List<Profesor> listaProfesoresSinRepetidos = [];
-
-    for (Profesor profesor in listadoProfesores) {
-      // Concatenar nombre y apellido del profesor
-      String nombreCompleto = profesor.nombreCompleto;
-
-      // Verificar si el nombre y apellido ya están en el conjunto
-      if (!nombresApellidosSet.contains(nombreCompleto)) {
-        // Agregar el nombre y apellido al conjunto y a la lista
-        nombresApellidosSet.add(nombreCompleto);
-        listaProfesoresSinRepetidos.add(profesor);
-      }
-    }
-
-    // Ordenar la lista por nombre
-    listaProfesoresSinRepetidos.sort((a, b) => a.nombre.compareTo(b.nombre));
-
+  Future<void> _fetchProfesores(
+      CredencialesProvider credencialesProvider) async {
     setState(() {
-      listaOrdenadaProfesores = listaProfesoresSinRepetidos;
-      profesoresFiltrados =
-          listaOrdenadaProfesores; // Inicialmente muestra todos los profesores
-      isLoading = false;
+      isLoading = true;
     });
+
+    try {
+      await credencialesProvider.getCredencialesUsuario();
+      if (credencialesProvider.listaCredenciales.isEmpty) {
+        Future.delayed(const Duration(seconds: 2), () {
+          _fetchProfesores(credencialesProvider);
+        });
+      }
+      setState(() {
+        listaOrdenadaProfesores = credencialesProvider.listaCredenciales;
+        listaOrdenadaProfesores.sort((a, b) => a.nombre.compareTo(b.nombre));
+        profesoresFiltrados = List.from(listaOrdenadaProfesores);
+      });
+    } catch (e) {
+      Future.delayed(const Duration(seconds: 2), () {
+        _fetchProfesores(credencialesProvider);
+      });
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
+    }
   }
 
   void filterSearchResults(String query) {
@@ -67,7 +64,7 @@ class _ContactoProfesoresScreenState extends State<ContactoProfesoresScreen> {
         profesoresFiltrados = List.from(listaOrdenadaProfesores);
       } else {
         profesoresFiltrados = listaOrdenadaProfesores
-            .where((profesor) => profesor.nombreCompleto
+            .where((profesor) => "${profesor.nombre} ${profesor.apellidos}"
                 .toLowerCase()
                 .contains(query.toLowerCase()))
             .toList();
@@ -85,7 +82,7 @@ class _ContactoProfesoresScreenState extends State<ContactoProfesoresScreen> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             const Text(
-              'Contacto profesor',
+              'CONTACTO',
               style: TextStyle(
                 color: Colors.white,
                 fontSize: 20,
@@ -142,17 +139,17 @@ class _ContactoProfesoresScreenState extends State<ContactoProfesoresScreen> {
                     _mostrarAlert(context, index, profesoresFiltrados);
                   },
                   child: Container(
-                    margin: const EdgeInsets.symmetric(vertical: 10),
-                    padding: const EdgeInsets.all(15),
+                    margin:
+                        const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                    padding: const EdgeInsets.all(10),
                     decoration: BoxDecoration(
                       color: Colors.white,
-                      border: Border.all(color: Colors.blueAccent, width: 2),
-                      borderRadius: BorderRadius.circular(15),
+                      borderRadius: BorderRadius.circular(10),
                       boxShadow: [
                         BoxShadow(
                           color: Colors.grey.withOpacity(0.5),
-                          spreadRadius: 3,
-                          blurRadius: 7,
+                          spreadRadius: 2,
+                          blurRadius: 5,
                           offset: const Offset(0, 3),
                         ),
                       ],
@@ -161,13 +158,12 @@ class _ContactoProfesoresScreenState extends State<ContactoProfesoresScreen> {
                       leading: CircleAvatar(
                         backgroundColor: Colors.blue,
                         child: Text(
-                          profesoresFiltrados[index].nombreCompleto[
-                              0], // Muestra la primera letra del nombre
+                          "${profesoresFiltrados[index].nombre[0]}",
                           style: const TextStyle(color: Colors.white),
                         ),
                       ),
                       title: Text(
-                        profesoresFiltrados[index].nombreCompleto,
+                        "${profesoresFiltrados[index].nombre} ${profesoresFiltrados[index].apellidos}",
                         style: const TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
@@ -187,68 +183,84 @@ class _ContactoProfesoresScreenState extends State<ContactoProfesoresScreen> {
   }
 
   void _mostrarAlert(
-      BuildContext context, int index, List<Profesor> listadoProfesores) {
-    final int numeroTlf = (Random().nextInt(99999999) + 600000000);
-    const String mailProfesor = "Correo@gmail.com";
+      BuildContext context, int index, List<Credenciales> credenciales) {
+    Credenciales profesor = credenciales[index];
 
     showDialog(
       context: context,
       barrierDismissible: true,
       builder: (context) {
-        TextStyle textStyle = const TextStyle(fontWeight: FontWeight.bold);
-
         return AlertDialog(
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
-          title: Text(listadoProfesores[index].nombre),
+          title: Text("${profesor.nombre} ${profesor.apellidos}"),
           content: Column(
             mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              const Divider(
-                color: Colors.black,
-                thickness: 1,
-              ),
-              Row(
-                children: [
-                  Text(
-                    "Correo: ",
-                    style: textStyle,
-                  ),
-                  const Text(mailProfesor),
-                  IconButton(
-                    onPressed: () {
-                      launchUrlString("mailto:$mailProfesor");
-                    },
-                    icon: const Icon(Icons.mail),
-                    color: Colors.blue,
-                  ),
-                ],
-              ),
-              Row(
-                children: [
-                  Text(
-                    "Teléfono: ",
-                    style: textStyle,
-                  ),
-                  Text("$numeroTlf"),
-                  IconButton(
-                    onPressed: () {
-                      launchUrlString("tel:$numeroTlf");
-                    },
-                    icon: const Icon(Icons.phone),
-                    color: Colors.blue,
-                  )
-                ],
-              )
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _buildContactInfoRow(Icons.mail, "Correo: ${profesor.usuario}",
+                  () => _launchEmail(profesor.usuario)),
+              SizedBox(height: 10),
+              _buildContactInfoRow(
+                  Icons.phone,
+                  "Teléfono: ${profesor.telefono}",
+                  () => _launchPhone(profesor.telefono)),
             ],
           ),
           actions: [
             TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: const Text("Cerrar")),
+              onPressed: () => Navigator.pop(context),
+              child: const Text("Cerrar"),
+            ),
           ],
         );
       },
     );
+  }
+
+  Widget _buildContactInfoRow(
+      IconData icon, String text, VoidCallback onPressed) {
+    return Row(
+      children: [
+        Icon(icon, color: Colors.blueAccent),
+        SizedBox(width: 10),
+        Expanded(
+          child: GestureDetector(
+            onTap: onPressed,
+            child: Text(
+              text,
+              style: TextStyle(
+                color: Colors.black,
+                fontSize: 16,
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  void _launchEmail(String email) async {
+    final Uri _emailLaunchUri = Uri(
+      scheme: 'mailto',
+      path: email,
+    );
+
+    if (await canLaunch(_emailLaunchUri.toString())) {
+      await launch(_emailLaunchUri.toString());
+    } else {
+      throw 'Could not launch $email';
+    }
+  }
+
+  void _launchPhone(String phone) async {
+    final Uri _phoneLaunchUri = Uri(
+      scheme: 'tel',
+      path: phone,
+    );
+
+    if (await canLaunch(_phoneLaunchUri.toString())) {
+      await launch(_phoneLaunchUri.toString());
+    } else {
+      throw 'Could not launch $phone';
+    }
   }
 }
