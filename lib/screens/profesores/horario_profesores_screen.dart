@@ -14,7 +14,7 @@ class HorarioProfesoresScreen extends StatefulWidget {
 class _HorarioProfesoresScreenState extends State<HorarioProfesoresScreen> {
   List<Credenciales> listaOrdenadaProfesores = [];
   List<Credenciales> profesoresFiltrados = [];
-  bool isLoading = true;
+  bool isLoading = false;
   TextEditingController _controller = TextEditingController();
 
   @override
@@ -142,11 +142,18 @@ class _HorarioProfesoresScreenState extends State<HorarioProfesoresScreen> {
               itemBuilder: (BuildContext context, int index) {
                 return GestureDetector(
                   onTap: () {
+                    setState(() {
+                      isLoading = true; // Indicar que se está cargando
+                    });
                     Navigator.pushNamed(
                       context,
                       "horario_profesores_detalles_screen",
                       arguments: profesoresFiltrados[index],
-                    );
+                    ).then((_) {
+                      setState(() {
+                        isLoading = false; // Indicar que se ha cargado
+                      });
+                    });
                   },
                   child: Container(
                     margin:

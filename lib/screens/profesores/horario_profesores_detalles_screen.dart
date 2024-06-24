@@ -95,74 +95,80 @@ class _HorarioProfesoresDetallesScreenState
         ),
         backgroundColor: Colors.blue,
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Column(
-          children: [
-            Expanded(
-              child: Table(
-                border: TableBorder.all(color: Colors.blueAccent, width: 2),
-                children: [
-                  TableRow(
-                    children: [
-                      _buildTableHeaderCell('Hora'),
-                      _buildTableHeaderCell('Lunes'),
-                      _buildTableHeaderCell('Martes'),
-                      _buildTableHeaderCell('Miércoles'),
-                      _buildTableHeaderCell('Jueves'),
-                      _buildTableHeaderCell('Viernes'),
-                    ],
-                  ),
-                  for (var hora in horas)
+      body: Center(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            children: [
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Table(
+                  border: TableBorder.all(color: Colors.blueAccent, width: 2),
+                  defaultColumnWidth: FixedColumnWidth(100.0),
+                  children: [
                     TableRow(
                       children: [
-                        _buildTableCell(hora),
-                        for (var dia in ['L', 'M', 'X', 'J', 'V'])
-                          TableCell(
-                            child: _obtenerCeldaHorario(
-                                horarioProfesor, dia, hora),
-                          ),
+                        _buildTableHeaderCell('Hora'),
+                        _buildTableHeaderCell('Lunes'),
+                        _buildTableHeaderCell('Martes'),
+                        _buildTableHeaderCell('Miércoles'),
+                        _buildTableHeaderCell('Jueves'),
+                        _buildTableHeaderCell('Viernes'),
                       ],
                     ),
-                ],
+                    for (var hora in horas)
+                      TableRow(
+                        children: [
+                          _buildTableCell(hora),
+                          for (var dia in ['L', 'M', 'X', 'J', 'V'])
+                            TableCell(
+                              child: _obtenerCeldaHorario(
+                                  horarioProfesor, dia, hora),
+                            ),
+                        ],
+                      ),
+                  ],
+                ),
               ),
-            ),
-            const SizedBox(height: 10),
-            Container(
-              padding: const EdgeInsets.all(16.0),
-              margin: const EdgeInsets.symmetric(vertical: 20.0),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                border: Border.all(color: Colors.blueAccent),
-                borderRadius: BorderRadius.circular(10.0),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.grey.withOpacity(0.5),
-                    spreadRadius: 2,
-                    blurRadius: 5,
-                    offset: Offset(0, 3),
-                  ),
-                ],
+              const SizedBox(height: 10),
+              Container(
+                padding: const EdgeInsets.all(16.0),
+                margin: const EdgeInsets.symmetric(vertical: 20.0),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  border: Border.all(color: Colors.blueAccent),
+                  borderRadius: BorderRadius.circular(10.0),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.grey.withOpacity(0.5),
+                      spreadRadius: 2,
+                      blurRadius: 5,
+                      offset: Offset(0, 3),
+                    ),
+                  ],
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    const Text(
+                      'ASIGNATURAS',
+                      style:
+                          TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                    ),
+                    const SizedBox(height: 10),
+                    Text(
+                      asignaturasProfesor.map((asignatura) {
+                        final abreviatura =
+                            obtenerTresPrimerasLetras(asignatura);
+                        return '$abreviatura - $asignatura';
+                      }).join('\n'),
+                      style: TextStyle(fontSize: 14),
+                    ),
+                  ],
+                ),
               ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  const Text(
-                    'ASIGNATURAS',
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-                  ),
-                  const SizedBox(height: 10),
-                  Text(
-                    asignaturasProfesor.map((asignatura) {
-                      final abreviatura = obtenerTresPrimerasLetras(asignatura);
-                      return '$abreviatura - $asignatura';
-                    }).join('\n'),
-                    style: TextStyle(fontSize: 14),
-                  ),
-                ],
-              ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -195,7 +201,7 @@ class _HorarioProfesoresDetallesScreenState
     final horario = horarioProfesor.firstWhere(
         (horario) =>
             horario.dia == dia + _obtenerNumeroHora(hora) &&
-            horario.hora == hora.split(' ')[0], // ajuste aquí
+            horario.hora == hora.split(' ')[0],
         orElse: () => HorarioResult(
               curso: '',
               dia: '',
@@ -215,7 +221,7 @@ class _HorarioProfesoresDetallesScreenState
         : Container(
             padding: const EdgeInsets.all(8.0),
             decoration: BoxDecoration(
-              color: Colors.lightBlueAccent,
+              color: const Color.fromARGB(255, 151, 202, 226),
               border: Border.all(color: Colors.blueAccent, width: 1),
             ),
             child: Column(
