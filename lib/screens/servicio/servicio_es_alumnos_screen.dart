@@ -96,21 +96,21 @@ class _ServicioESAlumnosScreenState extends State<ServicioESAlumnosScreen> {
                       );
                     },
                     child: Container(
-                          margin: const EdgeInsets.symmetric(
-                              horizontal: 10, vertical: 5),
-                          padding: const EdgeInsets.all(10),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(10),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.grey.withOpacity(0.5),
-                                spreadRadius: 2,
-                                blurRadius: 5,
-                                offset: const Offset(0, 3),
-                              ),
-                            ],
+                      margin: const EdgeInsets.symmetric(
+                          horizontal: 10, vertical: 5),
+                      padding: const EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(10),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey.withOpacity(0.5),
+                            spreadRadius: 2,
+                            blurRadius: 5,
+                            offset: const Offset(0, 3),
                           ),
+                        ],
+                      ),
                       child: Row(
                         children: [
                           Container(
@@ -211,7 +211,7 @@ class _ServicioESAlumnosScreenState extends State<ServicioESAlumnosScreen> {
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(50),
                         ),
-                        fillColor: Colors.blue,
+                        fillColor: isIdaPressed ? Colors.grey : Colors.blue,
                         padding: const EdgeInsets.symmetric(
                             horizontal: 120, vertical: 60),
                         child: const FittedBox(
@@ -257,7 +257,7 @@ class _ServicioESAlumnosScreenState extends State<ServicioESAlumnosScreen> {
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(50),
                         ),
-                        fillColor: Colors.red,
+                        fillColor: isIdaPressed ? Colors.grey : Colors.red,
                         padding: const EdgeInsets.symmetric(
                             horizontal: 120, vertical: 60),
                         child: const FittedBox(

@@ -1,17 +1,10 @@
-2024/06/24-02:51:34.372 26cc Reusing MANIFEST C:\Users\alvar\AppData\Local\Temp\flutter_tools.437a9943\flutter_tools_chrome_device.5857427d\Default\Session Storage/MANIFEST-000001
-2024/06/24-02:51:34.390 26cc Recovering log #9
-2024/06/24-02:51:34.398 26cc Reusing old log C:\Users\alvar\AppData\Local\Temp\flutter_tools.437a9943\flutter_tools_chrome_device.5857427d\Default\Session Storage/000009.log 
-2024/06/24-02:51:34.399 26cc Delete type=0 #3
-2024/06/24-02:51:34.399 26cc Delete type=0 #4
-2024/06/24-02:51:34.399 26cc Delete type=0 #6
-2024/06/24-02:51:49.078 2460 Level-0 table #13: started
-2024/06/24-02:51:49.088 2460 Level-0 table #13: 11524 bytes OK
-2024/06/24-02:51:49.093 2460 Delete type=0 #9
-2024/06/24-02:51:49.096 26cc Compacting 4@0 + 0@1 files
-2024/06/24-02:51:49.109 26cc Generated table #14@0: 4 keys, 303 bytes
-2024/06/24-02:51:49.109 26cc Compacted 4@0 + 0@1 files => 303 bytes
-2024/06/24-02:51:49.113 26cc compacted to: files[ 0 1 0 0 0 0 0 ]
-2024/06/24-02:51:49.114 26cc Delete type=2 #3
-2024/06/24-02:51:49.114 26cc Delete type=2 #7
-2024/06/24-02:51:49.114 26cc Delete type=2 #10
-2024/06/24-02:51:49.114 26cc Delete type=2 #13
+2024/06/24-19:27:49.801 4a34 Reusing MANIFEST C:\Users\alvar\AppData\Local\Temp\flutter_tools.33c6eb3c\flutter_tools_chrome_device.2089a0c3\Default\Session Storage/MANIFEST-000001
+2024/06/24-19:27:49.805 4a34 Recovering log #12
+2024/06/24-19:27:49.812 4a34 Reusing old log C:\Users\alvar\AppData\Local\Temp\flutter_tools.33c6eb3c\flutter_tools_chrome_device.2089a0c3\Default\Session Storage/000012.log 
+2024/06/24-19:27:49.815 4a34 Delete type=2 #3
+2024/06/24-19:27:49.815 4a34 Delete type=0 #3
+2024/06/24-19:27:49.816 4a34 Delete type=0 #4
+2024/06/24-19:27:49.816 4a34 Delete type=0 #6
+2024/06/24-19:27:49.816 4a34 Delete type=2 #7
+2024/06/24-19:27:49.816 4a34 Delete type=0 #9
+2024/06/24-19:27:49.816 4a34 Delete type=2 #10

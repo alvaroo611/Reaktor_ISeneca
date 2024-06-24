@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:iseneca/models/alumno_servcio.dart';
+import 'package:iseneca/models/servicio_response.dart'; // Asegúrate de que esta ruta sea correcta
 import 'package:provider/provider.dart';
 import 'package:iseneca/providers/servicio_provider.dart';
 
@@ -16,7 +16,7 @@ class _ServicioInformesScreenState extends State<ServicioInformesScreen> {
   String selectedDateFin = "";
   bool fechaInicioEscogida = false;
   bool isLoading = false;
-  List<AlumnoServcio> listaAlumnosFechas = [];
+  List<Servicio> listaAlumnosFechas = [];
   List<String> listaAlumnosNombres = [];
   DateTime dateTimeInicio = DateTime.now();
   DateTime dateTimeFin = DateTime.now();
@@ -24,10 +24,29 @@ class _ServicioInformesScreenState extends State<ServicioInformesScreen> {
   int repeticiones = 0;
   TextEditingController _controller = TextEditingController();
   List<String> alumnosFiltrados = []; // Lista para almacenar alumnos filtrados
+  late List<Servicio> servicioList = [];
+  late ServicioProvider servicioProvider;
+
+  @override
+  void initState() {
+    super.initState();
+    servicioProvider = Provider.of<ServicioProvider>(context, listen: false);
+    _fetchData();
+  }
+
+  Future<void> _fetchData() async {
+    await servicioProvider.getAlumnosServicio(context);
+  }
+
   int _calcularRepeticiones(String nombreAlumno) {
     int num = 0;
-    for (int i = 0; i < listaAlumnosFechas.length; i++) {
-      if (nombreAlumno == listaAlumnosFechas[i].nombreCompleto) {
+    final today = DateTime.now();
+    for (var servicio in listaAlumnosFechas) {
+      final fechaServicio = DateTime.parse(servicio.fechaEntrada);
+      if (nombreAlumno == servicio.nombreAlumno &&
+          fechaServicio.year == today.year &&
+          fechaServicio.month == today.month &&
+          fechaServicio.day == today.day) {
         num++;
       }
     }
@@ -59,34 +78,33 @@ class _ServicioInformesScreenState extends State<ServicioInformesScreen> {
   }
 
   Future<void> _loadNombresAlumnos(
-      BuildContext context, DateTime fechaInicio, DateTime fechaFin) async {
+    BuildContext context, DateTime fechaInicio, DateTime fechaFin) async {
+  setState(() {
+    isLoading = true;
+  });
+  try {
+    servicioList = await servicioProvider.getServiciosPorFecha(fechaInicio, fechaFin);
+
+    // Obtener nombres únicos usando un conjunto (Set)
+    Set<String> nombresUnicos = servicioList.map((servicio) => servicio.nombreAlumno).toSet();
+
     setState(() {
-      isLoading = true;
+      listaAlumnosFechas = servicioList;
+      listaAlumnosNombres = nombresUnicos.toList(); // Convertir Set a List
+      alumnosFiltrados = List.from(listaAlumnosNombres);
+      size = listaAlumnosNombres.length;
+      print("Datos cargados: $alumnosFiltrados"); // Debugging output
     });
-    try {
-      final servicioProvider =
-          Provider.of<ServicioProvider>(context, listen: false);
-      Future.delayed(const Duration(seconds: 2));
-      await servicioProvider.fetchStudentVisits(
-          DateFormat("dd-MM-yyyy").format(fechaInicio),
-          DateFormat("dd-MM-yyyy").format(fechaFin),
-          context);
-      setState(() {
-        listaAlumnosNombres = servicioProvider.getNombresAlumnosFromMap();
-        alumnosFiltrados = listaAlumnosNombres;
-        listaAlumnosFechas = servicioProvider.getAlumnoFromMap();
-        size = listaAlumnosNombres.length;
-      });
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error al cargar estudiantes por fecha.')));
-      print('Failed to load students: $e');
-    } finally {
-      setState(() {
-        isLoading = false;
-      });
-    }
+  } catch (e) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Error al cargar estudiantes por fecha.')));
+    print('Failed to load students: $e');
+  } finally {
+    setState(() {
+      isLoading = false;
+    });
   }
+}
 
   // Método para filtrar alumnos por nombre
   void filtrarAlumnos(String query) {
@@ -242,13 +260,11 @@ class _ServicioInformesScreenState extends State<ServicioInformesScreen> {
                 : ListView.builder(
                     itemCount: alumnosFiltrados.length,
                     itemBuilder: (context, index) {
-                      repeticiones =
-                          _calcularRepeticiones(listaAlumnosNombres[index]);
                       return GestureDetector(
                         onTap: () => Navigator.pushNamed(
                           context,
                           "servicio_informes_detalles_screen",
-                          arguments: listaAlumnosNombres[index],
+                          arguments: alumnosFiltrados[index],
                         ),
                         child: Container(
                           margin: const EdgeInsets.symmetric(
@@ -273,13 +289,6 @@ class _ServicioInformesScreenState extends State<ServicioInformesScreen> {
                                 fontSize: 20,
                                 fontWeight: FontWeight.bold,
                                 color: Color.fromARGB(255, 8, 8, 8),
-                              ),
-                            ),
-                            subtitle: Text(
-                              "Veces visitado hoy: $repeticiones",
-                              style: const TextStyle(
-                                fontSize: 16,
-                                color: Color.fromARGB(227, 112, 121, 131),
                               ),
                             ),
                             trailing: const Icon(

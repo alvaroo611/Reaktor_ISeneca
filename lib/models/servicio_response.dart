@@ -21,18 +21,32 @@ class Servicio {
   Servicio({
     required this.nombreAlumno,
     required this.fechaEntrada,
+    required this.horaEntrada,
     required this.fechaSalida,
+    required this.horaSalida,
   });
 
   String nombreAlumno;
   String fechaEntrada;
+  String horaEntrada;
   String fechaSalida;
+  String horaSalida;
 
   factory Servicio.fromJson(String str) => Servicio.fromMap(json.decode(str));
 
   factory Servicio.fromMap(Map<String, dynamic> json) => Servicio(
-        nombreAlumno: json["NombreAlumno"],
+        nombreAlumno: json[" "],
         fechaEntrada: json["FechaEntrada"],
+        horaEntrada: json["HoraEntrada"],
         fechaSalida: json["FechaSalida"],
+        horaSalida: json["HoraSalida"],
       );
+
+  Map<String, dynamic> toMap() => {
+        " ": nombreAlumno,
+        "FechaEntrada": fechaEntrada,
+        "HoraEntrada": horaEntrada,
+        "FechaSalida": fechaSalida,
+        "HoraSalida": horaSalida,
+      };
 }

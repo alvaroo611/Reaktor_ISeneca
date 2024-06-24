@@ -1,12 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:iseneca/models/alumno_servcio.dart';
-import 'package:iseneca/models/datos_visita.dart';
-
 import 'package:provider/provider.dart';
-import 'package:iseneca/providers/alumno_provider.dart';
+import 'package:iseneca/models/servicio_response.dart'; // Asegúrate de que esta importación sea correcta
 import 'package:iseneca/providers/servicio_provider.dart';
-import 'package:url_launcher/url_launcher_string.dart';
-import 'package:http/http.dart' as http;
 
 class ServicioInformesDetallesScreen extends StatefulWidget {
   const ServicioInformesDetallesScreen({Key? key}) : super(key: key);
@@ -18,8 +13,9 @@ class ServicioInformesDetallesScreen extends StatefulWidget {
 
 class _ServicioInformesDetallesScreenState
     extends State<ServicioInformesDetallesScreen> {
-  AlumnoServcio? alumno;
-  List<DatosVisita> datosVisitas = [];
+  List<Servicio> servicios =
+      []; // Lista para almacenar los servicios del alumno
+  bool isLoading = false; // Estado para indicar si se está cargando
 
   @override
   void initState() {
@@ -30,152 +26,156 @@ class _ServicioInformesDetallesScreenState
   }
 
   Future<void> _loadData() async {
-    final nombreParametro =
-        ModalRoute.of(context)!.settings.arguments as String;
+    final nombreAlumno = ModalRoute.of(context)!.settings.arguments
+        as String; // Obtener nombre del argumento
     final servicioProvider =
         Provider.of<ServicioProvider>(context, listen: false);
 
-    List<AlumnoServcio> listaAlumnos = [];
+    setState(() {
+      isLoading = true; // Marcar que se está cargando
+    });
 
     try {
-      listaAlumnos = servicioProvider.getAlumnoFromMap();
-      // Buscar el alumno con el nombre proporcionado
-      alumno = listaAlumnos
-          .firstWhere((alumno) => alumno.nombreCompleto == nombreParametro);
+      // Cargar servicios del alumno
+      servicios = await servicioProvider.getServiciosPorAlumno(nombreAlumno);
 
-      if (alumno != null) {
-        // Si se encuentra el alumno, obtener sus datos de visita
-        datosVisitas =
-            servicioProvider.getDatosVisitasFromMap(alumno!.alumnoId);
-      }
+      servicios = servicios.reversed.toList();
+
+      setState(() {
+        // Actualizar el estado para mostrar los servicios
+        isLoading = false; // Marcar que la carga ha terminado
+      });
     } catch (e) {
-      print('Error loading students: $e');
-    }
+      print('Error cargando servicios del alumno: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error al cargar servicios del alumno'),
+          backgroundColor: Colors.red,
+        ),
+      );
 
-    setState(() {
-      // Actualiza fechas con los datos de visita específicos del alumno
-      datosVisitas = datosVisitas;
-    });
+      setState(() {
+        isLoading =
+            false; // Asegurarse de que isLoading se marque como falso en caso de error
+      });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    final nombreParametro =
-        ModalRoute.of(context)!.settings.arguments as String;
+    final nombreAlumno = ModalRoute.of(context)!.settings.arguments
+        as String; // Obtener nombre del argumento
+    final size =
+        MediaQuery.of(context).size; // Obtener el tamaño de la pantalla
 
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.blue,
-        title: Text(
-          nombreParametro.toString().toUpperCase(),
-          style: const TextStyle(
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
-          ),
-        ),
+        title: Text('Historial de Visitas - $nombreAlumno'),
+        backgroundColor: Colors.blue, // Fondo azul en el AppBar
+        titleTextStyle:
+            TextStyle(color: Colors.white, fontSize: 20), // Texto en blanco
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
+          icon: Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () {
             Navigator.pop(context);
           },
         ),
       ),
-      body: SafeArea(
-        child: Stack(
-          children: [
-            ListView.builder(
-              itemCount: datosVisitas.length,
-              padding: const EdgeInsets.all(10),
-              itemBuilder: (BuildContext context, int index) {
-                final visita = datosVisitas[index];
-                return Card(
-                  margin: const EdgeInsets.symmetric(vertical: 10),
-                  elevation: 5,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(15),
-                  ),
-                  child: ListTile(
-                    leading: Icon(Icons.date_range, color: Colors.blueAccent),
-                    title: Text(
-                      'Fecha: ${visita.dia}',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black87,
+      body: isLoading
+          ? Center(
+              child: CircularProgressIndicator(),
+            )
+          : servicios.isEmpty
+              ? Center(
+                  child: Text('No hay servicios disponibles'),
+                )
+              : ListView.builder(
+                  itemCount: servicios.length,
+                  itemBuilder: (context, index) {
+                    final servicio = servicios[index];
+                    return Padding(
+                      padding: EdgeInsets.symmetric(
+                        vertical:
+                            size.height * 0.005, // Espaciado vertical dinámico
+                        horizontal:
+                            size.width * 0.03, // Espaciado horizontal dinámico
                       ),
-                    ),
-                    subtitle: Row(
-                      children: [
-                        Icon(Icons.access_time, color: Colors.blueAccent),
-                        SizedBox(width: 5),
-                        Text(
-                          'Hora: ${visita.horas}',
-                          style: TextStyle(color: Colors.black54),
+                      child: Card(
+                        elevation: 3,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(15),
                         ),
-                      ],
-                    ),
-                  ),
-                );
-              },
-            ),
-            if (alumno != null)
-              Container(
-                padding: const EdgeInsets.only(right: 20, bottom: 20),
-                alignment: Alignment.bottomRight,
-                child: FloatingActionButton(
-                  onPressed: () => _mostrarAlert(context, alumno!),
-                  child: const Icon(Icons.person),
+                        child: Padding(
+                          padding: EdgeInsets.symmetric(
+                            vertical:
+                                size.height * 0.01, // Padding vertical dinámico
+                            horizontal: size.width *
+                                0.04, // Padding horizontal dinámico
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: [
+                                  Icon(Icons.calendar_today,
+                                      color: Colors.blueAccent,
+                                      size: size.width * 0.04),
+                                  SizedBox(
+                                      width: size.width *
+                                          0.02), // Espaciado horizontal dinámico
+                                  Text(
+                                    'Fecha: ${servicio.fechaEntrada}',
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: size.width * 0.035),
+                                  ),
+                                ],
+                              ),
+                              SizedBox(
+                                  height: size.height *
+                                      0.005), // Espaciado vertical dinámico
+                              Row(
+                                children: [
+                                  Icon(Icons.access_time,
+                                      color: Colors.blueAccent,
+                                      size: size.width * 0.04),
+                                  SizedBox(
+                                      width: size.width *
+                                          0.02), // Espaciado horizontal dinámico
+                                  Text(
+                                    'Hora Entrada: ${servicio.horaEntrada}',
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: size.width * 0.035),
+                                  ),
+                                ],
+                              ),
+                              SizedBox(
+                                  height: size.height *
+                                      0.005), // Espaciado vertical dinámico
+                              Row(
+                                children: [
+                                  Icon(Icons.access_time_outlined,
+                                      color: Colors.blueAccent,
+                                      size: size.width * 0.04),
+                                  SizedBox(
+                                      width: size.width *
+                                          0.02), // Espaciado horizontal dinámico
+                                  Text(
+                                    'Hora Salida: ${servicio.horaSalida}',
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: size.width * 0.035),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    );
+                  },
                 ),
-              ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  void _mostrarAlert(BuildContext context, AlumnoServcio alumno) {
-    showDialog(
-      context: context,
-      barrierDismissible: true,
-      builder: (context) {
-        return AlertDialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20.0),
-          ),
-          title: Text(alumno.nombreCompleto),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              const Divider(
-                color: Colors.black,
-                thickness: 1,
-              ),
-              Text(
-                'Historial de Visitas:',
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-              SizedBox(
-                height: 8,
-              ),
-              ListView.builder(
-                shrinkWrap: true,
-                itemCount: datosVisitas.length,
-                itemBuilder: (context, index) {
-                  final visita = datosVisitas[index];
-                  return ListTile(
-                    title: Text(visita.horas),
-                  );
-                },
-              ),
-            ],
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text("Cerrar"),
-            ),
-          ],
-        );
-      },
     );
   }
 }

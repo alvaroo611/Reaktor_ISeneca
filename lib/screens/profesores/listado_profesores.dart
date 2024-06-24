@@ -95,17 +95,23 @@ class _ListadoProfesoresState extends State<ListadoProfesores> {
     int minutos = now.minute;
     String parteDelDia;
 
-    if (hora >= 8 && hora < 9 && minutos >= 0) {
+    if (hora == 8 && minutos >= 0 && minutos < 60) {
       parteDelDia = "1";
-    } else if (hora >= 9 && hora < 10 && minutos >= 0) {
+    } else if (hora == 9 && minutos >= 0 && minutos < 60) {
       parteDelDia = "2";
-    } else if (hora >= 10 && hora < 11 && minutos >= 0) {
+    } else if (hora == 10 && minutos >= 0 && minutos < 60) {
       parteDelDia = "3";
-    } else if ((hora >= 11 && minutos >= 30) || (hora < 12 && minutos <= 30)) {
+    } else if (hora == 11 && minutos >= 30 && minutos < 60) {
       parteDelDia = "4";
-    } else if ((hora >= 12 && minutos >= 30) || (hora < 13 && minutos <= 30)) {
+    } else if (hora == 12 && minutos >= 0 && minutos < 30) {
+      parteDelDia = "4";
+    } else if (hora == 12 && minutos >= 30 && minutos < 60) {
       parteDelDia = "5";
-    } else if ((hora >= 13 && minutos >= 30) || (hora < 14 && minutos <= 30)) {
+    } else if (hora == 13 && minutos >= 0 && minutos < 30) {
+      parteDelDia = "5";
+    } else if (hora == 13 && minutos >= 30 && minutos < 60) {
+      parteDelDia = "6";
+    } else if (hora == 14 && minutos >= 0 && minutos < 30) {
       parteDelDia = "6";
     } else {
       // Fuera de las horas válidas para las partes del día
@@ -280,7 +286,7 @@ class _ListadoProfesoresState extends State<ListadoProfesores> {
               ],
             ),
             content: const Text(
-              'El profesor seleccionado no tiene horario disponible en este momento.',
+              'El profesor seleccionado no tiene clase en la hora actual.',
               style: TextStyle(color: Colors.black),
             ),
             actions: <Widget>[
