@@ -134,22 +134,33 @@ class ServicioProvider extends ChangeNotifier {
       String horaSalida,
       BuildContext context) async {
     final Uri url = Uri.parse(
-        'https://script.google.com/macros/s/AKfycbww17NqHZU5opz9SkMtUASKZOg1Hg6KsExRSvlqAMyrx4i0Ax9P5I7IQtKRcnsMKVivdw/exec?spreadsheetId=1u79XugcalPc4aPcymy9OsWu1qdg8aKCBvaPWQOH187I&sheet=Servicio&nombreAlumno=$nombreAlumno&fechaEntrada=$fechaEntrada&horaEntrada=$horaEntrada&fechaSalida=$fechaSalida&horaSalida=$horaSalida');
+        'https://script.google.com/macros/s/AKfycbzj0UpLfXpp9tza9njVytvs9Ovi77oV7GRN1lSfmljf_bS6PkqUgAwGGdOYlPXe9zXd/exec'
+        '?spreadsheetId=1u79XugcalPc4aPcymy9OsWu1qdg8aKCBvaPWQOH187I'
+        '&sheet=Servicio'
+        '&nombreAlumno=$nombreAlumno'
+        '&fechaEntrada=$fechaEntrada'
+        '&horaEntrada=$horaEntrada'
+        '&fechaSalida=$fechaSalida'
+        '&horaSalida=$horaSalida');
 
     try {
       final response = await http.get(url);
 
       if (response.statusCode == 200) {
-        final String data = json.decode(response.body) as String;
-        print('Respuesta: $data');
-        showSnackBar('$data', context);
+        final dynamic data = json.decode(response.body);
+        final String message = data['message'] as String;
+        print('Respuesta: $message');
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text(message)));
       } else {
         print('Error en la solicitud: ${response.statusCode}');
-        showSnackBar('Error en la solicitud: ${response.statusCode}', context);
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text('Error en la solicitud: ${response.statusCode}')));
       }
     } catch (e) {
       print('Error: $e');
-      showSnackBar('Error: $e', context);
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text('Error: $e')));
     }
   }
 

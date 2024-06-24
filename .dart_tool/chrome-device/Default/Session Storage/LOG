@@ -1,6 +1,10 @@
-2024/06/24-02:03:36.950 518 Reusing MANIFEST C:\Users\alvar\AppData\Local\Temp\flutter_tools.d5db1371\flutter_tools_chrome_device.90f4f3d0\Default\Session Storage/MANIFEST-000001
-2024/06/24-02:03:36.968 518 Recovering log #9
-2024/06/24-02:03:36.978 518 Reusing old log C:\Users\alvar\AppData\Local\Temp\flutter_tools.d5db1371\flutter_tools_chrome_device.90f4f3d0\Default\Session Storage/000009.log 
-2024/06/24-02:03:36.979 518 Delete type=0 #3
-2024/06/24-02:03:36.980 518 Delete type=0 #4
-2024/06/24-02:03:36.980 518 Delete type=0 #6
+2024/06/24-03:01:41.358 1ce8 Reusing MANIFEST C:\Users\alvar\AppData\Local\Temp\flutter_tools.8277b63f\flutter_tools_chrome_device.f0423b05\Default\Session Storage/MANIFEST-000001
+2024/06/24-03:01:41.386 1ce8 Recovering log #12
+2024/06/24-03:01:41.401 1ce8 Reusing old log C:\Users\alvar\AppData\Local\Temp\flutter_tools.8277b63f\flutter_tools_chrome_device.f0423b05\Default\Session Storage/000012.log 
+2024/06/24-03:01:41.404 1ce8 Delete type=2 #3
+2024/06/24-03:01:41.405 1ce8 Delete type=0 #3
+2024/06/24-03:01:41.405 1ce8 Delete type=0 #4
+2024/06/24-03:01:41.406 1ce8 Delete type=0 #6
+2024/06/24-03:01:41.406 1ce8 Delete type=2 #7
+2024/06/24-03:01:41.406 1ce8 Delete type=0 #9
+2024/06/24-03:01:41.406 1ce8 Delete type=2 #10

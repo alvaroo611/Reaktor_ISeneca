@@ -1,6 +1,17 @@
-2024/06/24-01:54:48.949 764 Reusing MANIFEST C:\Users\alvar\AppData\Local\Temp\flutter_tools.32104ce4\flutter_tools_chrome_device.74460932\Default\Session Storage/MANIFEST-000001
-2024/06/24-01:54:48.951 764 Recovering log #9
-2024/06/24-01:54:48.956 764 Reusing old log C:\Users\alvar\AppData\Local\Temp\flutter_tools.32104ce4\flutter_tools_chrome_device.74460932\Default\Session Storage/000009.log 
-2024/06/24-01:54:48.959 764 Delete type=0 #3
-2024/06/24-01:54:48.959 764 Delete type=0 #4
-2024/06/24-01:54:48.959 764 Delete type=0 #6
+2024/06/24-02:51:34.372 26cc Reusing MANIFEST C:\Users\alvar\AppData\Local\Temp\flutter_tools.437a9943\flutter_tools_chrome_device.5857427d\Default\Session Storage/MANIFEST-000001
+2024/06/24-02:51:34.390 26cc Recovering log #9
+2024/06/24-02:51:34.398 26cc Reusing old log C:\Users\alvar\AppData\Local\Temp\flutter_tools.437a9943\flutter_tools_chrome_device.5857427d\Default\Session Storage/000009.log 
+2024/06/24-02:51:34.399 26cc Delete type=0 #3
+2024/06/24-02:51:34.399 26cc Delete type=0 #4
+2024/06/24-02:51:34.399 26cc Delete type=0 #6
+2024/06/24-02:51:49.078 2460 Level-0 table #13: started
+2024/06/24-02:51:49.088 2460 Level-0 table #13: 11524 bytes OK
+2024/06/24-02:51:49.093 2460 Delete type=0 #9
+2024/06/24-02:51:49.096 26cc Compacting 4@0 + 0@1 files
+2024/06/24-02:51:49.109 26cc Generated table #14@0: 4 keys, 303 bytes
+2024/06/24-02:51:49.109 26cc Compacted 4@0 + 0@1 files => 303 bytes
+2024/06/24-02:51:49.113 26cc compacted to: files[ 0 1 0 0 0 0 0 ]
+2024/06/24-02:51:49.114 26cc Delete type=2 #3
+2024/06/24-02:51:49.114 26cc Delete type=2 #7
+2024/06/24-02:51:49.114 26cc Delete type=2 #10
+2024/06/24-02:51:49.114 26cc Delete type=2 #13
